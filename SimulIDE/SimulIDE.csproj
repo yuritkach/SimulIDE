@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{12B1FEDE-D188-4605-B6E0-F3C21CF56F3D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SimulIDE</RootNamespace>
+    <AssemblyName>SimulIDE</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="src\gui\editor\CodeEditor.xaml.cs">
+      <DependentUpon>CodeEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\gui\editor\EditorPage.xaml.cs">
+      <DependentUpon>EditorPage.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="src\gui\editor\CodeEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\gui\editor\EditorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\images\about.png" />
+    <Resource Include="resources\images\breakpoint.png" />
+    <Resource Include="resources\images\cdup.png" />
+    <Resource Include="resources\images\closeterminal.png" />
+    <Resource Include="resources\images\copy.png" />
+    <Resource Include="resources\images\cut.png" />
+    <Resource Include="resources\images\find.png" />
+    <Resource Include="resources\images\finish.png" />
+    <Resource Include="resources\images\help.png" />
+    <Resource Include="resources\images\hflip.png" />
+    <Resource Include="resources\images\invert.png" />
+    <Resource Include="resources\images\load.png" />
+    <Resource Include="resources\images\media-seek-forward.png" />
+    <Resource Include="resources\images\new.png" />
+    <Resource Include="resources\images\newcirc.png" />
+    <Resource Include="resources\images\nobreakpoint.png" />
+    <Resource Include="resources\images\open.png" />
+    <Resource Include="resources\images\opencirc.png" />
+    <Resource Include="resources\images\paste.png" />
+    <Resource Include="resources\images\pause.png" />
+    <Resource Include="resources\images\pausesim.png" />
+    <Resource Include="resources\images\play.png" />
+    <Resource Include="resources\images\powerdeb.png" />
+    <Resource Include="resources\images\poweroff.png" />
+    <Resource Include="resources\images\poweron.png" />
+    <Resource Include="resources\images\properties.png" />
+    <Resource Include="resources\images\reload.png" />
+    <Resource Include="resources\images\remove.png" />
+    <Resource Include="resources\images\rename.png" />
+    <Resource Include="resources\images\reset.png" />
+    <Resource Include="resources\images\rotate180.png" />
+    <Resource Include="resources\images\rotateCCW.png" />
+    <Resource Include="resources\images\rotateCW.png" />
+    <Resource Include="resources\images\runtobk.png" />
+    <Resource Include="resources\images\save.png" />
+    <Resource Include="resources\images\saveas.png" />
+    <Resource Include="resources\images\savecirc.png" />
+    <Resource Include="resources\images\savecircas.png" />
+    <Resource Include="resources\images\saveimage.png" />
+    <Resource Include="resources\images\step.png" />
+    <Resource Include="resources\images\stepover.png" />
+    <Resource Include="resources\images\stop.png" />
+    <Resource Include="resources\images\switchbut.png" />
+    <Resource Include="resources\images\terminal.png" />
+    <Resource Include="resources\images\unuse.png" />
+    <Resource Include="resources\images\verify.png" />
+    <Resource Include="resources\images\vflip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\images\closepage.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
