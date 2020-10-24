@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,21 +28,18 @@ namespace SimulIDE.src.gui.editor
 
             CreateWidgets();
             CreateActions();
-//            CreateToolBars();
 //            ReadSettings();
         }
 
 
 
-    //    public bool Close()
-    //    {
-    //        WriteSettings();
-    //        for (int i = 0; i < m_docWidget.Count(); i++)
-    //        {
-    //            CloseTab(m_docWidget[i]);
-    //        }
-    //        return MaybeSave();
-    //    }
+    public bool Close()
+    {
+      //     WriteSettings();
+           for (int i = 0; i < tabControl.Items.Count; i++)
+                tabControl.Items.RemoveAt(i);
+            return MaybeSave();
+    }
 
     //    protected override void keyPressEvent(QKeyEvent* event )
     //    {
@@ -65,157 +64,163 @@ namespace SimulIDE.src.gui.editor
 
         protected void NewFile()
         {
-            CodeEditor editor = new CodeEditor();
+            CodeEditorWidget editorView = new CodeEditorWidget();
             TabItem item = new TabItem();
-            Frame pageFrame = new Frame();
             item.Header = "New";
-            pageFrame.Content = editor;
-            item.Content = pageFrame;
-            var index=tabControl.Items.Add(item);
-            tabControl.SelectedIndex = index;
-
+            item.Content = editorView;
+            tabControl.SelectedIndex = tabControl.Items.Add(item);
             //        connect(baseWidget->m_codeEditor->document(), SIGNAL(contentsChanged()),
             //             this, SLOT(documentWasModified()));
-
-            //        m_fileList << "New";
+            fileList.Add("New");
             EnableFileActs(true);
             EnableDebugActs(true);
         }
 
         protected void Open()
         {
-    //        const string dir = m_lastDir;
-    //        string fileName = FileDialog::getOpenFileName(this, tr("Load File"), dir,
-    //                       tr("All files") + " (*);;Arduino (*.ino);;Asm (*.asm);;GcBasic (*.gcb)");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            string dir = lastDir;
+            openFileDialog.InitialDirectory = dir;
+            openFileDialog.Filter = "Arduino (*.ino)|*.ino|Asm (*.asm)|*.asm|GcBasic (*.gcb)|*.gcb|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 0;
+            openFileDialog.RestoreDirectory = true;
 
-    //        if (fileName!="") LoadFile(fileName);
+            if (openFileDialog.ShowDialog()==true)
+            {
+                string fileName = openFileDialog.FileName;
+                if (fileName != "") LoadFile(fileName);
+            }
         }
 
-    //    protected void LoadFile(string fileName )
-    //    {
-    //        if (m_fileList.contains(fileName))
-    //        {
-    //            m_docWidget->setCurrentIndex(m_fileList.indexOf(fileName));
-    //            //return;
-    //        }
-    //        else newFile();
+        protected void LoadFile(string fileName )
+        {
+            if (fileList.Contains(fileName))
+                tabControl.SelectedIndex = fileList.IndexOf(fileName);
+            else NewFile();
+            //Cursor.Current = Cursors.WaitCursor;
+            CodeEditor ce = GetCodeEditor();
+            ce.AppendText(File.ReadAllText(fileName));
+            ce.FileName=fileName;
+            lastDir = System.IO.Path.GetDirectoryName(fileName);
+            int index = tabControl.SelectedIndex;
+            fileList[index] = fileName;
+            ((TabItem)tabControl.Items[index]).Header = System.IO.Path.GetFileName(fileName);
+            EnableFileActs(true);
+            //if(ce.HasDebugger())
+            EnableDebugActs(true);
+            //Cursor.Current = Cursors.DefaULT;
+        }
 
+        protected void Reload()
+        {
+                string fileName = fileList[tabControl.SelectedIndex];
+                LoadFile(fileName);
+        }
+
+        protected bool Save()
+        {
+                string file = GetCodeEditor().FileName;
+                if (file=="") return SaveAs();
+                else return SaveFile(file);
+        }
+
+        protected bool SaveAs()
+        {
+            CodeEditor ce = GetCodeEditor();
+            string fileName = ce.FileName;
+            string ext = System.IO.Path.GetExtension(fileName);
+            string path = System.IO.Path.GetDirectoryName(fileName);
+            if (path == "")
+                path = lastDir;
+            //qDebug() << "EditorWindow::saveAs" << path;
+
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = path;
+            if (ext == "")
+                saveFileDialog.Filter = "Arduino (*.ino)|*.ino|Asm (*.asm)|*.asm|GcBasic (*.gcb)|*.gcb|All files (*.*)|*.*";
+            else
+                saveFileDialog.Filter = ext+"(*"+ext+")|*"+ext+"|All files (*.*)|*.*";
             
-    //        //Cursor.Current = Cursors.WaitCursor;
+            bool? result = saveFileDialog.ShowDialog();
+            fileName = saveFileDialog.FileName;
+            if (fileName=="") return false;
+            if (result == true)
+            {
+                fileList[tabControl.SelectedIndex]= fileName;
+                return SaveFile(fileName);
+            }
+            return false;
+        }
 
-    //        CodeEditor* ce = getCodeEditor();
-    //        ce->setPlainText(fileToString(fileName, "EditorWindow"));
-    //        ce->setFile(fileName);
+        protected bool SaveFile(string fileName)
+        {
+        //        QFile file(fileName);
+        //        if (!file.open(QFile::WriteOnly | QFile::Text))
+        //        {
+        //            QMessageBox::warning(this, "EditorWindow::saveFile",
+        //                             tr("Cannot write file %1:\n%2.")
+        //                             .arg(fileName)
+        //                             .arg(file.errorString()));
+        //            return false;
+        //        }
+        //        QTextStream out(&file);
+        //        out.setCodec("UTF-8");
+        //        QApplication::setOverrideCursor(Qt::WaitCursor);
+        //        CodeEditor* ce = getCodeEditor();
+        //        out << ce->toPlainText();
+        //        ce->setFile(fileName);
+        //        QApplication::restoreOverrideCursor();
 
-    //        m_lastDir = fileName;
-    //        int index = m_docWidget->currentIndex();
-    //        m_fileList.replace(index, fileName);
-    //        m_docWidget->setTabText(index, strippedName(fileName));
-    //        enableFileActs(true);   // enable file actions
-    //                            //if( ce->hasDebugger() )
-    //        enableDebugActs(true);
+        //        ce->document()->setModified(false);
+        //        documentWasModified();
 
-    //    //Cursor.Current = Cursors.DefaULT;
-    //    }
+        //        m_docWidget->setTabText(m_docWidget->currentIndex(), strippedName(fileName));
+               return true;
+        }
 
-    //    protected void Reload()
-    //    {
-    //        string fileName = m_fileList.at(m_docWidget->currentIndex());
-    //        LoadFile(fileName);
-    //    }
+        protected bool MaybeSave()
+        {
+            if (fileList.Count==0) return true;
+            if (GetCodeEditor().IsModified())
+            {
+                MessageBoxResult dialogResult = MessageBox.Show("\nThe Document has been modified.\nDo you want to save your changes?\n",
+                    "Save file", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (dialogResult == MessageBoxResult.Yes)
+                {
+                    Save();
+                    return true;
 
-    //    protected bool Save()
-    //    {
-    //        QString file = getCodeEditor()->getFilePath();
-    //        if (file.isEmpty()) return saveAs();
-    //        else return saveFile(file);
-    //    }
+                }
+                else if (dialogResult == MessageBoxResult.No)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-    //    protected bool SaveAs()
-    //    {
-    //        CodeEditor* ce = getCodeEditor();
+        //    protected void DocumentWasModified()
+        //    {
+        //        CodeEditor* ce = getCodeEditor();
+        //        QTextDocument* doc = ce->document();
 
-    //        QFileInfo fi = QFileInfo(ce->getFilePath());
-    //        QString ext = fi.suffix();
-    //        QString path = fi.absolutePath();
-    //        if (path == "") path = m_lastDir;
-    //        //qDebug() << "EditorWindow::saveAs" << path;
+        //        bool modified = doc->isModified();
+        //        int index = m_docWidget->currentIndex();
+        //        QString tabText = m_docWidget->tabText(index);
 
-    //        QString extensions = "";
-    //        if (ext == "") extensions = tr("All files") + " (*);;Arduino (*.ino);;Asm (*.asm);;GcBasic (*.gcb)";
-    //        else extensions = "." + ext + "(*." + ext + ");;" + tr("All files") + " (*.*)";
-    
-    //        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Document As"), path, extensions);
-    //        if (fileName.isEmpty()) return false;
+        //        if (modified && !tabText.endsWith("*")) tabText.append("*");
+        //        else if (!modified && tabText.endsWith("*")) tabText.remove("*");
 
-    //        m_fileList.replace(m_docWidget->currentIndex(), fileName);
+        //        m_docWidget->setTabText(index, tabText);
 
-    //        return saveFile(fileName);
-    //    }
+        //        redoAct->setEnabled(false);
+        //        undoAct->setEnabled(false);
+        //        if (doc->isRedoAvailable()) redoAct->setEnabled(true);
+        //        if (doc->isUndoAvailable()) undoAct->setEnabled(true);
 
-    //    protected bool SaveFile(const QString &fileName)
-    //    {
-    //        QFile file(fileName);
-    //        if (!file.open(QFile::WriteOnly | QFile::Text))
-    //        {
-    //            QMessageBox::warning(this, "EditorWindow::saveFile",
-    //                             tr("Cannot write file %1:\n%2.")
-    //                             .arg(fileName)
-    //                             .arg(file.errorString()));
-    //            return false;
-    //        }
-    //        QTextStream out(&file);
-    //        out.setCodec("UTF-8");
-    //        QApplication::setOverrideCursor(Qt::WaitCursor);
-    //        CodeEditor* ce = getCodeEditor();
-    //        out << ce->toPlainText();
-    //        ce->setFile(fileName);
-    //        QApplication::restoreOverrideCursor();
-
-    //        ce->document()->setModified(false);
-    //        documentWasModified();
-
-    //        m_docWidget->setTabText(m_docWidget->currentIndex(), strippedName(fileName));
-    //        return true;
-    //    }
-
-    //    protected bool MaybeSave()
-    //    {
-    //        if (m_fileList.isEmpty()) return true;
-    //        if (getCodeEditor()->document()->isModified())
-    //        {
-    //            QMessageBox::StandardButton ret;
-    //            ret = QMessageBox::warning(this, "EditorWindow::saveFile",
-    //              tr("\nThe Document has been modified.\nDo you want to save your changes?\n"),
-    //              QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-
-    //            if (ret == QMessageBox::Save) return save();
-    //            else if (ret == QMessageBox::Cancel) return false;
-    //        }
-    //        return true;
-    //    }
-
-    //    protected void DocumentWasModified()
-    //    {
-    //        CodeEditor* ce = getCodeEditor();
-    //        QTextDocument* doc = ce->document();
-
-    //        bool modified = doc->isModified();
-    //        int index = m_docWidget->currentIndex();
-    //        QString tabText = m_docWidget->tabText(index);
-
-    //        if (modified && !tabText.endsWith("*")) tabText.append("*");
-    //        else if (!modified && tabText.endsWith("*")) tabText.remove("*");
-    
-    //        m_docWidget->setTabText(index, tabText);
-
-    //        redoAct->setEnabled(false);
-    //        undoAct->setEnabled(false);
-    //        if (doc->isRedoAvailable()) redoAct->setEnabled(true);
-    //        if (doc->isUndoAvailable()) undoAct->setEnabled(true);
-
-    //        ce->setCompiled(false);
-    //    }
+        //        ce->setCompiled(false);
+        //    }
 
         protected void EnableFileActs(bool enable)
         {
@@ -310,114 +315,74 @@ namespace SimulIDE.src.gui.editor
 
         protected void CreateActions()
         {
-//            newAct = new Action( QIcon(":/new.png"), tr("&New\tCtrl+N"), this);
-    //        newAct->setStatusTip(tr("Create a new file"));
-    //        connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+            editorSaveButton.IsEnabled = false;
+            editorSaveAsButton.IsEnabled = false;
 
-    //        openAct = new QAction(QIcon(":/open.png"), tr("&Open...\tCtrl+O"), this);
-    //        openAct->setStatusTip(tr("Open an existing file"));
-    //        connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+            //        exitAct = new QAction(QIcon(":/exit.png"), tr("E&xit"), this);
+            //        exitAct->setStatusTip(tr("Exit the application"));
+            //        connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    //        saveAct = new QAction(QIcon(":/save.png"), tr("&Save\tCtrl+S"), this);
-    //        saveAct->setStatusTip(tr("Save the document to disk"));
-    //        saveAct->setEnabled(false);
-    //        connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+            //        runAct = new QAction(QIcon(":/runtobk.png"), tr("Run To Breakpoint"), this);
+            //        runAct->setStatusTip(tr("Run to next breakpoint"));
+            //        runAct->setEnabled(false);
+            //        connect(runAct, SIGNAL(triggered()), this, SLOT(run()));
 
-    //        saveAsAct = new QAction(QIcon(":/saveas.png"), tr("Save &As...\tCtrl+Shift+S"), this);
-    //        saveAsAct->setStatusTip(tr("Save the document under a new name"));
-    //        saveAsAct->setEnabled(false);
-    //        connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+            //        stepAct = new QAction(QIcon(":/step.png"), tr("Step"), this);
+            //        stepAct->setStatusTip(tr("Step debugger"));
+            //        stepAct->setEnabled(false);
+            //        connect(stepAct, SIGNAL(triggered()), this, SLOT(step()));
 
-    //        exitAct = new QAction(QIcon(":/exit.png"), tr("E&xit"), this);
-    //        exitAct->setStatusTip(tr("Exit the application"));
-    //        connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+            //        stepOverAct = new QAction(QIcon(":/rotateCW.png"), tr("StepOver"), this);
+            //        stepOverAct->setStatusTip(tr("Step Over"));
+            //        stepOverAct->setEnabled(false);
+            //        stepOverAct->setVisible(false);
+            //        connect(stepOverAct, SIGNAL(triggered()), this, SLOT(stepOver()));
 
-    //        cutAct = new QAction(QIcon(":/cut.png"), tr("Cu&t\tCtrl+X"), this);
-    //        cutAct->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
-    //        cutAct->setEnabled(false);
-    //        connect(cutAct, SIGNAL(triggered()), this, SLOT(cut()));
+            //        pauseAct = new QAction(QIcon(":/pause.png"), tr("Pause"), this);
+            //        pauseAct->setStatusTip(tr("Pause debugger"));
+            //        pauseAct->setEnabled(false);
+            //        connect(pauseAct, SIGNAL(triggered()), this, SLOT(pause()));
 
-    //        copyAct = new QAction(QIcon(":/copy.png"), tr("&Copy\tCtrl+C"), this);
-    //        copyAct->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
-    //        copyAct->setEnabled(false);
-    //        connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+            //        resetAct = new QAction(QIcon(":/reset.png"), tr("Reset"), this);
+            //        resetAct->setStatusTip(tr("Reset debugger"));
+            //        resetAct->setEnabled(false);
+            //        connect(resetAct, SIGNAL(triggered()), this, SLOT(reset()));
 
-    //        pasteAct = new QAction(QIcon(":/paste.png"), tr("&Paste\tCtrl+V"), this);
-    //        pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
-    //        pasteAct->setEnabled(false);
-    //        connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+            //        stopAct = new QAction(QIcon(":/stop.png"), tr("Stop Debugger"), this);
+            //        stopAct->setStatusTip(tr("Stop debugger"));
+            //        stopAct->setEnabled(false);
+            //        connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
 
-    //        undoAct = new QAction(QIcon(":/undo.png"), tr("Undo\tCtrl+Z"), this);
-    //        undoAct->setStatusTip(tr("Undo the last action"));
-    //        undoAct->setEnabled(false);
-    //        connect(undoAct, SIGNAL(triggered()), this, SLOT(undo()));
+            //        compileAct = new QAction(QIcon(":/compile.png"), tr("Compile"), this);
+            //        compileAct->setStatusTip(tr("Compile Source"));
+            //        compileAct->setEnabled(false);
+            //        connect(compileAct, SIGNAL(triggered()), this, SLOT(compile()));
 
-    //        redoAct = new QAction(QIcon(":/redo.png"), tr("Redo\tCtrl+Shift+Z"), this);
-    //        redoAct->setStatusTip(tr("Redo the last action"));
-    //        redoAct->setEnabled(false);
-    //        connect(redoAct, SIGNAL(triggered()), this, SLOT(redo()));
+            //        loadAct = new QAction(QIcon(":/load.png"), tr("UpLoad"), this);
+            //        loadAct->setStatusTip(tr("Load Firmware"));
+            //        loadAct->setEnabled(false);
+            //        connect(loadAct, SIGNAL(triggered()), this, SLOT(upload()));
 
-    //        runAct = new QAction(QIcon(":/runtobk.png"), tr("Run To Breakpoint"), this);
-    //        runAct->setStatusTip(tr("Run to next breakpoint"));
-    //        runAct->setEnabled(false);
-    //        connect(runAct, SIGNAL(triggered()), this, SLOT(run()));
+            //        /*aboutAct = new QAction(QIcon(":/info.png"),tr("&About"), this);
+            //        aboutAct->setStatusTip(tr("Show the application's About box"));
+            //        connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));*/
 
-    //        stepAct = new QAction(QIcon(":/step.png"), tr("Step"), this);
-    //        stepAct->setStatusTip(tr("Step debugger"));
-    //        stepAct->setEnabled(false);
-    //        connect(stepAct, SIGNAL(triggered()), this, SLOT(step()));
+            //        /*aboutQtAct = new QAction(QIcon(":/info.png"),tr("About &Qt"), this);
+            //        aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+            //        connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));*/
 
-    //        stepOverAct = new QAction(QIcon(":/rotateCW.png"), tr("StepOver"), this);
-    //        stepOverAct->setStatusTip(tr("Step Over"));
-    //        stepOverAct->setEnabled(false);
-    //        stepOverAct->setVisible(false);
-    //        connect(stepOverAct, SIGNAL(triggered()), this, SLOT(stepOver()));
+            //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
+            //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
 
-    //        pauseAct = new QAction(QIcon(":/pause.png"), tr("Pause"), this);
-    //        pauseAct->setStatusTip(tr("Pause debugger"));
-    //        pauseAct->setEnabled(false);
-    //        connect(pauseAct, SIGNAL(triggered()), this, SLOT(pause()));
+            //        findQtAct = new QAction(QIcon(":/find.png"), tr("Find Replace"), this);
+            //        findQtAct->setStatusTip(tr("Find Replace"));
+            //        findQtAct->setEnabled(false);
+            //        connect(findQtAct, SIGNAL(triggered()), this, SLOT(findReplaceDialog()));
 
-    //        resetAct = new QAction(QIcon(":/reset.png"), tr("Reset"), this);
-    //        resetAct->setStatusTip(tr("Reset debugger"));
-    //        resetAct->setEnabled(false);
-    //        connect(resetAct, SIGNAL(triggered()), this, SLOT(reset()));
-
-    //        stopAct = new QAction(QIcon(":/stop.png"), tr("Stop Debugger"), this);
-    //        stopAct->setStatusTip(tr("Stop debugger"));
-    //        stopAct->setEnabled(false);
-    //        connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
-
-    //        compileAct = new QAction(QIcon(":/compile.png"), tr("Compile"), this);
-    //        compileAct->setStatusTip(tr("Compile Source"));
-    //        compileAct->setEnabled(false);
-    //        connect(compileAct, SIGNAL(triggered()), this, SLOT(compile()));
-
-    //        loadAct = new QAction(QIcon(":/load.png"), tr("UpLoad"), this);
-    //        loadAct->setStatusTip(tr("Load Firmware"));
-    //        loadAct->setEnabled(false);
-    //        connect(loadAct, SIGNAL(triggered()), this, SLOT(upload()));
-
-    //        /*aboutAct = new QAction(QIcon(":/info.png"),tr("&About"), this);
-    //        aboutAct->setStatusTip(tr("Show the application's About box"));
-    //        connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));*/
-
-    //        /*aboutQtAct = new QAction(QIcon(":/info.png"),tr("About &Qt"), this);
-    //        aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    //        connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));*/
-
-    //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
-    //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
-
-    //        findQtAct = new QAction(QIcon(":/find.png"), tr("Find Replace"), this);
-    //        findQtAct->setStatusTip(tr("Find Replace"));
-    //        findQtAct->setEnabled(false);
-    //        connect(findQtAct, SIGNAL(triggered()), this, SLOT(findReplaceDialog()));
-
-    //        debugAct = new QAction(QIcon(":/play.png"), tr("Debug"), this);
-    //        debugAct->setStatusTip(tr("Start Debugger"));
-    //        debugAct->setEnabled(false);
-    //        connect(debugAct, SIGNAL(triggered()), this, SLOT(debug()));
+            //        debugAct = new QAction(QIcon(":/play.png"), tr("Debug"), this);
+            //        debugAct->setStatusTip(tr("Start Debugger"));
+            //        debugAct->setEnabled(false);
+            //        connect(debugAct, SIGNAL(triggered()), this, SLOT(debug()));
         }
 
     //    protected void EnableStepOver(bool en)
@@ -425,12 +390,10 @@ namespace SimulIDE.src.gui.editor
     //        stepOverAct->setVisible(en);
     //    }
 
-    //    protected CodeEditor* getCodeEditor()
-    //    {
-    //        CodeEditorWidget* actW = dynamic_cast<CodeEditorWidget*>(m_docWidget->currentWidget());
-    //        if (actW) return actW->m_codeEditor;
-    //        else return 0l;
-    //    }
+        protected CodeEditor GetCodeEditor()
+        {
+            return ((CodeEditorWidget)((TabItem)tabControl.Items[tabControl.SelectedIndex]).Content).EditorView;
+        }
 
     //    protected void СloseTab(int index)
     //    {
@@ -551,76 +514,43 @@ namespace SimulIDE.src.gui.editor
     //        findRepDiaWidget->show();
     //    }
 
-        protected void CreateToolBars()
-        {
-            //m_editorToolBar->addAction(newAct);
-            //m_editorToolBar->addAction(openAct);
-            //m_editorToolBar->addAction(saveAct);
-            //m_editorToolBar->addAction(saveAsAct);
-            //m_editorToolBar->addSeparator();
+        //    protected void ReadSettings()
+        //    {
+        //        QSettings* settings = MainWindow::self()->settings();
+        //        restoreGeometry(settings->value("geometry").toByteArray());
+        //        m_docWidget->restoreGeometry(settings->value("docWidget/geometry").toByteArray());
+        //        m_lastDir = settings->value("lastDir").toString();
+        //    }
 
-    //        /*m_editorToolBar->addAction(cutAct);
-    //        m_editorToolBar->addAction(copyAct);
-    //        m_editorToolBar->addAction(pasteAct);
-    //        m_editorToolBar->addSeparator();
-    //        m_editorToolBar->addAction(undoAct);
-    //        m_editorToolBar->addAction(redoAct);*/
-    
-            //m_editorToolBar->addAction(findQtAct);
-            //m_editorToolBar->addSeparator();
+        //    protected void EditorWindow::writeSettings()
+        //    {
+        //        QSettings* settings = MainWindow::self()->settings();
+        //        settings->setValue("geometry", saveGeometry());
+        //        settings->setValue("docWidget/geometry", m_docWidget->saveGeometry());
+        //        settings->setValue("lastDir", m_lastDir);
+        //    }
 
-            //m_editorToolBar->addAction(compileAct);
-            //m_editorToolBar->addAction(loadAct);
-            //m_editorToolBar->addSeparator();
+        //    protected QString StrippedName(const QString &fullFileName)
+        //    {
+        //        return QFileInfo(fullFileName).fileName();
+        //    }
 
-            //m_editorToolBar->addAction(debugAct);
-
-            //m_debuggerToolBar->addAction(stepAct);
-            //m_debuggerToolBar->addAction(stepOverAct);
-            //m_debuggerToolBar->addAction(runAct);
-            //m_debuggerToolBar->addAction(pauseAct);
-            //m_debuggerToolBar->addAction(resetAct);
-            //m_debuggerToolBar->addSeparator();
-            //m_debuggerToolBar->addAction(stopAct);
-        }
-
-    //    protected void ReadSettings()
-    //    {
-    //        QSettings* settings = MainWindow::self()->settings();
-    //        restoreGeometry(settings->value("geometry").toByteArray());
-    //        m_docWidget->restoreGeometry(settings->value("docWidget/geometry").toByteArray());
-    //        m_lastDir = settings->value("lastDir").toString();
-    //    }
-
-    //    protected void EditorWindow::writeSettings()
-    //    {
-    //        QSettings* settings = MainWindow::self()->settings();
-    //        settings->setValue("geometry", saveGeometry());
-    //        settings->setValue("docWidget/geometry", m_docWidget->saveGeometry());
-    //        settings->setValue("lastDir", m_lastDir);
-    //    }
-
-    //    protected QString StrippedName(const QString &fullFileName)
-    //    {
-    //        return QFileInfo(fullFileName).fileName();
-    //    }
-
-    //    protected void About()
-    //    {
-    //        /*QMessageBox::about(this, tr("About Application"),
-    //                 tr(""));*/
-    //        ;
-    //    }
+        //    protected void About()
+        //    {
+        //        /*QMessageBox::about(this, tr("About Application"),
+        //                 tr(""));*/
+        //        ;
+        //    }
 
 
 
-    //QGridLayout* baseWidgetLayout;
-    //QTabWidget* m_docWidget;
+        //QGridLayout* baseWidgetLayout;
+        //QTabWidget* m_docWidget;
 
-    //FindReplaceDialog* findRepDiaWidget;
+        //FindReplaceDialog* findRepDiaWidget;
 
-    //QString m_lastDir;
-    //QStringList m_fileList;
+        protected string lastDir="";
+        protected List<string> fileList = new List<string>();
 
     //QToolBar* m_editorToolBar;
     //QToolBar* m_debuggerToolBar;
@@ -653,13 +583,17 @@ namespace SimulIDE.src.gui.editor
 
         private void EditorNewButton_Click(object sender, RoutedEventArgs e) => NewFile();
         private void EditorOpenButton_Click(object sender, RoutedEventArgs e) => Open();
+        private void EditorSaveButton_Click(object sender, RoutedEventArgs e) => Save();
+        private void EditorSaveAsButton_Click(object sender, RoutedEventArgs e) => SaveAs();
 
-
-
-     
         private void TabItemButton_Click(object sender, RoutedEventArgs e)
         {
             
+
+        }
+
+        private void EditorFindButton_Click(object sender, RoutedEventArgs e)
+        {
 
         }
 

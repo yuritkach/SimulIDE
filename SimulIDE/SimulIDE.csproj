@@ -58,6 +58,9 @@
     <Compile Include="src\gui\editor\CodeEditor.xaml.cs">
       <DependentUpon>CodeEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="src\gui\editor\CodeEditorWidget.xaml.cs">
+      <DependentUpon>CodeEditorWidget.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\gui\editor\EditorPage.xaml.cs">
       <DependentUpon>EditorPage.xaml</DependentUpon>
     </Compile>
@@ -74,6 +77,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="src\gui\editor\CodeEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\gui\editor\CodeEditorWidget.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

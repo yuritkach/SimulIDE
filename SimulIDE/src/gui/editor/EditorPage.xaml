@@ -34,18 +34,18 @@
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/open.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="editorSaveButton" Content="" Height="24" VerticalAlignment="Top" Width="24">
+            <Button x:Name="editorSaveButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorSaveButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/save.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="editorSaveAsButton" Content="" Height="24" VerticalAlignment="Top" Width="24">
+            <Button x:Name="editorSaveAsButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorSaveAsButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/saveas.png"/>
                 </Button.Background>
             </Button>
             <Separator />
-            <Button x:Name="editorFindButton" Content="" Height="24" VerticalAlignment="Top" Width="24">
+            <Button x:Name="editorFindButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorFindButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/find.png"/>
                 </Button.Background>
