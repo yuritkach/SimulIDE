@@ -22,6 +22,30 @@ namespace SimulIDE.src.gui.editor
     /// </summary>
     public partial class EditorPage : Page
     {
+        public delegate void MyEventHandler(object obj);
+        public event MyEventHandler DocumentChanged;
+        protected void DocumentWasChanged(object obj)
+        {
+            //        CodeEditor* ce = getCodeEditor();
+            //        QTextDocument* doc = ce->document();
+
+            //        bool modified = doc->isModified();
+            //        int index = m_docWidget->currentIndex();
+            //        QString tabText = m_docWidget->tabText(index);
+
+            //        if (modified && !tabText.endsWith("*")) tabText.append("*");
+            //        else if (!modified && tabText.endsWith("*")) tabText.remove("*");
+
+            //        m_docWidget->setTabText(index, tabText);
+
+            //        redoAct->setEnabled(false);
+            //        undoAct->setEnabled(false);
+            //        if (doc->isRedoAvailable()) redoAct->setEnabled(true);
+            //        if (doc->isUndoAvailable()) undoAct->setEnabled(true);
+
+            //        ce->setCompiled(false);
+        }
+
         public EditorPage()
         {
             InitializeComponent();
@@ -69,12 +93,14 @@ namespace SimulIDE.src.gui.editor
             item.Header = "New";
             item.Content = editorView;
             tabControl.SelectedIndex = tabControl.Items.Add(item);
-            //        connect(baseWidget->m_codeEditor->document(), SIGNAL(contentsChanged()),
-            //             this, SLOT(documentWasModified()));
+            CodeEditor ce = GetCodeEditor();
+            editorView.EditorView.OnDocumentChanged += DocumentWasChanged;
             fileList.Add("New");
             EnableFileActs(true);
             EnableDebugActs(true);
         }
+
+        
 
         protected void Open()
         {
@@ -155,34 +181,17 @@ namespace SimulIDE.src.gui.editor
 
         protected bool SaveFile(string fileName)
         {
-        //        QFile file(fileName);
-        //        if (!file.open(QFile::WriteOnly | QFile::Text))
-        //        {
-        //            QMessageBox::warning(this, "EditorWindow::saveFile",
-        //                             tr("Cannot write file %1:\n%2.")
-        //                             .arg(fileName)
-        //                             .arg(file.errorString()));
-        //            return false;
-        //        }
-        //        QTextStream out(&file);
-        //        out.setCodec("UTF-8");
-        //        QApplication::setOverrideCursor(Qt::WaitCursor);
-        //        CodeEditor* ce = getCodeEditor();
-        //        out << ce->toPlainText();
-        //        ce->setFile(fileName);
-        //        QApplication::restoreOverrideCursor();
-
-        //        ce->document()->setModified(false);
-        //        documentWasModified();
-
-        //        m_docWidget->setTabText(m_docWidget->currentIndex(), strippedName(fileName));
-               return true;
+            CodeEditor ce = GetCodeEditor();
+            System.IO.File.WriteAllText(fileName, ce.GetPlainText());
+            ((TabItem)tabControl.Items[tabControl.SelectedIndex]).Header = System.IO.Path.GetFileName(fileName);
+            ce.IsModified=false;
+            return true;
         }
 
         protected bool MaybeSave()
         {
             if (fileList.Count==0) return true;
-            if (GetCodeEditor().IsModified())
+            if (GetCodeEditor().IsModified)
             {
                 MessageBoxResult dialogResult = MessageBox.Show("\nThe Document has been modified.\nDo you want to save your changes?\n",
                     "Save file", MessageBoxButton.YesNo, MessageBoxImage.Warning);
@@ -190,12 +199,8 @@ namespace SimulIDE.src.gui.editor
                 {
                     Save();
                     return true;
-
                 }
-                else if (dialogResult == MessageBoxResult.No)
-                {
-                    return false;
-                }
+                else if (dialogResult == MessageBoxResult.No) return false;
             }
             return true;
         }
