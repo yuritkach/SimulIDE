@@ -23,6 +23,7 @@ namespace SimulIDE.src.gui.editor
         public CodeEditorWidget()
         {
             InitializeComponent();
+            CodeEditor EditorView = new CodeEditor(ref EditorPanel, OutPane);
         }
     }
 }

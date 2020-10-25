@@ -13,7 +13,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <local:CodeEditor x:Name="EditorView" Grid.Row="0"></local:CodeEditor>
+        <DockPanel Name="EditorPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0"></DockPanel>
         <GridSplitter x:Name="gridSplitter" Grid.Row="1" Height="5" Width="800" HorizontalAlignment="Stretch" ResizeBehavior="PreviousAndNext" ResizeDirection="Rows"/>
         <TextBox Name="OutPane" Grid.Row="2" Text="Ready" Background="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"/>
     </Grid>

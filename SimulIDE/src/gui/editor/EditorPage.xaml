@@ -75,6 +75,11 @@
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/step.png"/>
                 </Button.Background>
             </Button>
+            <Button x:Name="debuggerStepOverButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepOverButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/stepover.png"/>
+                </Button.Background>
+            </Button>
             <Button x:Name="debuggerRunToBKButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerRunToBKButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/runtobk.png"/>

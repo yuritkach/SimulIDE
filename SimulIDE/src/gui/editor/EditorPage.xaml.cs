@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +18,11 @@ using System.Windows.Shapes;
 
 namespace SimulIDE.src.gui.editor
 {
+
     /// <summary>
     /// Interaction logic for EditorPage.xaml
     /// </summary>
+    /// 
     public partial class EditorPage : Page
     {
         public delegate void MyEventHandler(object obj);
@@ -67,10 +70,12 @@ namespace SimulIDE.src.gui.editor
             item.Content = editorView;
             tabControl.SelectedIndex = tabControl.Items.Add(item);
             CodeEditor ce = GetCodeEditor();
-            editorView.EditorView.OnDocumentChanged += DocumentWasChanged;
+            //editorView.EditorView.OnDocumentChanged += DocumentWasChanged;
             fileList.Add("New");
             EnableFileActs(true);
             EnableDebugActs(true);
+            TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
+            doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
         }
 
         
@@ -108,6 +113,9 @@ namespace SimulIDE.src.gui.editor
             EnableFileActs(true);
             if(ce.HasDebugger())
                 EnableDebugActs(true);
+
+            TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
+            doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
             //Cursor.Current = Cursors.DefaULT;
         }
 
@@ -247,31 +255,14 @@ namespace SimulIDE.src.gui.editor
             //        exitAct->setStatusTip(tr("Exit the application"));
             //        connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-            //        stepAct = new QAction(QIcon(":/step.png"), tr("Step"), this);
-            //        stepAct->setStatusTip(tr("Step debugger"));
-            //        stepAct->setEnabled(false);
-            //        connect(stepAct, SIGNAL(triggered()), this, SLOT(step()));
+            debuggerStepButton.IsEnabled = false;
+            debuggerStepOverButton.IsEnabled = false;
+            debuggerStepOverButton.Visibility = Visibility.Hidden;
 
-            //        stepOverAct = new QAction(QIcon(":/rotateCW.png"), tr("StepOver"), this);
-            //        stepOverAct->setStatusTip(tr("Step Over"));
-            //        stepOverAct->setEnabled(false);
-            //        stepOverAct->setVisible(false);
-            //        connect(stepOverAct, SIGNAL(triggered()), this, SLOT(stepOver()));
-
-            //        pauseAct = new QAction(QIcon(":/pause.png"), tr("Pause"), this);
-            //        pauseAct->setStatusTip(tr("Pause debugger"));
-            //        pauseAct->setEnabled(false);
-            //        connect(pauseAct, SIGNAL(triggered()), this, SLOT(pause()));
-
-            //        resetAct = new QAction(QIcon(":/reset.png"), tr("Reset"), this);
-            //        resetAct->setStatusTip(tr("Reset debugger"));
-            //        resetAct->setEnabled(false);
-            //        connect(resetAct, SIGNAL(triggered()), this, SLOT(reset()));
-
-            //        stopAct = new QAction(QIcon(":/stop.png"), tr("Stop Debugger"), this);
-            //        stopAct->setStatusTip(tr("Stop debugger"));
-            //        stopAct->setEnabled(false);
-            //        connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
+            debuggerPauseButton.IsEnabled = false;
+            debuggerResetButton.IsEnabled = false;
+            debuggerStopButton.IsEnabled = false;
+            editorDebugButton.IsEnabled = false;
 
             //        /*aboutAct = new QAction(QIcon(":/info.png"),tr("&About"), this);
             //        aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -283,21 +274,16 @@ namespace SimulIDE.src.gui.editor
 
             //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
             //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
-
-            //        debugAct = new QAction(QIcon(":/play.png"), tr("Debug"), this);
-            //        debugAct->setStatusTip(tr("Start Debugger"));
-            //        debugAct->setEnabled(false);
-            //        connect(debugAct, SIGNAL(triggered()), this, SLOT(debug()));
         }
 
         protected void EnableStepOver(bool en)
         {
-    //        stepOverAct->setVisible(en);
+            debuggerStepOverButton.Visibility =en? Visibility.Visible:Visibility.Hidden;
         }
 
         protected CodeEditor GetCodeEditor()
         {
-            return ((CodeEditorWidget)((TabItem)tabControl.Items[tabControl.SelectedIndex]).Content).EditorView;
+            return (CodeEditor)((CodeEditorWidget)((TabItem)tabControl.Items[tabControl.SelectedIndex]).Content).EditorPanel.Children[0];
         }
 
         protected void CloseTabSheet(int index)
@@ -309,7 +295,7 @@ namespace SimulIDE.src.gui.editor
 
             if (fileList.Count==0)
             {
-                EnableFileActs(false); // disable file actions
+                EnableFileActs(false); 
                 EnableDebugActs(false);
             }
             if (debuggerToolBar.Visibility==Visibility.Visible) Stop();
@@ -331,77 +317,78 @@ namespace SimulIDE.src.gui.editor
         {
             CodeEditor ce = GetCodeEditor();
 
-//            if (ce.InitDebbuger())
+            if (ce.InitDebbuger())
             {
                 editorToolBar.Visibility = Visibility.Hidden;
                 debuggerToolBar.Visibility=Visibility.Visible;
-    //            runAct->setEnabled(true);
-    //            stepAct->setEnabled(true);
-    //            stepOverAct->setEnabled(true);
-    //            resetAct->setEnabled(true);
-    //            pauseAct->setEnabled(false);
+                debuggerRunToBKButton.IsEnabled = true;
+                debuggerStepButton.IsEnabled = true;
+                debuggerStepOverButton.IsEnabled = true;
+                debuggerResetButton.IsEnabled = true;
+                debuggerPauseButton.IsEnabled = false;
             }
         }
 
         protected void Run()
         {
-    //        setStepActs();
-    //        QTimer::singleShot(10, getCodeEditor(), SLOT(run()));
+            SetStepActs();
+            //        QTimer::singleShot(10, getCodeEditor(), SLOT(run()));
+            GetCodeEditor().Run();
         }
 
         protected void Step()
         {
-    //        setStepActs();
+            SetStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(step()));
-    //        //getCodeEditor()->step( false ); 
+             GetCodeEditor().Step( false ); 
         }
 
         protected void StepOver()
         {
-    //        setStepActs();
+            SetStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(stepOver()));
-    //        //getCodeEditor()->step( true ); 
+            GetCodeEditor().Step( true ); 
         }
 
         protected void SetStepActs()
         {
-    //        runAct->setEnabled(false);
-    //        stepAct->setEnabled(false);
-    //        stepOverAct->setEnabled(false);
-    //        resetAct->setEnabled(false);
-    //        pauseAct->setEnabled(true);
+            debuggerRunToBKButton.IsEnabled = false;
+            debuggerStepButton.IsEnabled = false;
+            debuggerStepOverButton.IsEnabled = false;
+            debuggerResetButton.IsEnabled = false;
+            debuggerPauseButton.IsEnabled = true;
         }
 
         protected void Pause()
         {
-    //        getCodeEditor()->pause();
-    //        runAct->setEnabled(true);
-    //        stepAct->setEnabled(true);
-    //        stepOverAct->setEnabled(true);
-    //        resetAct->setEnabled(true);
-    //        pauseAct->setEnabled(false);
+            GetCodeEditor().Pause();
+            debuggerRunToBKButton.IsEnabled = true;
+            debuggerStepButton.IsEnabled = true;
+            debuggerStepOverButton.IsEnabled = true;
+            debuggerResetButton.IsEnabled = true;
+            debuggerPauseButton.IsEnabled = true;
         }
 
         protected void Reset()
         {
-    //        GetCodeEditor().Reset();
+            GetCodeEditor().Reset();
         }
 
         protected void Stop()
         {
-    //        getCodeEditor()->stopDebbuger();
-    //        m_debuggerToolBar->setVisible(false);
-    //        m_editorToolBar->setVisible(true);
+            GetCodeEditor().StopDebbuger();
+            debuggerToolBar.Visibility=Visibility.Hidden;
+            editorToolBar.Visibility=Visibility.Visible;
         }
 
         protected void Compile()
         {
-    //        getCodeEditor()->compile();
+            GetCodeEditor().Compile();
         }
 
         protected void Upload()
         {
-    //        getCodeEditor()->upload();
+            GetCodeEditor().Upload();
         }
 
         protected void FindReplaceDialog()
@@ -454,9 +441,9 @@ namespace SimulIDE.src.gui.editor
         private void EditorCompileButton_Click(object sender, RoutedEventArgs e) => Compile();
         private void EditorLoadButton_Click(object sender, RoutedEventArgs e) => Upload();
         private void EditorDebugButton_Click(object sender, RoutedEventArgs e) => Debug();
-
         private void DebuggerStepButton_Click(object sender, RoutedEventArgs e) => Step();
-        private void DebuggerRunToBKButton_Click(object sender, RoutedEventArgs e) => Run(); //???
+        private void DebuggerStepOverButton_Click(object sender, RoutedEventArgs e) => StepOver();
+        private void DebuggerRunToBKButton_Click(object sender, RoutedEventArgs e) => Run(); 
         private void DebuggerPauseButton_Click(object sender, RoutedEventArgs e) => Pause();
         private void DebuggerResetButton_Click(object sender, RoutedEventArgs e) => Reset();
         private void DebuggerStopButton_Click(object sender, RoutedEventArgs e) => Stop();

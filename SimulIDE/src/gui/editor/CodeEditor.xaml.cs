@@ -95,12 +95,17 @@ namespace SimulIDE.src.gui.editor
         public string FileName { get; set; }
         //Font font;
 
-        public CodeEditor(RichTextBox parent, TextBox outPane): base()
+        public CodeEditor(ref DockPanel parent, TextBox outPane): base()
         {
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Document.PageWidth = 10000;
+
             ////Q_UNUSED(CodeEditor_properties);
 
             ////setObjectName("Editor");
-
+            parent.Children.Add(this);
+            
             this.outPane = outPane;
             lNumArea = new LineNumberArea(this);
             //hlighter = new Highlighter(document());
@@ -178,8 +183,8 @@ namespace SimulIDE.src.gui.editor
             
         }
 
-        //        void CodeEditor::setFile( const QString& filePath )
-        //{
+        public void SetFile( string filePath )
+        {
         //    m_isCompiled= false;
         //    if(m_file == filePath ) return;
 
@@ -275,7 +280,7 @@ namespace SimulIDE.src.gui.editor
         //    {
         //        m_debugger = new B16AsmDebugger(this, m_outPane, filePath );
         //    }
-        //}
+        }
 
         //int CodeEditor::getSintaxCoincidences(QString& fileName, QStringList& instructions )
         //{
@@ -319,8 +324,8 @@ namespace SimulIDE.src.gui.editor
         //    }
         }
 
-        //void CodeEditor::compile()
-        //{
+        public void Compile()
+        {
         //    if (document()->isModified()) EditorWindow::self()->save();
         //    m_debugLine = -1;
         //    update();
@@ -380,10 +385,10 @@ namespace SimulIDE.src.gui.editor
         //            updateScreen();
         //        }
         //    }
-        //}
+        }
 
-        //void CodeEditor::upload()
-        //{
+        public void Upload()
+        {
         //    if (m_file.endsWith(".hex"))     // is an .hex file, upload to proccessor
         //    {
         //        //m_outPane->writeText( "-------------------------------------------------------\n" );
@@ -397,7 +402,7 @@ namespace SimulIDE.src.gui.editor
         //    if (!m_isCompiled) compile();
         //    if (!m_isCompiled) return;
         //    if (m_debugger) m_debugger->upload();
-        //}
+        }
 
         //void CodeEditor::addBreakPoint(int line)
         //{
@@ -413,8 +418,8 @@ namespace SimulIDE.src.gui.editor
 
         //void CodeEditor::remBreakPoint(int line) { m_brkPoints.removeOne(line); }
 
-        //void CodeEditor::run()
-        //{
+        public void Run()
+        {
         //    if (m_state == DBG_RUNNING) return;
 
         //    if (!m_driveCirc) Simulator::self()->stopTimer();
@@ -422,10 +427,10 @@ namespace SimulIDE.src.gui.editor
         //    m_state = DBG_RUNNING;
 
         //    timerTick();
-        //}
+        }
 
-        //void CodeEditor::step(bool over)
-        //{
+        public void Step(bool over)
+        {
         //    if (m_state == DBG_RUNNING) return;
 
         //    m_stepOver = over;
@@ -443,16 +448,16 @@ namespace SimulIDE.src.gui.editor
         //        runClockTick();
         //    }
         //    //updateScreen();
-        //}
+        }
 
-        //void CodeEditor::stepOver()
-        //{
+        public void StepOver()
+        {
         //    QList<int> subLines = m_debugger->getSubLines();
         //    bool over = false;
         //    if (subLines.contains(m_debugLine)) over = true;
         //    //qDebug() << "CodeEditor::stepOver()"<<over;
         //    step(over);
-        //}
+        }
 
         //void CodeEditor::runClockTick()
         //{
@@ -527,8 +532,8 @@ namespace SimulIDE.src.gui.editor
         //    //if( !m_stepOver ) updateScreen();
         //}
 
-        //bool CodeEditor::initDebbuger()
-        //{
+        public bool InitDebbuger()
+        {
         //    m_outPane->writeText("-------------------------------------------------------\n");
         //    m_outPane->writeText(tr("Starting Debbuger...") + "\n");
 
@@ -592,11 +597,11 @@ namespace SimulIDE.src.gui.editor
         //            setReadOnly(true);
         //        }
         //    }
-        //    return m_debugging;
-        //}
+            return debugging;
+        }
 
-        //void CodeEditor::stopDebbuger()
-        //{
+        public void StopDebbuger()
+        {
         //    if (m_debugging)
         //    {
         //        m_debugger->stop();
@@ -612,17 +617,17 @@ namespace SimulIDE.src.gui.editor
         //        updateScreen();
         //    }
         //    m_outPane->writeText(tr("Debugger Stopped ") + "\n");
-        //}
+        }
 
-        //void CodeEditor::pause()
-        //{
+        public void Pause()
+        {
         //    if (!m_debugging) return;
         //    //if( !m_running ) return;
 
         //    m_resume = m_state;
         //    m_state = DBG_PAUSED;
         //    updateScreen();
-        //}
+        }
 
         //void CodeEditor::resume()
         //{
@@ -641,15 +646,15 @@ namespace SimulIDE.src.gui.editor
         //    updateScreen();
         //}
 
-        //void CodeEditor::reset()
-        //{
+        public void Reset()
+        {
         //    if (m_state == DBG_RUNNING) pause();
 
         //    McuComponent::self()->reset();
         //    m_debugLine = 1; //m_debugger->getProgramStart();
 
         //    updateScreen();
-        //}
+        }
 
         //bool CodeEditor::driveCirc()
         //{
