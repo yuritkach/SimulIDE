@@ -51,19 +51,52 @@
                 </Button.Background>
             </Button>
             <Separator />
-            <Button x:Name="editorCompileButton" Content="" Height="24" VerticalAlignment="Top" Width="24">
+            <Button x:Name="editorCompileButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorCompileButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/verify.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="editorLoadButton" Content="" Height="24" VerticalAlignment="Top" Width="24">
+            <Button x:Name="editorLoadButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorLoadButton_Click">
                 <Button.Background>
                     <ImageBrush ImageSource="/SimulIDE;component/resources/images/load.png"/>
                 </Button.Background>
             </Button>
+            <Separator />
+            <Button x:Name="editorDebugButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="EditorDebugButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/play.png"/>
+                </Button.Background>
+            </Button>
 
         </ToolBar>
-        <ToolBar x:Name="debuggerToolBar" Grid.Row="0" Visibility="Hidden" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="800"/>
+        <ToolBar x:Name="debuggerToolBar" Grid.Row="0" Visibility="Visible" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="800">
+            <Button x:Name="debuggerStepButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/step.png"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="debuggerRunToBKButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerRunToBKButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/runtobk.png"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="debuggerPauseButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerPauseButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/pause.png"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="debuggerResetButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerResetButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/reset.png"/>
+                </Button.Background>
+            </Button>
+            <Separator />
+            <Button x:Name="debuggerStopButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStopButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/stop.png"/>
+                </Button.Background>
+            </Button>
+        </ToolBar>
         <TabControl x:Name="tabControl" Grid.Row="1">
             <TabControl.Resources>
                 <Style TargetType="TabItem">

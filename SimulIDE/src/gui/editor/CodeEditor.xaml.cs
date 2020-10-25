@@ -173,7 +173,9 @@ namespace SimulIDE.src.gui.editor
         protected override void OnTextChanged(TextChangedEventArgs e)
         {
             base.OnTextChanged(e);
+            IsModified = true;
             OnDocumentChanged?.Invoke(this);
+            
         }
 
         //        void CodeEditor::setFile( const QString& filePath )
@@ -305,8 +307,8 @@ namespace SimulIDE.src.gui.editor
         //    return (m_file);
         //}
 
-        //void CodeEditor::setCompilerPath()
-        //{
+        public void SetCompilerPath()
+        {
         //    if (m_debugger) m_debugger->getCompilerPath();
         //    else
         //    {
@@ -315,7 +317,7 @@ namespace SimulIDE.src.gui.editor
         //        else MessageBoxNB("CodeEditor::setCompilerPath",
         //                       tr("No Compiler available for: %1 files").arg(m_fileExt));
         //    }
-        //}
+        }
 
         //void CodeEditor::compile()
         //{
@@ -1078,7 +1080,17 @@ protected LineNumberArea lNumArea;
         static int DBG_RUNNING = 2;
         static int DBG_PAUSED = 3;
 
+
+        public bool HasDebugger()
+        {
+            //    return debugger != null;
+            return true; //tyv
+        }
+
+        public bool Compiled { get; set; }
+
     }
+
 }
 
     
@@ -1107,11 +1119,11 @@ protected LineNumberArea lNumArea;
 //    void lineNumberAreaPaintEvent(QPaintEvent*event);
 //    int lineNumberAreaWidth();
 
-//    void setCompiled(bool compiled) { m_isCompiled = compiled; }
+    
 
 //    bool debugStarted() { return m_debugging; }
 //    bool initDebbuger();
-//    bool hasDebugger() { return m_debugger != 0l; }
+    
 
 //    void setCompilerPath();
 

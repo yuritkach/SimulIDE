@@ -23,27 +23,22 @@ namespace SimulIDE.src.gui.editor
     public partial class EditorPage : Page
     {
         public delegate void MyEventHandler(object obj);
-        public event MyEventHandler DocumentChanged;
         protected void DocumentWasChanged(object obj)
         {
-            //        CodeEditor* ce = getCodeEditor();
-            //        QTextDocument* doc = ce->document();
+            CodeEditor ce = GetCodeEditor();
+            bool modified = ce.IsModified;
+            int index = tabControl.SelectedIndex;
+            string tabText = ((TabItem)tabControl.Items[index]).Header.ToString();
 
-            //        bool modified = doc->isModified();
-            //        int index = m_docWidget->currentIndex();
-            //        QString tabText = m_docWidget->tabText(index);
+            if (modified && !tabText.EndsWith("*")) tabText+="*";
+            else if (!modified && tabText.EndsWith("*")) tabText=tabText.Substring(0,tabText.Length-1);
 
-            //        if (modified && !tabText.endsWith("*")) tabText.append("*");
-            //        else if (!modified && tabText.endsWith("*")) tabText.remove("*");
-
-            //        m_docWidget->setTabText(index, tabText);
-
+            ((TabItem)tabControl.Items[index]).Header = tabText; 
             //        redoAct->setEnabled(false);
             //        undoAct->setEnabled(false);
             //        if (doc->isRedoAvailable()) redoAct->setEnabled(true);
             //        if (doc->isUndoAvailable()) undoAct->setEnabled(true);
-
-            //        ce->setCompiled(false);
+            ce.Compiled=false;
         }
 
         public EditorPage()
@@ -52,39 +47,17 @@ namespace SimulIDE.src.gui.editor
 
             CreateWidgets();
             CreateActions();
-//            ReadSettings();
+            ReadSettings();
         }
 
 
 
-    public bool Close()
-    {
-      //     WriteSettings();
-           for (int i = 0; i < tabControl.Items.Count; i++)
-                tabControl.Items.RemoveAt(i);
+        public bool Close()
+        {
+            WriteSettings();
+            for (int i = 0; i < tabControl.Items.Count; i++)CloseTabSheet(i);
             return MaybeSave();
-    }
-
-    //    protected override void keyPressEvent(QKeyEvent* event )
-    //    {
-    //        if ( event->key() == Qt::Key_N && (event->modifiers() & Qt::ControlModifier))
-    //        {
-    //            newFile();
-    //        }
-    //        else 
-    //        if( event->key() == Qt::Key_S && (event->modifiers() & Qt::ControlModifier))
-    //        {
-    //            if ( event->modifiers() & Qt::ShiftModifier) 
-    //                saveAs();
-    //            else
-    //                save();
-    //        }
-    //        else 
-    //        if( event->key() == Qt::Key_O && (event->modifiers() & Qt::ControlModifier))
-    //        {
-    //            open();
-    //        }
-    //    }
+        }
 
         protected void NewFile()
         {
@@ -126,26 +99,26 @@ namespace SimulIDE.src.gui.editor
             //Cursor.Current = Cursors.WaitCursor;
             CodeEditor ce = GetCodeEditor();
             ce.AppendText(File.ReadAllText(fileName));
+            ce.IsModified = false;
             ce.FileName=fileName;
             lastDir = System.IO.Path.GetDirectoryName(fileName);
             int index = tabControl.SelectedIndex;
             fileList[index] = fileName;
             ((TabItem)tabControl.Items[index]).Header = System.IO.Path.GetFileName(fileName);
             EnableFileActs(true);
-            //if(ce.HasDebugger())
-            EnableDebugActs(true);
+            if(ce.HasDebugger())
+                EnableDebugActs(true);
             //Cursor.Current = Cursors.DefaULT;
         }
 
         protected void Reload()
         {
-                string fileName = fileList[tabControl.SelectedIndex];
-                LoadFile(fileName);
+            LoadFile(fileList[tabControl.SelectedIndex]);
         }
 
         protected bool Save()
         {
-                string file = GetCodeEditor().FileName;
+                string file = GetCodeEditor().FileName??"";
                 if (file=="") return SaveAs();
                 else return SaveFile(file);
         }
@@ -158,9 +131,6 @@ namespace SimulIDE.src.gui.editor
             string path = System.IO.Path.GetDirectoryName(fileName);
             if (path == "")
                 path = lastDir;
-            //qDebug() << "EditorWindow::saveAs" << path;
-
-
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.InitialDirectory = path;
             if (ext == "")
@@ -204,29 +174,7 @@ namespace SimulIDE.src.gui.editor
             }
             return true;
         }
-
-        //    protected void DocumentWasModified()
-        //    {
-        //        CodeEditor* ce = getCodeEditor();
-        //        QTextDocument* doc = ce->document();
-
-        //        bool modified = doc->isModified();
-        //        int index = m_docWidget->currentIndex();
-        //        QString tabText = m_docWidget->tabText(index);
-
-        //        if (modified && !tabText.endsWith("*")) tabText.append("*");
-        //        else if (!modified && tabText.endsWith("*")) tabText.remove("*");
-
-        //        m_docWidget->setTabText(index, tabText);
-
-        //        redoAct->setEnabled(false);
-        //        undoAct->setEnabled(false);
-        //        if (doc->isRedoAvailable()) redoAct->setEnabled(true);
-        //        if (doc->isUndoAvailable()) undoAct->setEnabled(true);
-
-        //        ce->setCompiled(false);
-        //    }
-
+       
         protected void EnableFileActs(bool enable)
         {
             editorSaveButton.IsEnabled = enable;
@@ -241,78 +189,45 @@ namespace SimulIDE.src.gui.editor
 
         protected void EnableDebugActs(bool enable)
         {
-    //        debugAct->setEnabled(enable);
-    //        runAct->setEnabled(enable);
-    //        stepAct->setEnabled(enable);
-    //        stepOverAct->setEnabled(enable);
-    //        pauseAct->setEnabled(enable);
-    //        resetAct->setEnabled(enable);
-    //        stopAct->setEnabled(enable);
-    //        compileAct->setEnabled(enable);
-    //        loadAct->setEnabled(enable);
+            editorDebugButton.IsEnabled = enable;
+            debuggerRunToBKButton.IsEnabled = enable;
+            debuggerStepButton.IsEnabled = enable;
+            //        stepOverAct->setEnabled(enable);
+            debuggerPauseButton.IsEnabled = enable;
+            debuggerResetButton.IsEnabled = enable;
+            debuggerStopButton.IsEnabled = enable;
+            editorCompileButton.IsEnabled = enable;
+            editorLoadButton.IsEnabled = enable;
         }
 
-    //    protected void TabContextMenu( const QPoint &eventpoint )
-    //    {
-    //        CodeEditor* ce = getCodeEditor();
-    //        if (!ce) return;
+        //    protected void TabContextMenu( const QPoint &eventpoint )
+        //    {
+        //        CodeEditor* ce = getCodeEditor();
+        //        if (!ce) return;
 
-    //        QMenu* menu = new QMenu();
-    //        QAction* setCompilerAction = menu->addAction(QIcon(":/copy.png"), tr("Set Compiler Path"));
-    //        connect(setCompilerAction, SIGNAL(triggered()), this, SLOT(setCompiler()));
+        //        QMenu* menu = new QMenu();
+        //        QAction* setCompilerAction = menu->addAction(QIcon(":/copy.png"), tr("Set Compiler Path"));
+        //        connect(setCompilerAction, SIGNAL(triggered()), this, SLOT(setCompiler()));
 
-    //        QAction* reloadAction = menu->addAction(QIcon(":/reload.png"), tr("Reload"));
-    //        connect(reloadAction, SIGNAL(triggered()), this, SLOT(reload()));
+        //        QAction* reloadAction = menu->addAction(QIcon(":/reload.png"), tr("Reload"));
+        //        connect(reloadAction, SIGNAL(triggered()), this, SLOT(reload()));
 
-    //        menu->exec(mapToGlobal(eventpoint));
-    //        menu->deleteLater();
-    //    }
+        //        menu->exec(mapToGlobal(eventpoint));
+        //        menu->deleteLater();
+        //    }
 
-    //    void EditorWindow::tabChanged(int tab)
-    //    {
-    //        qDebug() << "EditorWindow::tabChanged" << m_docWidget->currentIndex() << tab;
-    //    }
-
-    //    void EditorWindow::setCompiler()
-    //    {
-    //        CodeEditor* ce = getCodeEditor();
-    //        if (ce) ce->setCompilerPath();
-    //    }
+        protected  void SetCompiler()
+        {
+            CodeEditor ce = GetCodeEditor();
+            if (ce!=null) ce.SetCompilerPath();
+        }
 
         protected void CreateWidgets()
         {
-    //        baseWidgetLayout = new QGridLayout(this);
-    //        baseWidgetLayout->setSpacing(0);
-    //        baseWidgetLayout->setContentsMargins(0, 0, 0, 0);
-    //        baseWidgetLayout->setObjectName("gridLayout");
-
-    //        m_editorToolBar = new QToolBar(this);
-    //        baseWidgetLayout->addWidget(m_editorToolBar);
-
-    //        m_debuggerToolBar = new QToolBar(this);
-    //        m_debuggerToolBar->setVisible(false);
-    //        baseWidgetLayout->addWidget(m_debuggerToolBar);
-
-    //        m_docWidget = new QTabWidget(this);
-    //        m_docWidget->setObjectName("docWidget");
-    //        m_docWidget->setTabPosition(QTabWidget::North);
-    //        m_docWidget->setTabsClosable(true);
-    //        m_docWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    //        double fontScale = MainWindow::self()->fontScale();
-    //        QString fontSize = QString::number(int(10 * fontScale));
-    //        m_docWidget->tabBar()->setStyleSheet("QTabBar { font-size:" + fontSize + "px; }");
-    //        //m_docWidget->setMovable( true );
-    //        baseWidgetLayout->addWidget(m_docWidget);
-
-    //        connect(m_docWidget, SIGNAL(tabCloseRequested(int)),
-    //             this, SLOT(closeTab(int)));
-
-    //        connect(m_docWidget, SIGNAL(customContextMenuRequested(const QPoint &)), 
-    //             this,        SLOT(tabContextMenu(const QPoint &)));
-
+              debuggerToolBar.Visibility=Visibility.Hidden;
+    //        connect(m_docWidget, SIGNAL(tabCloseRequested(int)),this, SLOT(closeTab(int)));
+    //        connect(m_docWidget, SIGNAL(customContextMenuRequested(const QPoint &)),this,SLOT(tabContextMenu(const QPoint &)));
     //        connect(m_docWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
-
-    //        setLayout(baseWidgetLayout);
 
     //        findRepDiaWidget = new FindReplaceDialog(this);
     //        findRepDiaWidget->setModal(false);
@@ -322,15 +237,15 @@ namespace SimulIDE.src.gui.editor
         {
             editorSaveButton.IsEnabled = false;
             editorSaveAsButton.IsEnabled = false;
+            editorFindButton.IsEnabled = false;
+            editorCompileButton.IsEnabled = false;
+            editorLoadButton.IsEnabled = false;
+
+            debuggerRunToBKButton.IsEnabled = false;
 
             //        exitAct = new QAction(QIcon(":/exit.png"), tr("E&xit"), this);
             //        exitAct->setStatusTip(tr("Exit the application"));
             //        connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-            //        runAct = new QAction(QIcon(":/runtobk.png"), tr("Run To Breakpoint"), this);
-            //        runAct->setStatusTip(tr("Run to next breakpoint"));
-            //        runAct->setEnabled(false);
-            //        connect(runAct, SIGNAL(triggered()), this, SLOT(run()));
 
             //        stepAct = new QAction(QIcon(":/step.png"), tr("Step"), this);
             //        stepAct->setStatusTip(tr("Step debugger"));
@@ -358,16 +273,6 @@ namespace SimulIDE.src.gui.editor
             //        stopAct->setEnabled(false);
             //        connect(stopAct, SIGNAL(triggered()), this, SLOT(stop()));
 
-            //        compileAct = new QAction(QIcon(":/compile.png"), tr("Compile"), this);
-            //        compileAct->setStatusTip(tr("Compile Source"));
-            //        compileAct->setEnabled(false);
-            //        connect(compileAct, SIGNAL(triggered()), this, SLOT(compile()));
-
-            //        loadAct = new QAction(QIcon(":/load.png"), tr("UpLoad"), this);
-            //        loadAct->setStatusTip(tr("Load Firmware"));
-            //        loadAct->setEnabled(false);
-            //        connect(loadAct, SIGNAL(triggered()), this, SLOT(upload()));
-
             //        /*aboutAct = new QAction(QIcon(":/info.png"),tr("&About"), this);
             //        aboutAct->setStatusTip(tr("Show the application's About box"));
             //        connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));*/
@@ -379,136 +284,128 @@ namespace SimulIDE.src.gui.editor
             //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
             //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
 
-            //        findQtAct = new QAction(QIcon(":/find.png"), tr("Find Replace"), this);
-            //        findQtAct->setStatusTip(tr("Find Replace"));
-            //        findQtAct->setEnabled(false);
-            //        connect(findQtAct, SIGNAL(triggered()), this, SLOT(findReplaceDialog()));
-
             //        debugAct = new QAction(QIcon(":/play.png"), tr("Debug"), this);
             //        debugAct->setStatusTip(tr("Start Debugger"));
             //        debugAct->setEnabled(false);
             //        connect(debugAct, SIGNAL(triggered()), this, SLOT(debug()));
         }
 
-    //    protected void EnableStepOver(bool en)
-    //    {
+        protected void EnableStepOver(bool en)
+        {
     //        stepOverAct->setVisible(en);
-    //    }
+        }
 
         protected CodeEditor GetCodeEditor()
         {
             return ((CodeEditorWidget)((TabItem)tabControl.Items[tabControl.SelectedIndex]).Content).EditorView;
         }
 
-    //    protected void СloseTab(int index)
-    //    {
-    //        m_docWidget->setCurrentIndex(index);
-    //        if (!MaybeSave()) return;
+        protected void CloseTabSheet(int index)
+        {
+            tabControl.SelectedIndex=index;
+            if (!MaybeSave()) return;
 
-    //        m_fileList.removeAt(index);
+            fileList.RemoveAt(index);
 
-    //        if (m_fileList.isEmpty())
-    //        {
-    //            enableFileActs(false); // disable file actions
-    //            enableDebugActs(false);
-    //        }
-    //        if (m_debuggerToolBar->isVisible()) stop();
+            if (fileList.Count==0)
+            {
+                EnableFileActs(false); // disable file actions
+                EnableDebugActs(false);
+            }
+            if (debuggerToolBar.Visibility==Visibility.Visible) Stop();
 
-    //        CodeEditorWidget* actW = dynamic_cast<CodeEditorWidget*>(m_docWidget->widget(index));
-    //        m_docWidget->removeTab(index);
-    //        delete actW;
+            tabControl.Items.RemoveAt(index);
+    
+            int last = tabControl.Items.Count - 1;
+            if (index > last) tabControl.SelectedIndex=last;
+            else tabControl.SelectedIndex = index;
+       }
 
-    //        int last = m_docWidget->count() - 1;
-    //        if (index > last) m_docWidget->setCurrentIndex(last);
-    //        else m_docWidget->setCurrentIndex(index);
-    //    }
+        protected void Cut() { GetCodeEditor().Cut(); }
+        protected void Copy() { GetCodeEditor().Copy(); }
+        protected void Paste() { GetCodeEditor().Paste(); }
+        protected void Undo() { GetCodeEditor().Undo(); }
+        protected void Redo() { GetCodeEditor().Redo(); }
 
-    //    protected void Cut() { getCodeEditor()->cut(); }
-    //    protected void EditorWindow::copy() { getCodeEditor()->copy(); }
-    //    protected void EditorWindow::paste() { getCodeEditor()->paste(); }
-    //    protected void EditorWindow::undo() { getCodeEditor()->undo(); }
-    //    protected void EditorWindow::redo() { getCodeEditor()->redo(); }
+        protected void Debug()
+        {
+            CodeEditor ce = GetCodeEditor();
 
-    //    protected void Debug()
-    //    {
-    //        CodeEditor* ce = getCodeEditor();
-
-    //        if (ce->initDebbuger())
-    //        {
-    //            m_editorToolBar->setVisible(false);
-    //            m_debuggerToolBar->setVisible(true);
-
+//            if (ce.InitDebbuger())
+            {
+                editorToolBar.Visibility = Visibility.Hidden;
+                debuggerToolBar.Visibility=Visibility.Visible;
     //            runAct->setEnabled(true);
     //            stepAct->setEnabled(true);
     //            stepOverAct->setEnabled(true);
     //            resetAct->setEnabled(true);
     //            pauseAct->setEnabled(false);
-    //        }
-    //    }
+            }
+        }
 
-    //    protected void Run()
-    //    {
+        protected void Run()
+        {
     //        setStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(run()));
-    //    }
+        }
 
-    //    protected void EditorWindow::step()
-    //    {
+        protected void Step()
+        {
     //        setStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(step()));
     //        //getCodeEditor()->step( false ); 
-    //    }
+        }
 
-    //    protected void StepOver()
-    //    {
+        protected void StepOver()
+        {
     //        setStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(stepOver()));
     //        //getCodeEditor()->step( true ); 
-    //    }
+        }
 
-    //    protected void SetStepActs()
-    //    {
+        protected void SetStepActs()
+        {
     //        runAct->setEnabled(false);
     //        stepAct->setEnabled(false);
     //        stepOverAct->setEnabled(false);
     //        resetAct->setEnabled(false);
     //        pauseAct->setEnabled(true);
-    //    }
+        }
 
-    //    protected void Pause()
-    //    {
+        protected void Pause()
+        {
     //        getCodeEditor()->pause();
     //        runAct->setEnabled(true);
     //        stepAct->setEnabled(true);
     //        stepOverAct->setEnabled(true);
     //        resetAct->setEnabled(true);
     //        pauseAct->setEnabled(false);
-    //    }
+        }
 
-    //    protected void Reset()
-    //    {
-    //        getCodeEditor()->reset();
-    //    }
+        protected void Reset()
+        {
+    //        GetCodeEditor().Reset();
+        }
 
-    //    protected void Stop()
-    //    {
+        protected void Stop()
+        {
     //        getCodeEditor()->stopDebbuger();
     //        m_debuggerToolBar->setVisible(false);
     //        m_editorToolBar->setVisible(true);
-    //    }
+        }
 
-    //    protected void Compile()
-    //    {
+        protected void Compile()
+        {
     //        getCodeEditor()->compile();
-    //    }
+        }
 
-    //    protected void Upload()
-    //    {
+        protected void Upload()
+        {
     //        getCodeEditor()->upload();
-    //    }
+        }
 
-    //    protected void FindReplaceDialog()
-    //    {
+        protected void FindReplaceDialog()
+        {
     //        CodeEditor* ce = getCodeEditor();
 
     //        findRepDiaWidget->setTextEdit(ce);
@@ -517,28 +414,24 @@ namespace SimulIDE.src.gui.editor
     //        if (text != "") findRepDiaWidget->setTextToFind(text);
 
     //        findRepDiaWidget->show();
-    //    }
+        }
 
-        //    protected void ReadSettings()
-        //    {
+            protected void ReadSettings()
+            {
         //        QSettings* settings = MainWindow::self()->settings();
         //        restoreGeometry(settings->value("geometry").toByteArray());
         //        m_docWidget->restoreGeometry(settings->value("docWidget/geometry").toByteArray());
         //        m_lastDir = settings->value("lastDir").toString();
-        //    }
+            }
 
-        //    protected void EditorWindow::writeSettings()
-        //    {
+            protected void WriteSettings()
+            {
         //        QSettings* settings = MainWindow::self()->settings();
         //        settings->setValue("geometry", saveGeometry());
         //        settings->setValue("docWidget/geometry", m_docWidget->saveGeometry());
         //        settings->setValue("lastDir", m_lastDir);
-        //    }
-
-        //    protected QString StrippedName(const QString &fullFileName)
-        //    {
-        //        return QFileInfo(fullFileName).fileName();
-        //    }
+            }
+       
 
         //    protected void About()
         //    {
@@ -548,59 +441,36 @@ namespace SimulIDE.src.gui.editor
         //    }
 
 
-
-        //QGridLayout* baseWidgetLayout;
-        //QTabWidget* m_docWidget;
-
         //FindReplaceDialog* findRepDiaWidget;
 
         protected string lastDir="";
         protected List<string> fileList = new List<string>();
 
-    //QToolBar* m_editorToolBar;
-    //QToolBar* m_debuggerToolBar;
-
-    Action newAct;
-    Action openAct;
-    Action saveAct;
-    Action saveAsAct;
-    Action exitAct;
-    Action aboutAct;
-    Action aboutQtAct;
-    Action undoAct;
-    Action redoAct;
-
-    Action cutAct;
-    Action copyAct;
-    Action pasteAct;
-
-    Action debugAct;
-
-    Action stepAct;
-    Action stepOverAct;
-    Action runAct;
-    Action pauseAct;
-    Action resetAct;
-    Action stopAct;
-    Action compileAct;
-    Action loadAct;
-    Action findQtAct;
-
         private void EditorNewButton_Click(object sender, RoutedEventArgs e) => NewFile();
         private void EditorOpenButton_Click(object sender, RoutedEventArgs e) => Open();
         private void EditorSaveButton_Click(object sender, RoutedEventArgs e) => Save();
         private void EditorSaveAsButton_Click(object sender, RoutedEventArgs e) => SaveAs();
+        private void EditorFindButton_Click(object sender, RoutedEventArgs e) => FindReplaceDialog();
+        private void EditorCompileButton_Click(object sender, RoutedEventArgs e) => Compile();
+        private void EditorLoadButton_Click(object sender, RoutedEventArgs e) => Upload();
+        private void EditorDebugButton_Click(object sender, RoutedEventArgs e) => Debug();
+
+        private void DebuggerStepButton_Click(object sender, RoutedEventArgs e) => Step();
+        private void DebuggerRunToBKButton_Click(object sender, RoutedEventArgs e) => Run(); //???
+        private void DebuggerPauseButton_Click(object sender, RoutedEventArgs e) => Pause();
+        private void DebuggerResetButton_Click(object sender, RoutedEventArgs e) => Reset();
+        private void DebuggerStopButton_Click(object sender, RoutedEventArgs e) => Stop();
 
         private void TabItemButton_Click(object sender, RoutedEventArgs e)
         {
-            
-
+            string tabText = (string)(sender as Button).DataContext;
+            if (tabText.EndsWith("*"))
+                tabText = tabText.Substring(0, tabText.Length - 1);
+            int index = fileList.IndexOf(tabText);
+            CloseTabSheet(index);
         }
 
-        private void EditorFindButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+        
+        
     }
 }
