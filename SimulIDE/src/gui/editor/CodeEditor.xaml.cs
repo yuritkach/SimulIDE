@@ -102,16 +102,14 @@ namespace SimulIDE.src.gui.editor
             Document.PageWidth = 10000;
 
             ////Q_UNUSED(CodeEditor_properties);
-
-            ////setObjectName("Editor");
             parent.Children.Add(this);
-            
+            Name = "Editor";
             this.outPane = outPane;
             lNumArea = new LineNumberArea(this);
             //hlighter = new Highlighter(document());
             //appPath   = QCoreApplication::applicationDirPath();
 
-//            debugger = 0l;
+            debugger = null;
 //            m_debugLine = 0;
 //            m_brkAction = 0;
 //            m_state = DBG_STOPPED;
@@ -163,7 +161,7 @@ namespace SimulIDE.src.gui.editor
         ~CodeEditor()
         {
 //            QPropertyEditorWidget::self()->removeObject(this);
-//            if (m_debugger) QPropertyEditorWidget::self()->removeObject(m_debugger);
+//            if (debugger!=null) QPropertyEditorWidget::self()->removeObject(m_debugger);
         }
 
         public bool IsModified { get; set; }
@@ -185,52 +183,40 @@ namespace SimulIDE.src.gui.editor
 
         public void SetFile( string filePath )
         {
-        //    m_isCompiled= false;
-        //    if(m_file == filePath ) return;
+            isCompiled= false;
+            if(file == filePath ) return;
+            debugger = null;
+            outPane.AppendText( "-------------------------------------------------------\n" );
+            outPane.AppendText(" File: ");
+            outPane.AppendText(filePath );
+            outPane.AppendText( "\n\n" );
+            file = System.IO.Path.GetFileName(filePath);
+            fileDir = System.IO.Path.GetDirectoryName(filePath);
+            fileExt  = System.IO.Path.GetExtension(filePath);
+            fileName = System.IO.Path.GetFileNameWithoutExtension(file);
 
-        //    if(m_debugger )
-        //    {
-        //        delete m_debugger;
-        //        m_debugger = 0l;
-        //    }
+            //    QDir::setCurrent(m_file );
 
-        //    m_outPane->appendText( "-------------------------------------------------------\n" );
-        //    m_outPane->appendText(tr(" File: ") );
-        //    m_outPane->appendText(filePath );
-        //    m_outPane->writeText( "\n\n" );
+//            string sintaxPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/sintax/");
+            //    if(m_file.endsWith(".gcb") )
+            //    {
+            //        //m_appPath+"/data/codeeditor/gcbasic.sintax");
+            //        QString path = sintaxPath + "gcbasic.sintax";
+            //    m_hlighter->readSintaxFile(path );
 
-        //    m_file  = filePath;
-        //    m_fileDir  = filePath;
-        //    m_fileName = filePath.split("/").last();
-        //    m_fileDir.remove(m_fileDir.lastIndexOf(m_fileName ), m_fileName.size() );
-        //    m_fileExt  = "."+m_fileName.split(".").last();
-        //    m_fileName = m_fileName.remove(m_fileExt );
+            //    debugger = new GcbDebugger(this, m_outPane, filePath );
+            //}
+            //    else 
+            if (file.EndsWith(".cpp") || file.EndsWith(".c") || file.EndsWith(".ino") || file.EndsWith(".h"))
+            {
+                //m_appPath+"/data/codeeditor/cpp.sintax"
+//                string path = sintaxPath + "cpp.sintax";
+//                hlighter.SetMultiline( true );
+//                hlighter.ReadSintaxFile(path );
 
-        //    QDir::setCurrent(m_file );
-
-        //    QString sintaxPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/sintax/");
-
-        //    if(m_file.endsWith(".gcb") )
-        //    {
-        //        //m_appPath+"/data/codeeditor/gcbasic.sintax");
-        //        QString path = sintaxPath + "gcbasic.sintax";
-        //    m_hlighter->readSintaxFile(path );
-
-        //    m_debugger = new GcbDebugger(this, m_outPane, filePath );
-        //}
-        //    else if(m_file.endsWith(".cpp")
-        //          || m_file.endsWith(".c") 
-        //          || m_file.endsWith(".ino") 
-        //          || m_file.endsWith(".h") )
-        //    {
-        //        //m_appPath+"/data/codeeditor/cpp.sintax"
-        //        QString path = sintaxPath + "cpp.sintax";
-        //m_hlighter->setMultiline( true );
-        //m_hlighter->readSintaxFile(path );
-
-        //        if(m_file.endsWith(".ino") )
-        //            m_debugger = new InoDebugger(this, m_outPane, filePath );
-        //    }
+                if(file.EndsWith(".ino") )
+                    debugger = new InoDebugger(this, outPane, filePath );
+            }
         //    else if(m_file.endsWith(".asm") )
         //    {
         //        // We should identify if pic or avr asm
@@ -250,7 +236,7 @@ namespace SimulIDE.src.gui.editor
         //QString path = sintaxPath + "pic14asm.sintax";
         //m_hlighter->readSintaxFile(path );
 
-        //m_debugger = new PicAsmDebugger(this, m_outPane, filePath );
+        //debugger = new PicAsmDebugger(this, m_outPane, filePath );
         //        }
         //        else if(isAvr > isPic )  // Is Avr
         //        {
@@ -259,7 +245,7 @@ namespace SimulIDE.src.gui.editor
         //QString path = sintaxPath + "avrasm.sintax";
         //m_hlighter->readSintaxFile(path );
 
-        //m_debugger = new AvrAsmDebugger(this, m_outPane, filePath );
+        //debugger = new AvrAsmDebugger(this, m_outPane, filePath );
         //        }
         //        else m_outPane->writeText( "Unknown\n" );
         //    }
@@ -278,7 +264,7 @@ namespace SimulIDE.src.gui.editor
         //    }
         //    else if(m_file.endsWith(".sac") )
         //    {
-        //        m_debugger = new B16AsmDebugger(this, m_outPane, filePath );
+        //        debugger = new B16AsmDebugger(this, m_outPane, filePath );
         //    }
         }
 
@@ -314,14 +300,14 @@ namespace SimulIDE.src.gui.editor
 
         public void SetCompilerPath()
         {
-        //    if (m_debugger) m_debugger->getCompilerPath();
-        //    else
-        //    {
+//            if (debugger!=null) debugger.GetCompilerPath();
+//            else
+            {
         //        if (m_fileExt == "") MessageBoxNB("CodeEditor::setCompilerPath",
         //                                       tr("Please save the Document first"));
         //        else MessageBoxNB("CodeEditor::setCompilerPath",
         //                       tr("No Compiler available for: %1 files").arg(m_fileExt));
-        //    }
+            }
         }
 
         public void Compile()
@@ -361,12 +347,12 @@ namespace SimulIDE.src.gui.editor
         //    }
         //    else
         //    {
-        //        if (!m_debugger)
+        //        if (!debugger)
         //        {
         //            m_outPane->writeText("\n" + tr("File type not supported") + "\n");
         //            return;
         //        }
-        //        error = m_debugger->compile();
+        //        error = debugger->compile();
         //    }
 
         //    if (error == 0)
@@ -401,7 +387,7 @@ namespace SimulIDE.src.gui.editor
         //    }
         //    if (!m_isCompiled) compile();
         //    if (!m_isCompiled) return;
-        //    if (m_debugger) m_debugger->upload();
+        //    if (debugger) debugger->upload();
         }
 
         //void CodeEditor::addBreakPoint(int line)
@@ -409,7 +395,7 @@ namespace SimulIDE.src.gui.editor
         //    if (!m_debugging) return;
 
 
-        //    int validLine = m_debugger->getValidLine(line);
+        //    int validLine = debugger->getValidLine(line);
 
         //    //qDebug() <<"CodeEditor::addBreakPoint" <<validLine;
 
@@ -452,7 +438,7 @@ namespace SimulIDE.src.gui.editor
 
         public void StepOver()
         {
-        //    QList<int> subLines = m_debugger->getSubLines();
+        //    QList<int> subLines = debugger->getSubLines();
         //    bool over = false;
         //    if (subLines.contains(m_debugLine)) over = true;
         //    //qDebug() << "CodeEditor::stepOver()"<<over;
@@ -468,7 +454,7 @@ namespace SimulIDE.src.gui.editor
         //    int i = 0;
         //    for (i = 0; i < 200000; i++)
         //    {
-        //        m_debugLine = m_debugger->step();
+        //        m_debugLine = debugger->step();
 
         //        if (m_debugLine >= 0) break;                // New Line reached
 
@@ -1050,7 +1036,9 @@ namespace SimulIDE.src.gui.editor
 
 
 
-        //        protected BaseDebugger debugger;
+        protected object debugger;
+        //TYV protected BaseDebugger debugger;
+
         protected TextBox outPane;
 
 protected LineNumberArea lNumArea;
@@ -1088,8 +1076,7 @@ protected LineNumberArea lNumArea;
 
         public bool HasDebugger()
         {
-            //    return debugger != null;
-            return true; //tyv
+            return debugger != null;
         }
 
         public bool Compiled { get; set; }

@@ -70,7 +70,7 @@ namespace SimulIDE.src.gui.editor
             item.Content = editorView;
             tabControl.SelectedIndex = tabControl.Items.Add(item);
             CodeEditor ce = GetCodeEditor();
-            //editorView.EditorView.OnDocumentChanged += DocumentWasChanged;
+            ((CodeEditor)editorView.EditorPanel.Children[0]).OnDocumentChanged += DocumentWasChanged;
             fileList.Add("New");
             EnableFileActs(true);
             EnableDebugActs(true);
