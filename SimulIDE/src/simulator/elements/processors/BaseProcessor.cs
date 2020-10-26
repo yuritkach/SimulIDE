@@ -20,7 +20,7 @@ namespace SimulIDE.src.simulator.elements.processors
 
         protected static BaseProcessor self = null;
 
-        public BaseProcessor(object parent ):base()
+        public BaseProcessor(object parent) : base()
         {
             loadStatus = false;
             resetStatus = false;
@@ -31,7 +31,7 @@ namespace SimulIDE.src.simulator.elements.processors
             //MainWindow::self()->m_ramTabWidgetLayout->addWidget(m_ramTable);
         }
 
-        public void Terminate()
+        protected virtual void Terminate()
         {
             //qDebug() <<"\nBaseProcessor::terminate "<<m_device<<m_symbolFile<<"\n";
 
@@ -40,7 +40,7 @@ namespace SimulIDE.src.simulator.elements.processors
             symbolFile = "";
         }
 
-        public void Initialized()
+        protected virtual void Initialized()
         {
             //qDebug() << "\nBaseProcessor::initialized  Firmware: " << m_symbolFile;
             //qDebug() << "\nBaseProcessor::initialized Data File: " << m_dataFile;
@@ -50,12 +50,12 @@ namespace SimulIDE.src.simulator.elements.processors
             extraCycle = 0;
         }
 
-        public void SetExtraStep() // Run Extra Simulation Step If MCU clock speed > Simulation speed
+        protected virtual void SetExtraStep() // Run Extra Simulation Step If MCU clock speed > Simulation speed
         {
             if (mcuStepsPT > 1) extraCycle = Cycle();
         }
 
-        public void Step()
+        protected virtual void Step()
         {
             if (!loadStatus || resetStatus) return;
 
@@ -64,7 +64,7 @@ namespace SimulIDE.src.simulator.elements.processors
                 StepCpu();
                 nextCycle -= 1;
 
-                if (extraCycle)
+                if (extraCycle!=0)
                 {
                     //qDebug() << "-" << m_extraCycle;qDebug() << " ";
                     Simulator.Self().RunExtraStep(extraCycle);
@@ -74,7 +74,7 @@ namespace SimulIDE.src.simulator.elements.processors
             nextCycle += mcuStepsPT;
         }
 
-        public void RunSimuStep()
+        protected virtual void RunSimuStep()
         {
             Simulator.Self().RunCircuit();
 
@@ -86,34 +86,34 @@ namespace SimulIDE.src.simulator.elements.processors
             }
         }
 
-        public void SetSteps(double steps) { mcuStepsPT = steps; }
+        protected virtual void SetSteps(double steps) { mcuStepsPT = steps; }
 
-        public string GetFileName() { return symbolFile; }
+        protected virtual string GetFileName() { return symbolFile; }
 
-        public void SetDevice(string device) { this.device = device; }
+        protected virtual void SetDevice(string device) { this.device = device; }
 
-        public string GetDevice() { return device; }
+        protected virtual string GetDevice() { return device; }
 
-        public void SetDataFile(string datafile)
+        protected virtual void SetDataFile(string datafile)
         {
             dataFile = datafile;
             SetRegisters();
         }
 
-        public void HardReset(bool rst)
+        protected virtual void HardReset(bool rst)
         {
             resetStatus = rst;
             if (rst) McuComponent.Self().Reset();
         }
 
-        public int GetRegAddress(string name)
+        protected virtual int GetRegAddress(string name)
         {
             name = name.ToUpper();
             if (regsTable.ContainsKey(name)) return regsTable[name];
             return -1;
         }
 
-        protected void UpdateRamValue(string name)
+        protected virtual void UpdateRamValue(string name)
         {
             if (!loadStatus) return;
 
@@ -153,7 +153,7 @@ namespace SimulIDE.src.simulator.elements.processors
             }
             if (type.Contains("f"))                          // float, double
             {
-                float value = (float) BitConverter.ToDouble(ba, 0);
+                float value = (float)BitConverter.ToDouble(ba, 0);
                 ramTable.SetItemValue(1, value);
             }
             else                                              // char, int, long
@@ -163,7 +163,7 @@ namespace SimulIDE.src.simulator.elements.processors
                 if (type.Contains("u"))
                 {
                     UInt32 val = BitConverter.ToUInt32(ba, 0);
-                    value =(Int32) val;
+                    value = (Int32)val;
                 }
                 else
                 {
@@ -185,16 +185,15 @@ namespace SimulIDE.src.simulator.elements.processors
                 }
                 ramTable.SetItemValue(2, value);
 
-                if (type.Contains("8")) ramTable.SetItemValue(3, DecToBase(value, 2, 8));
+                if (type.Contains("8")) ramTable.SetItemValue(3, Utils.DecToBase(value, 2, 8));
                 else if (type.Contains("string"))
                 {
                     string strVal = "";
                     for (int i = address; i <= address + value; i++)
                     {
                         string str = "";
-                        const char cha = GetRamValue(i);
-                        str.SetRawData(&cha, 1);
-
+                        char cha = (char)GetRamValue(i);
+                        str = cha.ToString();
                         strVal += str; //QByteArray::fromHex( getRamValue( i ) );
                     }
                     //qDebug() << "string" << name << value << strVal;
@@ -208,19 +207,19 @@ namespace SimulIDE.src.simulator.elements.processors
         }
 
 
-        protected int GetRamValue(string name)
+        protected virtual int GetRamValue(string name)
         {
-            if (regsTable.Count==0) return -1;
+            if (regsTable.Count == 0) return -1;
 
             bool isNumber = false;
-            isNumber = int.TryParse( name,out int address);
+            isNumber = int.TryParse(name, out int address);
             if (!isNumber)
                 address = regsTable[name.ToUpper()];  // Is a register name
 
-            return GetRamValue(address.ToString());  // TYV ToString???
+            return GetRamValue(address); 
         }
 
-        protected void AddWatchVar(string name, int address, string type)
+        protected virtual void AddWatchVar(string name, int address, string type)
         {
             name = name.ToUpper();
             if (!regsTable.ContainsKey(name)) regList.Add(name);
@@ -228,18 +227,17 @@ namespace SimulIDE.src.simulator.elements.processors
             typeTable[name] = type;
         }
 
-        protected void SetRegisters() // get register addresses from data file
+        protected virtual void SetRegisters() // get register addresses from data file
         {
-            List<string> lineList = FileToStringList(dataFile, "BaseProcessor.setRegisters");
-
-            if (regsTable.Count!=0)
+            List<string> lineList = Utils.FileToStringList(dataFile);
+            if (regsTable.Count != 0)
             {
                 regList.Clear();
                 regsTable.Clear();
                 typeTable.Clear();
             }
 
-            for(int i=0;i<lineList.Count;i++)
+            for (int i = 0; i < lineList.Count; i++)
             {
                 string line = lineList[i];
                 if (line.Contains("EQU "))   // This line contains a definition
@@ -256,7 +254,7 @@ namespace SimulIDE.src.simulator.elements.processors
                     if (wordList.Length < 2) continue;
 
                     name = wordList[0];
-                    while (addrtxt=="") addrtxt = wordList[0];
+                    while (addrtxt == "") addrtxt = wordList[0];
 
                     isNumber = int.TryParse(addrtxt, out address);
                     if (isNumber)        // If found a valid address add to map
@@ -269,20 +267,37 @@ namespace SimulIDE.src.simulator.elements.processors
             }
         }
 
-        protected void UartOut(int uart, UInt32 value) // Send value to OutPanelText
+        protected virtual void UartOut(int uart, UInt32 value) // Send value to OutPanelText
         {
-            UartDataOut?.Invoke(uart, value);
+  //tyv          UartDataOut?.Invoke(uart, value);
         }
 
-        protected void UartIn(int uart, UInt32 value) // Receive one byte on Uart
+        protected virtual void UartIn(int uart, UInt32 value) // Receive one byte on Uart
         {
-            UartDataIn?.Invoke(uart, value );
+  //tyv          UartDataIn?.Invoke(uart, value);
         }
 
+
+
+        protected virtual bool LoadFirmware(string file) { return false; }
+        protected virtual bool GetLoadStatus() { return loadStatus; }
+
+
+        protected virtual void StepOne() { }
+        protected virtual void StepCpu() { }
+        protected virtual void Reset() { }
+        protected virtual int PC(){return 0;}
+        protected virtual UInt64 Cycle() { return 0; }
+        protected virtual byte GetRamValue(int address) { return 0; }
+
+        protected virtual List<string> GetRegList() { return regList; }
+
+        protected virtual RamTable GetRamTable() { return ramTable; }
+
+        protected virtual List<int> Eeprom() { return null; }
+        protected virtual void SetEeprom(List<int> eep) { }
 
         protected virtual int Validate(int address) { return 0; }
-
-        protected void RunSimuStep() { }
 
         protected string symbolFile;
         protected string dataFile;

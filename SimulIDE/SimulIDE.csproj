@@ -69,6 +69,7 @@
     <Compile Include="src\gui\editor\InoDebugger.cs" />
     <Compile Include="src\gui\RamTable.cs" />
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />
+    <Compile Include="src\Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
