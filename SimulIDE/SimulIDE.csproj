@@ -67,7 +67,12 @@
       <DependentUpon>EditorPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\gui\editor\InoDebugger.cs" />
-    <Compile Include="src\gui\RamTable.cs" />
+    <Compile Include="src\gui\RamTable.xaml.cs">
+      <DependentUpon>RamTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="src\gui\TableWidgetItem.xaml.cs">
+      <DependentUpon>TableWidgetItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />
     <Compile Include="src\Utils.cs" />
     <Page Include="MainWindow.xaml">
@@ -91,6 +96,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="src\gui\editor\EditorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\gui\RamTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\gui\TableWidgetItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

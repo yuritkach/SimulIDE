@@ -18,7 +18,7 @@ using TextBox = System.Windows.Controls.TextBox;
 
 namespace SimulIDE.src.gui.editor
 {
-    class BaseDebugger
+    public class BaseDebugger
     {
         public BaseDebugger(object parent, TextBox outPane, string filePath)
         {

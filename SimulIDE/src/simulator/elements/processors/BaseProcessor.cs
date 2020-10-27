@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator.elements.processors
 {
-    class BaseProcessor
+    public class BaseProcessor
     {
 
         protected static BaseProcessor self = null;
