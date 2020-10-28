@@ -56,7 +56,7 @@ namespace SimulIDE.src.simulator
             }
         }
 
-        public void StampCurrent(ePin* epin, double data)
+        public void StampCurrent(ePin epin, double data)
         {
             if (nodeList[epin] == nodeNum) return; // Be sure msg doesn't come from this node
 
@@ -289,7 +289,7 @@ namespace SimulIDE.src.simulator
             }
         }
 
-        public void AddToChangedFast(eElement*el)
+        public void AddToChangedFast(eElement el)
         {
             if (!changedFast.Contains(el)) changedFast.Add(el);
         }
