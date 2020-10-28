@@ -20,14 +20,23 @@ namespace SimulIDE.src.gui
     /// <summary>
     /// Interaction logic for RamTable.xaml
     /// </summary>
-    public partial class RamTable : Grid
+    /// 
+    public class RamTableValue
+    {
+        public string Reg { get; set; }
+        public string Type { get; set; }
+        public string Dec { get; set; }
+        public string Value { get; set; }
+    }
+
+    public partial class RamTable : UserControl
     {
         public RamTable()
         {
             InitializeComponent();
         }
 
-
+        
 
 
         //# include "ramtable.h"
@@ -43,84 +52,35 @@ namespace SimulIDE.src.gui
             numRegs = 60;
             loadingVars = false;
 
-
-            InitGrid(4, 60);
-
-             //   VerticalHeader().SetSectionsMovable(true);
-
-             //   SetColumnWidth(0, 60);
-             //   SetColumnWidth(1, 55);
-             //   SetColumnWidth(2, 35);
-             //   SetColumnWidth(3, 80);
-
-             //   int row_heigh = 23;
-
-             //   TableWidgetItem it;
-
-             //   for (int row = 0; row < numRegs; row++)
-             //   {
-             //       it = new TableWidgetItem(0);
-             //       it.SetText("---");
-             //       SetVerticalHeaderItem(row, it);
-             //       for (int col = 0; col < 4; col++)
-             //       {
-             //           QTableWidgetItem* it = new QTableWidgetItem(0);
-             //           if (col > 0) it->setFlags(Qt::ItemIsEnabled);
-             //           setItem(row, col, it);
-             //       }
-             //       QFont font = item(0, 0)->font();
-             //       font.setBold(true);
-             //       font.setPixelSize(10 * MainWindow::self()->fontScale());
-             //       for (int col = 0; col < 4; col++) item(row, col)->setFont(font);
-
-             //       item(row, 1)->setText("---");
-             //       item(row, 2)->setText("---");
-             //       item(row, 3)->setText("---");
-
-             //       setRowHeight(row, row_heigh);
-             //   }
-
-             //   it = new QTableWidgetItem(0);
-             //   it->setText(tr("Reg."));
-             //   setHorizontalHeaderItem(0, it);
-
-             //   it = new QTableWidgetItem(0);
-             //   it->setText(tr("Type"));
-             //   setHorizontalHeaderItem(1, it);
-
-             //   it = new QTableWidgetItem(0);
-             //   it->setText(tr("Dec"));
-             //   setHorizontalHeaderItem(2, it);
-
-             //   it = new QTableWidgetItem(0);
-             //   it->setText(tr("Value"));
-             //   setHorizontalHeaderItem(3, it);
-
-             //   setContextMenuPolicy(Qt::CustomContextMenu);
-
-             //   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-             //this, SLOT(slotContextMenu(const QPoint&)));
+            InitGrid(4, numRegs);
 
              //   connect(this, SIGNAL(itemChanged(QTableWidgetItem *)),
              //            this, SLOT(addToWatch(QTableWidgetItem *)));
-
-             //   show();
             }
 
+        private DataGridTextColumn MakeColumn(string header,string field, int width)
+        {
+            DataGridTextColumn result = new DataGridTextColumn();
+            result.Header = header;
+            result.Binding = new Binding(field);
+            result.Width = width;
+            return result;
+        }
 
         protected void InitGrid(int Cols, int Rows)
         {
-            DataGrid.ColumnDefinitions.Clear();
-            ColumnDefinition col0 = new ColumnDefinition();
-            col0.Width = new GridLength(60);
-
-            DataGrid.ColumnDefinitions.Add(col0);
-
-
-            }
-             
-
+            dataGrid.Columns.Clear();
+            dataGrid.Columns.Add(MakeColumn("Reg","Reg",60));
+            dataGrid.Columns.Add(MakeColumn("Type", "Type", 55));
+            dataGrid.Columns.Add(MakeColumn("Dec", "Dec", 35));
+            dataGrid.Columns.Add(MakeColumn("Value", "Value", 80));
+            dataGrid.Items.Clear();
+            for (int row = 0; row < Rows; row++)
+                dataGrid.Items.Add(new RamTableValue() { Reg = "---", Type = "---", Dec = "---", Value = "---" });
         }
+
+
+   
 
 
 
@@ -224,63 +184,69 @@ namespace SimulIDE.src.gui
 
         public void LoadVariables()
         {
-            //if (!m_debugger) return;
-
-            //m_loadingVars = true;
-
-            //QStringList variables = m_debugger->getVarList();
-            ////qDebug() << "RamTable::loadVariables" << variables;
-
-            //for (QString var : variables)
-            //{
-            //    int row = currentRow() + 1;
-            //    if (row >= m_numRegs) break;
-            //    item(row, 0)->setText(var);
-            //}
-            //m_loadingVars = false;
+            if (debugger==null) return;
+            loadingVars = true;
+            List<string> variables = debugger.GetVarList();
+            foreach (string variable in variables)
+            {
+                int row = dataGrid.SelectedIndex + 1;
+                if (row >= numRegs) break;
+                ((RamTableValue)dataGrid.Items[row]).Reg=variable;
+            }
+            loadingVars = false;
         }
 
         public void UpdateValues()
         {
-            //if (m_processor)
-            //{
-            //    for (int _row: watchList.keys())
-            //    {
-            //        m_currentRow = _row;
-            //        QString name = watchList[_row];
+            if (processor!=null)
+            {
+                foreach (int _row in watchList.Keys)
+                {
+                    currentRow = _row;
+                    string name = watchList[_row];
+                    bool ok;
+                    ok = int.TryParse(name, System.Globalization.NumberStyles.Integer,null,out int addr);
+                    if (!ok)
+                        ok = int.TryParse(name, System.Globalization.NumberStyles.HexNumber, null, out addr);
 
-            //        bool ok;
-            //        int addr = name.toInt(&ok, 10);
-            //        if (!ok) addr = name.toInt(&ok, 16);
-            //        if (!ok) m_processor->updateRamValue(name);  // Var or Reg name
-            //        else                                            // Address
-            //        {
-            //            int value = m_processor->getRamValue(addr);
+                    if (!ok) processor.UpdateRamValue(name);  // Var or Reg name
+                    else                                            // Address
+                    {
+                        int value = processor.GetRamValue(addr);
 
-            //            if (value >= 0)
-            //            {
-            //                item(_row, 1)->setText("uint8");
-            //                item(_row, 2)->setData(0, value);
-            //                item(_row, 3)->setData(0, decToBase(value, 2, 8));
-            //            }
-            //        }
-            //    }
-            //}
+                        if (value >= 0)
+                        {
+                            ((RamTableValue)dataGrid.Items[_row]).Type = "uint8";
+                            ((RamTableValue)dataGrid.Items[_row]).Dec = value.ToString();
+                            ((RamTableValue)dataGrid.Items[_row]).Value = Utils.DecToBase(value,2,8);
+                        }
+                    }
+                }
+            }
         }
 
         public void SetItemValue(int col, string value)
         {
-  //          item(m_currentRow, col)->setData(0, value);
+            var item = ((RamTableValue)dataGrid.Items[currentRow]);
+            switch (col)
+            {
+                case 0: item.Reg = value;break;
+                case 1: item.Type = value; break;
+                case 2: item.Dec = value; break;
+                case 3: item.Value = value; break;
+                default: break;
+            }
+
         }
 
         public void SetItemValue(int col, float value)
         {
- //           item(m_currentRow, col)->setData(0, value);
+            SetItemValue(col, value.ToString());
         }
 
         public void SetItemValue(int col, Int32 value)
         {
-   //         item(m_currentRow, col)->setData(0, value);
+            SetItemValue(col, value.ToString());
         }
 
         protected void AddToWatch(TableWidgetItem it)

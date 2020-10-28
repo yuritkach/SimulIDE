@@ -37,7 +37,7 @@ namespace SimulIDE.src.gui.editor
 
         }
 
-        protected List<string> GetVarList()
+        public List<string> GetVarList()
         {
             return varNames;
         }

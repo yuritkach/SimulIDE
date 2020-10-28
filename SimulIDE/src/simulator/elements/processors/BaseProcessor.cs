@@ -113,7 +113,7 @@ namespace SimulIDE.src.simulator.elements.processors
             return -1;
         }
 
-        protected virtual void UpdateRamValue(string name)
+        public virtual void UpdateRamValue(string name)
         {
             if (!loadStatus) return;
 
@@ -207,7 +207,7 @@ namespace SimulIDE.src.simulator.elements.processors
         }
 
 
-        protected virtual int GetRamValue(string name)
+        public virtual int GetRamValue(string name)
         {
             if (regsTable.Count == 0) return -1;
 
@@ -288,7 +288,7 @@ namespace SimulIDE.src.simulator.elements.processors
         protected virtual void Reset() { }
         protected virtual int PC(){return 0;}
         protected virtual UInt64 Cycle() { return 0; }
-        protected virtual byte GetRamValue(int address) { return 0; }
+        public virtual byte GetRamValue(int address) { return 0; }
 
         protected virtual List<string> GetRegList() { return regList; }
 
