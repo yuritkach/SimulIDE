@@ -393,7 +393,7 @@ namespace SimulIDE.src.simulator
             int mult = 20;
             if (fps == 40) mult = 40;
 
-            circuitRate = rate / fps;
+            circuitRate = (ulong)(rate / fps);
 
             if (rate < fps)
             {
@@ -410,7 +410,7 @@ namespace SimulIDE.src.simulator
             }
 
             ////PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
-            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / stepsPerus);
+            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / stepsPerus));
 
             simuRate = circuitRate * fps;
             Console.WriteLine("\nFPS:              " + fps.ToString()

@@ -196,141 +196,138 @@ namespace SimulIDE.src.simulator
                 foreach (eElement el in nonLinear) Simulator.Self().AddToNoLinList(el);
             }
         }
-    double eNode::getVolt() { return m_volt; }
 
-    void eNode::setIsBus(bool bus)
-    {
-        m_isBus = bus;
+        public double GetVolt() { return volt; }
 
-        Simulator::self()->remFromEnodeList(this, /*delete=*/ false);
-        Simulator::self()->addToEnodeBusList(this);
-    }
-
-    bool eNode::isBus()
-    {
-        return m_isBus;
-    }
-
-    void eNode::createBus()
-    {
-        int busSize = m_eBusPinList.size();
-
-        //qDebug()<<"\neNode::createBus"<< this <<busSize << m_eBusPinList;
-
-        m_eNodeList.clear();
-        for (int i = 0; i < busSize; i++)
+        public void SetIsBus(bool bus)
         {
-            QList<ePin*> pinList = m_eBusPinList.at(i);
+            isBus = bus;
 
-            eNode* enode = 0l;
+            Simulator.Self().RemFromEnodeList(this, /*delete=*/ false);
+            Simulator.Self().AddToEnodeBusList(this);
+        }
 
-            if (!pinList.isEmpty())
+        public bool IsBus()
+        {
+            return isBus;
+        }
+
+        public void CreateBus()
+        {
+            int busSize = eBusPinList.Capacity;
+
+            //qDebug()<<"\neNode::createBus"<< this <<busSize << m_eBusPinList;
+
+            eNodeList.Clear();
+            for (int i = 0; i < busSize; i++)
             {
-                enode = new eNode(m_id + "-eNode-" + QString::number(i));
+                List<ePin> pinList = eBusPinList[i];
 
-                for (ePin* epin : pinList)
+                eNode enode = null;
+
+                if (pinList.Capacity!=0)
                 {
-                    //qDebug() <<"Pin eNode"<< QString::fromStdString(epin->getId())<<enode;
-                    epin->setEnode(enode);
+                    enode = new eNode(id + "-eNode-" + i.ToString());
+
+                    foreach (ePin epin in pinList)
+                    {
+                        //qDebug() <<"Pin eNode"<< QString::fromStdString(epin->getId())<<enode;
+                        epin.SetEnode(enode);
+                    }
+                }
+                eNodeList.Add(enode);
+            }
+        }
+
+        public void AddBusPinList(List<ePin> list, int line)
+        {
+            int size = line + 1;
+            int busSize = eBusPinList.Capacity;
+
+            if (size > busSize)
+            {
+                for (int i = 0; i < size - busSize; i++)
+                {
+                    List<ePin> newList = new List<ePin>();
+                    eBusPinList.Add(newList);
                 }
             }
-            m_eNodeList.append(enode);
-        }
-    }
 
-    void eNode::addBusPinList(QList<ePin*> list, int line)
-    {
-        int size = line + 1;
-        int busSize = m_eBusPinList.size();
-
-        if (size > busSize)
-        {
-            for (int i = 0; i < size - busSize; i++)
+            List<ePin> pinList = eBusPinList[line];
+            foreach (ePin epin in list)
             {
-                QList<ePin*> newList;
-                m_eBusPinList.append(newList);
+                if (!pinList.Contains(epin))
+                {
+                    pinList.Add(epin);
+                    //epin->setEnode( this );
+                }
+            }
+            //qDebug() << "eNode::addBusPinList" <<this<< line << busSize<<"\n"<<pinList;
+            eBusPinList.Replace(line, pinList);
+        }
+
+        public List<ePin> GetEpins() { return ePinList; }
+
+        public void AddEpin(ePin epin)
+        {
+            //qDebug() << "eNode::addEpin" << m_id << QString::fromStdString(epin->getId());
+            if (!ePinList.Contains(epin)) ePinList.Add(epin);
+        }
+
+        public void RemEpin(ePin epin)
+        {
+            //qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId());
+            if (ePinList.Contains(epin)) ePinList.Remove(epin);
+
+            //qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId())<<m_ePinList.size();
+
+            // If No epins then remove this enode
+            if (ePinList.Capacity==0)
+            {
+                if (isBus) Simulator.Self().RemFromEnodeBusList(this, true);
+                else Simulator.Self().RemFromEnodeList(this, true);
             }
         }
 
-        QList<ePin*> pinList = m_eBusPinList.at(line);
-        for (ePin* epin : list)
+        public void AddToChangedFast(eElement*el)
         {
-            if (!pinList.contains(epin))
-            {
-                pinList.append(epin);
-                //epin->setEnode( this );
-            }
+            if (!changedFast.Contains(el)) changedFast.Add(el);
         }
-        //qDebug() << "eNode::addBusPinList" <<this<< line << busSize<<"\n"<<pinList;
-        m_eBusPinList.replace(line, pinList);
-    }
 
-    QList<ePin*> eNode::getEpins() { return m_ePinList; }
-
-    void eNode::addEpin(ePin* epin)
-    {
-        //qDebug() << "eNode::addEpin" << m_id << QString::fromStdString(epin->getId());
-        if (!m_ePinList.contains(epin)) m_ePinList.append(epin);
-    }
-
-    void eNode::remEpin(ePin* epin)
-    {
-        //qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId());
-        if (m_ePinList.contains(epin)) m_ePinList.removeOne(epin);
-
-        //qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId())<<m_ePinList.size();
-
-        // If No epins then remove this enode
-        if (m_ePinList.isEmpty())
+        public void RemFromChangedFast(eElement el)
         {
-            if (m_isBus) Simulator::self()->remFromEnodeBusList(this, true);
-            else Simulator::self()->remFromEnodeList(this, true);
+            changedFast.Remove(el);
         }
-    }
 
-    void eNode::addToChangedFast(eElement* el)
-    {
-        if (!m_changedFast.contains(el)) m_changedFast.append(el);
-    }
+        public void AddToReactiveList(eElement el)
+        {
+            if (!reactiveList.Contains(el)) reactiveList.Add(el);
+        }
 
-    void eNode::remFromChangedFast(eElement* el)
-    {
-        m_changedFast.removeOne(el);
-    }
+        public void RemFromReactiveList(eElement el)
+        {
+            reactiveList.Remove(el);
+        }
 
-    void eNode::addToReactiveList(eElement* el)
-    {
-        if (!m_reactiveList.contains(el)) m_reactiveList.append(el);
-    }
+        public void AddToNoLinList(eElement el)
+        {
+            if (!nonLinear.Contains(el)) nonLinear.Add(el);
+        }
 
-    void eNode::remFromReactiveList(eElement* el)
-    {
-        m_reactiveList.removeOne(el);
-    }
+        public void RemFromNoLinList(eElement el)
+        {
+            nonLinear.Remove(el);
+        }
 
-    void eNode::addToNoLinList(eElement* el)
-    {
-        if (!m_nonLinear.contains(el)) m_nonLinear.append(el);
-    }
+        public void SetSingle(bool single) { this.single = single; }      // This eNode can calculate it's own Volt
+        public bool IsSingle() { return single; }
 
-    void eNode::remFromNoLinList(eElement* el)
-    {
-        m_nonLinear.removeOne(el);
-    }
+        public void SetSwitched(bool switched) { this.switched = switched; } // This eNode has switches attached
+        public bool IsSwitched() { return switched; }
 
-    void eNode::setSingle(bool single) { m_single = single; }      // This eNode can calculate it's own Volt
-    bool eNode::isSingle() { return m_single; }
+        public int GetNodeNumber() { return nodeNum; }
 
-    void eNode::setSwitched(bool switched) { m_switched = switched; } // This eNode has switches attached
-    bool eNode::isSwitched() { return m_switched; }
-
-    int eNode::getNodeNumber() { return m_nodeNum; }
-
-    QString eNode::itemId() { return m_id; }
-
-
-
-
+        public string ItemId() { return id; }
 
         private List<ePin> ePinList;
         //QList<ePin*>     m_ePinSubList;  // Used by Connector to find connected dpins
