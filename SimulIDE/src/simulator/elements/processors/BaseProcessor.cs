@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.gui;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,13 +20,15 @@ namespace SimulIDE.src.simulator.elements.processors
     {
 
         protected static BaseProcessor self = null;
+        public static BaseProcessor Self() { return self; }
 
-        public BaseProcessor(object parent) : base()
+        public BaseProcessor() 
         {
             loadStatus = false;
             resetStatus = false;
             symbolFile = "";
             device = "";
+            self = this;
 
             //ramTable = new RamTable(this);
             //MainWindow::self()->m_ramTabWidgetLayout->addWidget(m_ramTable);
@@ -55,7 +58,7 @@ namespace SimulIDE.src.simulator.elements.processors
             if (mcuStepsPT > 1) extraCycle = Cycle();
         }
 
-        protected virtual void Step()
+        public virtual void Step()
         {
             if (!loadStatus || resetStatus) return;
 
