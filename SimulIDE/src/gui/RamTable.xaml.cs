@@ -249,7 +249,7 @@ namespace SimulIDE.src.gui
             SetItemValue(col, value.ToString());
         }
 
-        protected void AddToWatch(TableWidgetItem it)
+        protected void AddToWatch(RamTableValue it)
         {
             //if (column(it) != 0) return;
             //int _row = row(it);

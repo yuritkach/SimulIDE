@@ -70,10 +70,8 @@
     <Compile Include="src\gui\RamTable.xaml.cs">
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
-    <Compile Include="src\gui\TableWidgetItem.xaml.cs">
-      <DependentUpon>TableWidgetItem.xaml</DependentUpon>
-    </Compile>
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />
+    <Compile Include="src\simulator\eNode.cs" />
     <Compile Include="src\simulator\Simulator.cs" />
     <Compile Include="src\Utils.cs" />
     <Page Include="MainWindow.xaml">
@@ -101,10 +99,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="src\gui\RamTable.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="src\gui\TableWidgetItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

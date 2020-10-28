@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator
@@ -33,7 +34,7 @@ namespace SimulIDE.src.simulator
 
             stepsPerus = 1;
 
-            refTimer.start();
+            refTimer.Start();
         }
         ~Simulator()
         {
@@ -135,7 +136,7 @@ namespace SimulIDE.src.simulator
 
                 if (runMcu) BaseProcessor.Self().Step();             // Run MCU
 
-                if (!simuClock.isEmpty())     // Run elements at Simulation Clock
+                if (simuClock.Count!=0)     // Run elements at Simulation Clock
                 {
                     foreach (eElement el in simuClock) el.SimuClockStep();
                 }
@@ -147,15 +148,15 @@ namespace SimulIDE.src.simulator
 
                 if (step >= reacCounter)               // Run Reactive Elements
                 {
-                    reacCounter += stepsPrea * stepsPerus;
-                    if (!reactive.IsEmpty())
+                    reacCounter +=(ulong) (stepsPrea * stepsPerus);
+                    if (reactive.Count!=0)
                     {
                         foreach (eElement el in reactive) el.SetVChanged();
                         reactive.Clear();
                     }
                 }
 
-                if (!nonLinear.IsEmpty())              // Run Non-Linear elements
+                if (nonLinear.Count!=0)              // Run Non-Linear elements
                 {
                     int counter = 0;
                     int limit = (noLinAcc - 2) * 100;
@@ -188,12 +189,12 @@ namespace SimulIDE.src.simulator
             //if( !m_isrunning ) return;
 
             //qDebug() <<"\nSimulator::runExtraStep"<<m_circTime<<m_step<<m_stepNS;
-            circTime = cycle * mcuStepNS;
+            circTime =(ulong) (cycle * mcuStepNS);
             //qDebug() <<"Simulator::runExtraStep"<<m_circTime<<cycle<<m_mcuStepNS;
 
-            if (!eChangedNodeList.IsEmpty())
+            if (eChangedNodeList.Count!=0)
             {
-                solveMatrix();
+                SolveMatrix();
                 //if( !m_isrunning ) return;
             }
 
@@ -206,11 +207,11 @@ namespace SimulIDE.src.simulator
         {
             if (debugging)                     // Debugger Controllig Simulation
             {
-                debug(false);
+                Debug(false);
                 OnResumeDebug?.Invoke(); 
                 return;
             }
-            simuRateChanged(simuRate);
+            SimuRateChanged(simuRate);
             StartSim();
 
             Console.WriteLine("\n    Simulation Running... \n");
@@ -403,13 +404,13 @@ namespace SimulIDE.src.simulator
 
             if (isrunning)
             {
-                pauseSim();
+                PauseSim();
                 OnRateChanged?.Invoke();
-                resumeSim();
+                ResumeSim();
             }
 
             ////PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
-            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / m_stepsPerus);
+            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / stepsPerus);
 
             simuRate = circuitRate * fps;
             Console.WriteLine("\nFPS:              " + fps.ToString()
@@ -442,27 +443,27 @@ namespace SimulIDE.src.simulator
         public void SetReaClock(int value)
         {
             bool running = isrunning;
-            if (running) stopSim();
+            if (running) StopSim();
 
             if (value < 1) value = 1;
             else if (value > 100) value = 100;
 
             stepsPrea = value;
 
-            if (running) runContinuous();
+            if (running) RunContinuous();
         }
 
         public int NoLinAcc() { return noLinAcc; }
         public void SetNoLinAcc(int ac)
         {
             bool running = isrunning;
-            if (running) stopSim();
+            if (running) StopSim();
 
             if (ac < 3) ac = 3;
             else if (ac > 14) ac = 14;
             noLinAcc = ac;
 
-            if (running) runContinuous();
+            if (running) RunContinuous();
         }
         public double NLaccuracy()
         {
@@ -479,222 +480,145 @@ namespace SimulIDE.src.simulator
             return circTime;
         }
 
-        protected void AddToEnodeBusList(eNode nod)
+        public void AddToEnodeBusList(eNode nod)
         {
-            if (!eNodeBusList.Contains(nod)) eNodeBusList.Append(nod);
+            if (!eNodeBusList.Contains(nod)) eNodeBusList.Add(nod);
         }
 
-        protected void RemFromEnodeBusList(eNode nod, bool del)
+        public void RemFromEnodeBusList(eNode nod, bool del)
         {
-            if (eNodeBusList.Contains(nod)) eNodeBusList.RemoveOne(nod);
-            if (del) { delete nod; }
+            if (eNodeBusList.Contains(nod)) eNodeBusList.Remove(nod);
+  //          if (del) { delete nod; }
         }
 
-        void Simulator::addToEnodeList(eNode* nod)
+        public void AddToEnodeList(eNode nod)
         {
-            if (!m_eNodeList.contains(nod)) m_eNodeList.append(nod);
+            if (!eNodeList.Contains(nod)) eNodeList.Add(nod);
         }
 
-        void Simulator::remFromEnodeList(eNode* nod, bool del)
+        public void RemFromEnodeList(eNode nod, bool del)
         {
-            if (m_eNodeList.contains(nod))
+            if (eNodeList.Contains(nod))
             {
-                m_eNodeList.removeOne(nod);
-                if (del) delete nod;
+                eNodeList.Remove(nod);
+//                if (del) delete nod;
             }
         }
 
-        void Simulator::addToChangedNodeList(eNode* nod)
+        public void AddToChangedNodeList(eNode nod)
         {
-            if (!m_eChangedNodeList.contains(nod)) m_eChangedNodeList.append(nod);
+            if (!eChangedNodeList.Contains(nod)) eChangedNodeList.Add(nod);
         }
-        void Simulator::remFromChangedNodeList(eNode* nod)
+        public void RemFromChangedNodeList(eNode nod)
         {
-            m_eChangedNodeList.removeOne(nod);
-        }
-
-        void Simulator::addToElementList(eElement* el)
-        {
-            if (!m_elementList.contains(el)) m_elementList.append(el);
+            eChangedNodeList.Remove(nod);
         }
 
-        void Simulator::remFromElementList(eElement* el)
+        public void AddToElementList(eElement el)
         {
-            if (m_elementList.contains(el)) m_elementList.removeOne(el);
+            if (!elementList.Contains(el)) elementList.Add(el);
         }
 
-        void Simulator::addToUpdateList(eElement* el)
+        public void RemFromElementList(eElement el)
         {
-            if (!m_updateList.contains(el)) m_updateList.append(el);
+            if (elementList.Contains(el)) elementList.Remove(el);
         }
 
-        void Simulator::remFromUpdateList(eElement* el)
+        protected void AddToUpdateList(eElement el)
         {
-            m_updateList.removeOne(el);
+            if (!updateList.Contains(el)) updateList.Add(el);
         }
 
-        void Simulator::addToSimuClockList(eElement* el)
+        public void RemFromUpdateList(eElement el)
         {
-            if (!m_simuClock.contains(el)) m_simuClock.append(el);
+            updateList.Remove(el);
         }
 
-        void Simulator::remFromSimuClockList(eElement* el)
+        public void AddToSimuClockList(eElement el)
         {
-            m_simuClock.removeOne(el);
+            if (!simuClock.Contains(el)) simuClock.Add(el);
         }
 
-        void Simulator::addToChangedFast(eElement* el)
+        public void RemFromSimuClockList(eElement el)
         {
-            if (!m_changedFast.contains(el)) m_changedFast.append(el);
+            simuClock.Remove(el);
         }
 
-        void Simulator::remFromChangedFast(eElement* el)
+        public void AddToChangedFast(eElement el)
         {
-            m_changedFast.removeOne(el);
+            if (!changedFast.Contains(el)) changedFast.Add(el);
         }
 
-        void Simulator::addToReactiveList(eElement* el)
+        public void RemFromChangedFast(eElement el)
         {
-            if (!m_reactive.contains(el)) m_reactive.append(el);
+            changedFast.Remove(el);
         }
 
-        void Simulator::remFromReactiveList(eElement* el)
+        public void AddToReactiveList(eElement el)
         {
-            m_reactive.removeOne(el);
+            if (!reactive.Contains(el)) reactive.Add(el);
         }
 
-        void Simulator::addToNoLinList(eElement* el)
+        public void RemFromReactiveList(eElement el)
         {
-            if (!m_nonLinear.contains(el)) m_nonLinear.append(el);
+            reactive.Remove(el);
         }
 
-        void Simulator::remFromNoLinList(eElement* el)
+        public void AddToNoLinList(eElement el)
         {
-            m_nonLinear.removeOne(el);
+            if (!nonLinear.Contains(el)) nonLinear.Add(el);
         }
 
-        void Simulator::addToMcuList(BaseProcessor* proc)
+        public void RemFromNoLinList(eElement el)
         {
-            if (!m_mcuList.contains(proc)) m_mcuList.append(proc);
+            nonLinear.Remove(el);
         }
-        void Simulator::remFromMcuList(BaseProcessor* proc) { m_mcuList.removeOne(proc); }
 
-
-
-
-
-
-
-
-
-
-
+        public void AddToMcuList(BaseProcessor proc)
+        {
+            if (!mcuList.Contains(proc)) mcuList.Add(proc);
+        }
+        public void RemFromMcuList(BaseProcessor proc)
+        {
+            mcuList.Remove(proc);
+        }
 
         // Header
         public static Simulator Self() { return mself; }
+        
+        public int CircuitRate() { return (int)circuitRate; }
+        public int SimuRate() { return simuRate; }
+        
+        public void SetTimerScale(int ts) { timerSc = ts; }
+        public List<eNode> GeteNodes() { return eNodeList; }
 
-        public void runContinuous();
-        public void topTimer();
-        public void resumeTimer();
-        public void pauseSim();
-        public void resumeSim();
-        public void stopSim();
-        public void stopDebug();
-        public void startSim();
-        public void debug(bool run);
-        public void runGraphicStep();
-        public void runExtraStep(uint64_t cycle);
-        public void runGraphicStep1();
-        public void runGraphicStep2();
-        public void runCircuit();
+        
+        public UInt64 stepsPerSec;
 
-        public int circuitRate() { return m_circuitRate; }
-        public int simuRate() { return m_simuRate; }
-        public int simuRateChanged(int rate);
+        public UInt64 mS() { return refTimer.Elapsed(); }
 
-        public void setTimerScale(int ts) { m_timerSc = ts; }
-
-        public int reaClock();
-        public void setReaClock(int value);
-
-        public int noLinAcc();
-        public void setNoLinAcc(int ac);
-        public double NLaccuracy();
-
-        public bool isRunning();
-        public bool isPaused();
-
-        public UInt64 step();
-        public uint64_t circTime();
-        public void setCircTime(uint64_t time);
-
-        public QList<eNode*> geteNodes() { return m_eNodeList; }
-
-        public void addToEnodeBusList(eNode* nod);
-        public void remFromEnodeBusList(eNode* nod, bool del);
-
-        public void addToEnodeList(eNode* nod);
-        public void remFromEnodeList(eNode* nod, bool del);
-
-        public void addToChangedNodeList(eNode* nod);
-        public void remFromChangedNodeList(eNode* nod);
-
-        public void addToElementList(eElement* el);
-        public void remFromElementList(eElement* el);
-
-        public void addToUpdateList(eElement* el);
-        public void remFromUpdateList(eElement* el);
-
-        public void addToChangedFast(eElement* el);
-        public void remFromChangedFast(eElement* el);
-
-        public void addToReactiveList(eElement* el);
-        public void remFromReactiveList(eElement* el);
-
-        public void addToSimuClockList(eElement* el);
-        public void remFromSimuClockList(eElement* el);
-
-        public void addToNoLinList(eElement* el);
-        public void remFromNoLinList(eElement* el);
-
-        public void addToMcuList(BaseProcessor* proc);
-        public void remFromMcuList(BaseProcessor* proc);
-
-        public void timerEvent(QTimerEvent* e);
-
-        public double stepsPerus();
-
-        public uint64_t stepsPerSec;
-
-        public uint64_t mS() { return m_RefTimer.elapsed(); }
-
-
-        //events
         public event Action OnPauseDebug;
         public event Action OnResumeDebug;
         public event Action OnRateChanged;
 
-
         private static Simulator mself=null;
-
-        private inline void solveMatrix();
 
         private QFuture<void> CircuitFuture;
 
         private CircMatrix matrix;
 
-        private QList<eNode*> eNodeList;
-        private QList<eNode*> eChangedNodeList;
-        private QList<eNode*> eNodeBusList;
+        private List<eNode> eNodeList;
+        private List<eNode> eChangedNodeList;
+        private List<eNode> eNodeBusList;
 
-        private QList<eElement*> elementList;
-        private QList<eElement*> updateList;
+        private List<eElement> elementList;
+        private List<eElement> updateList;
 
-        private QList<eElement*> changedFast;
-        private QList<eElement*> reactive;
-        private QList<eElement*> nonLinear;
-        private QList<eElement*> simuClock;
-        private QList<BaseProcessor*> mcuList;
+        private List<eElement> changedFast;
+        private List<eElement> reactive;
+        private List<eElement> nonLinear;
+        private List<eElement> simuClock;
+        private List<BaseProcessor> mcuList;
 
         private bool isrunning;
         private bool debugging;
@@ -705,24 +629,22 @@ namespace SimulIDE.src.simulator
         private int timerId;
         private int timerTick;
         private int timerSc;
-        private int noLinAcc;
         private int numEnodes;
-        private int simuRate;
         private int stepsPrea;
 
+        private int noLinAcc;
+        private int simuRate;
         private double stepsPerus;
         private double stepNS;
         private double mcuStepNS;
 
         private UInt64 circuitRate;
+        private UInt64 circTime;
         private UInt64 reacCounter;
         private UInt64 updtCounter;
-
-        private UInt64 circTime;
         private UInt64 step;
         private UInt64 tStep;
         private UInt64 lastStep;
-
         private UInt64 refTime;
         private UInt64 lastRefTime;
         private Timer refTimer;
