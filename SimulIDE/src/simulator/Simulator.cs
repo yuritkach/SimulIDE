@@ -210,294 +210,283 @@ namespace SimulIDE.src.simulator
                 OnResumeDebug?.Invoke(); 
                 return;
             }
-            simuRateChanged(m_simuRate);
-            startSim();
+            simuRateChanged(simuRate);
+            StartSim();
 
-            std::cout << "\n    Simulation Running... \n" << std::endl;
-            m_timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
+            Console.WriteLine("\n    Simulation Running... \n");
+            //timerId = this.StartTimer(timerTick, Qt::PreciseTimer);
         }
 
-        void Simulator::debug(bool run)
+        public void Debug(bool run)
         {
             if (run)
             {
-                m_debugging = false;
-                runContinuous();
+                debugging = false;
+                RunContinuous();
             }
             else
             {
                 startSim();
-                m_isrunning = false;
-                m_debugging = true;
-                std::cout << "\n    Debugger Controllig Simulation... \n" << std::endl;
+                isrunning = false;
+                debugging = true;
+                Console.WriteLine("\n    Debugger Controllig Simulation... \n");
             }
-            m_runMcu = false;
+            runMcu = false;
         }
 
-        void Simulator::startSim()
+        public void StartSim()
         {
-            std::cout << "\nStarting Circuit Simulation...\n" << std::endl;
+            Console.WriteLine("\nStarting Circuit Simulation...\n");
 
-            for (eNode* busNode : m_eNodeBusList) busNode->initialize(); // Clear Buses
+            foreach (eNode busNode in eNodeBusList) busNode.Initialize(); // Clear Buses
 
-            std::cout << "  Initializing " << m_elementList.size() << "\teElements" << std::endl;
-            for (eElement* el : m_elementList)    // Initialize all Elements
+            Console.WriteLine("  Initializing " + elementList.Size().ToString() + "\teElements");
+            foreach (eElement el in elementList)    // Initialize all Elements
             {
                 //std::cout << "initializing  "<< el->getId()<<  std::endl;
-                if (!m_paused) el->resetState();
-                el->initialize();
+                if (!paused) el.ResetState();
+                el.Initialize();
             }
+            Console.WriteLine("  Initializing " + eNodeBusList.Size().ToString() + "\tBuses");
+            foreach (eNode busNode in eNodeBusList) busNode.CreateBus(); // Create Buses
 
-            std::cout << "  Initializing " << m_eNodeBusList.size() << "\tBuses" << std::endl;
-            for (eNode* busNode : m_eNodeBusList) busNode->createBus(); // Create Buses
-
-            m_nonLinear.clear();
-            m_changedFast.clear();
-            m_reactive.clear();
-            m_eChangedNodeList.clear();
+            nonLinear.Clear();
+            changedFast.Clear();
+            reactive.Clear();
+            eChangedNodeList.Clear();
 
             // Connect Elements with internal circuits.
-            for (eElement* el : m_elementList) el->attach();
+            foreach (eElement el in elementList) el.Attach();
 
-            if (McuComponent::self() && !m_paused) McuComponent::self()->runAutoLoad();
+            if (McuComponent.Self()!=null && !paused) McuComponent.Self().RunAutoLoad();
 
 
-            m_numEnodes = m_eNodeList.size();
-            std::cout << "  Initializing " << m_eNodeList.size() << "\teNodes" << std::endl;
-            for (int i = 0; i < m_numEnodes; i++)
+            numEnodes = eNodeList.Size();
+            Console.WriteLine("  Initializing " + eNodeList.Size().ToString() + "\teNodes");
+            for (int i = 0; i < numEnodes; i++)
             {
-                eNode* enode = m_eNodeList.at(i);
-                enode->setNodeNumber(i + 1);
-                enode->initialize();
+                eNode enode = eNodeList.Items[i];
+                enode.SetNodeNumber(i + 1);
+                enode.Initialize();
             }
-            for (eElement* el : m_elementList) el->stamp();
+            foreach (eElement el in elementList) el.Stamp();
 
             // Initialize Matrix
-            m_matrix.createMatrix(m_eNodeList);
+            matrix.CreateMatrix(eNodeList);
 
             // Try to solve matrix, if fails stop simulation
-            // m_matrix.printMatrix();
-            if (!m_matrix.solveMatrix())
+            ////// m_matrix.printMatrix();
+            if (!matrix.SolveMatrix())
             {
-                std::cout << "Simulator::startSim, Failed to solve Matrix"
-                          << std::endl;
-                CircuitWidget::self()->powerCircOff();
-                CircuitWidget::self()->setRate(-1);
+                Console.WriteLine("Simulator::startSim, Failed to solve Matrix");
+                CircuitWidget.Self().PowerCircOff();
+                CircuitWidget.Self().SetRate(-1);
                 return;
             }
-            //for( eElement* el : m_elementList ) el->setVChanged();
-            std::cout << "\nCircuit Matrix looks good" << std::endl;
-            if (!m_paused)
+            //////for( eElement* el : m_elementList ) el->setVChanged();
+            Console.WriteLine("\nCircuit Matrix looks good");
+            if (!paused)
             {
-                m_lastStep = 0;
-                m_lastRefTime = 0;
-                m_updtCounter = m_circuitRate;
-                m_reacCounter = m_stepsPrea;
+                lastStep = 0;
+                lastRefTime = 0;
+                updtCounter = circuitRate;
+                reacCounter = stepsPrea;
             }
-            m_isrunning = true;
-            m_paused = false;
-            m_error = false;
-            CircuitView::self()->setCircTime(0);
+            isrunning = true;
+            paused = false;
+            error = false;
+            CircuitView.Self().SetCircTime(0);
         }
 
-        void Simulator::stopDebug()
+        public void StopDebug()
         {
-            m_debugging = false;
-            stopSim();
+            debugging = false;
+            StopSim();
         }
 
-        void Simulator::stopSim()
+        public void StopSim()
         {
-            //if( !m_isrunning ) return;
+            ////if( !m_isrunning ) return;
 
-            stopTimer();
-            //emit pauseDebug();
-            m_paused = false;
-            m_circTime = 0;
-            m_step = 0;
+            StopTimer();
+            ////emit pauseDebug();
+            paused = false;
+            circTime = 0;
+            step = 0;
 
-            for (eNode* node  : m_eNodeList) node->setVolt(0);
-            for (eElement* el : m_elementList) el->resetState();
-            for (eElement* el : m_updateList) el->updateStep();
+            foreach (eNode node  in eNodeList) node.SetVolt(0);
+            foreach (eElement el in elementList) el.ResetState();
+            foreach (eElement el in updateList) el.UpdateStep();
 
-            if (McuComponent::self()) McuComponent::self()->reset();
+            if (McuComponent.Self()!=null) McuComponent.Self().Reset();
 
-            CircuitWidget::self()->setRate(0);
-            Circuit::self()->update();
-
-            std::cout << "\n    Simulation Stopped \n" << std::endl;
+            CircuitWidget.Self().SetRate(0);
+            Circuit.Self().Update();
+            Console.WriteLine("\n    Simulation Stopped \n");
         }
 
-        void Simulator::pauseSim()
+        public void PauseSim()
         {
-            emit pauseDebug();
-            m_paused = true;
-            stopTimer();
-
-            std::cout << "\n    Simulation Paused \n" << std::endl;
+            OnPauseDebug?.Invoke();
+            paused = true;
+            StopTimer();
+            Console.WriteLine("\n    Simulation Paused \n");
         }
 
-        void Simulator::resumeSim()
+        public void ResumeSim()
         {
-            m_isrunning = true;
-            m_paused = false;
+            isrunning = true;
+            paused = false;
 
-            emit resumeDebug();
-
-            if (m_debugging) return;
-
-            std::cout << "\n    Resuming Simulation\n" << std::endl;
-            m_timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
+            OnResumeDebug?.Invoke();
+            if (debugging) return;
+            Console.WriteLine("\n    Resuming Simulation\n");
+            //timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
         }
 
-        void Simulator::stopTimer()
+        protected void StopTimer()
         {
-            if (m_timerId != 0)
+            if (timerId != 0)
             {
-                m_isrunning = false;
-                this->killTimer(m_timerId);
-                m_timerId = 0;
-                m_CircuitFuture.waitForFinished();
+                isrunning = false;
+                //TYV this->killTimer(m_timerId); 
+                timerId = 0;
+                CircuitFuture.WaitForFinished();
             }
         }
 
-        void Simulator::resumeTimer()
+        protected void ResumeTimer()
         {
-            if (m_timerId == 0)
+            if (timerId == 0)
             {
-                m_isrunning = true;
-                m_timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
+                isrunning = true;
+               //TYV timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
             }
         }
 
-        int Simulator::simuRateChanged(int rate)
+        protected int SimuRateChanged(int rate)
         {
             //if( rate > 1e6 ) rate = 1e6;
             if (rate < 1) rate = 1;
 
-            m_stepsPerus = rate / 1e6;
-            if (m_stepsPerus < 1) m_stepsPerus = 1;
-            m_stepNS = 1000 / m_stepsPerus;
+            stepsPerus = rate / 1e6;
+            if (stepsPerus < 1) stepsPerus = 1;
+            stepNS = 1000 / stepsPerus;
 
-            m_runMcu = false;
+            runMcu = false;
 
-            if (BaseProcessor::self())
+            if (BaseProcessor.Self()!=null)
             {
                 //double mcuSteps = McuComponent::self()->freq()*1e6;
                 //if( mcuSteps > rate ) m_stepsPerus = (int)
 
-                double mcuSteps = McuComponent::self()->freq() / m_stepsPerus;
-                BaseProcessor::self()->setSteps(mcuSteps);
-                m_mcuStepNS = 1000 / McuComponent::self()->freq();
-                m_runMcu = true;
+                double mcuSteps = McuComponent.Self().Freq() / stepsPerus;
+                BaseProcessor.Self().SetSteps(mcuSteps);
+                mcuStepNS = 1000 / McuComponent.Self().Freq();
+                runMcu = true;
                 //qDebug() <<"Simulator::simuRateChanged mcuSteps"<<mcuSteps<<m_mcuStepNS;
             }
 
-            m_timerTick = 50 / m_timerSc;
-            int fps = 1000 / m_timerTick;
+            timerTick = 50 / timerSc;
+            int fps = 1000 / timerTick;
             int mult = 20;
             if (fps == 40) mult = 40;
 
-            m_circuitRate = rate / fps;
+            circuitRate = rate / fps;
 
             if (rate < fps)
             {
                 fps = rate;
-                m_circuitRate = 1;
-                m_timerTick = 1000 / rate;
+                circuitRate = 1;
+                timerTick = 1000 / rate;
             }
 
-            if (m_isrunning)
+            if (isrunning)
             {
                 pauseSim();
-                emit rateChanged();
+                OnRateChanged?.Invoke();
                 resumeSim();
             }
 
-            //PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
-            PlotterWidget::self()->setPlotterTick(m_circuitRate * mult / m_stepsPerus);
+            ////PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
+            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / m_stepsPerus);
 
-            m_simuRate = m_circuitRate * fps;
-
-            std::cout << "\nFPS:              " << fps
-                      << "\nCircuit Rate:     " << m_circuitRate
-                      << std::endl
-                      << "\nSimulation Speed: " << m_simuRate
-                      << "\nReactive SubRate: " << m_stepsPrea
-                      << std::endl
-                      << std::endl;
-
-            return m_simuRate;
+            simuRate = circuitRate * fps;
+            Console.WriteLine("\nFPS:              " + fps.ToString()
+                      + "\nCircuit Rate:     " + circuitRate.ToString()
+                      + "\nSimulation Speed: " + simuRate.ToString()
+                      + "\nReactive SubRate: " + stepsPrea.ToString());
+            return simuRate;
         }
 
-        double Simulator::stepsPerus()
+        public double StepsPerus()
         {
-            return m_stepsPerus;
+            return stepsPerus;
         }
 
-        bool Simulator::isRunning()
+        public bool IsRunning()
         {
-            return m_isrunning;
+            return isrunning;
         }
 
-        bool Simulator::isPaused()
+        public bool IsPaused()
         {
-            return m_paused;
+            return paused;
         }
 
-        int Simulator::reaClock()
+        public int ReaClock()
         {
-            return m_stepsPrea;
+            return stepsPrea;
         }
 
-        void Simulator::setReaClock(int value)
+        public void SetReaClock(int value)
         {
-            bool running = m_isrunning;
+            bool running = isrunning;
             if (running) stopSim();
 
             if (value < 1) value = 1;
             else if (value > 100) value = 100;
 
-            m_stepsPrea = value;
+            stepsPrea = value;
 
             if (running) runContinuous();
         }
 
-        int Simulator::noLinAcc() { return m_noLinAcc; }
-        void Simulator::setNoLinAcc(int ac)
+        public int NoLinAcc() { return noLinAcc; }
+        public void SetNoLinAcc(int ac)
         {
-            bool running = m_isrunning;
+            bool running = isrunning;
             if (running) stopSim();
 
             if (ac < 3) ac = 3;
             else if (ac > 14) ac = 14;
-            m_noLinAcc = ac;
+            noLinAcc = ac;
 
             if (running) runContinuous();
         }
-        double Simulator::NLaccuracy()
+        public double NLaccuracy()
         {
-            return 1 / pow(10, m_noLinAcc) / 2;
+            return 1 / Math.Pow(10, noLinAcc) / 2;
         }
 
-        uint64_t Simulator::step()
+        public UInt64 Step()
         {
-            return m_step;
+            return step;
         }
 
-        uint64_t Simulator::circTime()
+        UInt64 CircTime()
         {
-            return m_circTime;
+            return circTime;
         }
 
-        void Simulator::addToEnodeBusList(eNode* nod)
+        protected void AddToEnodeBusList(eNode nod)
         {
-            if (!m_eNodeBusList.contains(nod)) m_eNodeBusList.append(nod);
+            if (!eNodeBusList.Contains(nod)) eNodeBusList.Append(nod);
         }
 
-        void Simulator::remFromEnodeBusList(eNode* nod, bool del)
+        protected void RemFromEnodeBusList(eNode nod, bool del)
         {
-            if (m_eNodeBusList.contains(nod)) m_eNodeBusList.removeOne(nod);
+            if (eNodeBusList.Contains(nod)) eNodeBusList.RemoveOne(nod);
             if (del) { delete nod; }
         }
 
@@ -681,9 +670,9 @@ namespace SimulIDE.src.simulator
 
 
         //events
-        public void OnPauseDebug();
-        public void OnResumeDebug();
-        public void OnRateChanged();
+        public event Action OnPauseDebug;
+        public event Action OnResumeDebug;
+        public event Action OnRateChanged;
 
 
         private static Simulator mself=null;

@@ -89,21 +89,21 @@ namespace SimulIDE.src.simulator.elements.processors
             }
         }
 
-        protected virtual void SetSteps(double steps) { mcuStepsPT = steps; }
+        public virtual void SetSteps(double steps) { mcuStepsPT = steps; }
 
         protected virtual string GetFileName() { return symbolFile; }
 
-        protected virtual void SetDevice(string device) { this.device = device; }
+        public virtual void SetDevice(string device) { this.device = device; }
 
-        protected virtual string GetDevice() { return device; }
+        public virtual string GetDevice() { return device; }
 
-        protected virtual void SetDataFile(string datafile)
+        public virtual void SetDataFile(string datafile)
         {
             dataFile = datafile;
             SetRegisters();
         }
 
-        protected virtual void HardReset(bool rst)
+        public virtual void HardReset(bool rst)
         {
             resetStatus = rst;
             if (rst) McuComponent.Self().Reset();
