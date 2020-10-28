@@ -98,8 +98,8 @@ namespace SimulIDE.src.simulator
 
             if (admitChanged)
             {
-                m_admit.clear();
-                m_totalAdmit = 0;
+                admit.Clear();
+                totalAdmit = 0;
 
                 QHashIterator<ePin, double> i(admitList); // ePin-Admit
                 while (i.hasNext())
@@ -177,7 +177,7 @@ namespace SimulIDE.src.simulator
             List<int> cons=new List<int>();
             foreach(var nodeNum in nodeList)
             {
-                if (admit[nodeNum] > 0) cons.Add(nodeNum.Value);
+                if ((admit[nodeNum]).Value > 0) cons.Add(nodeNum.Value);
             }
             return cons;
         }
@@ -185,7 +185,7 @@ namespace SimulIDE.src.simulator
         public void SetVolt(double v)
         {
             //qDebug() << m_id << m_volt << v;
-            if (fabs(volt - v) > 1e-9) //( m_volt != v )
+            if (Math.Abs(volt - v) > 1e-9) //( m_volt != v )
             {
                 //qDebug() << m_id << "setVChanged";
                 voltChanged = true;

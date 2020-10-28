@@ -21,12 +21,12 @@ namespace SimulIDE.src.simulator
             Simulator.Self().RemFromElementList(this);
         }
 
-        public void InitEpins()
+        public virtual void InitEpins()
         {
             SetNumEpins(2); // by default create 2 ePins
         }
 
-        public void SetNumEpins(int n)
+        public virtual void SetNumEpins(int n)
         {
             Array.Resize<ePin>(ref ePin,n);
             //qDebug() << "eElement::setNumEpins"<< QString::fromStdString( m_elmId )<<m_ePin.size();
@@ -42,12 +42,12 @@ namespace SimulIDE.src.simulator
             }
         }
 
-        public ePin GetEpin(int pin)
+        public virtual ePin GetEpin(int pin)
         {
             return ePin[pin];
         }
 
-        public ePin GetEpin(string pinName)
+        public virtual ePin GetEpin(string pinName)
         {
             //qDebug() << "eElement::getEpin" << pinName;
             if (pinName == "lPin") return ePin[0];
@@ -60,11 +60,19 @@ namespace SimulIDE.src.simulator
             return null;
         }
 
-        public void SetEpin(int num, ePin pin)
+        public virtual void SetEpin(int num, ePin pin)
         {
             ePin[num] = pin;
         }
 
+        public virtual void Initialize() { }
+        public virtual void ResetState() { }
+        public virtual void Attach() { }
+        public virtual void Stamp() { }
+
+        public virtual void SimuClockStep() { }
+        public virtual void UpdateStep() { }
+        public virtual void SetVChanged() { }
 
         const double cero_doub = 1e-14;
         const double high_imp = 1e14;

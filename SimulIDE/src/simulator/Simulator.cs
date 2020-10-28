@@ -77,7 +77,7 @@ namespace SimulIDE.src.simulator
 
             RunGraphicStep1();
             // Run Circuit in parallel thread
-            CircuitFuture = QtConcurrent::run(this, &Simulator::runCircuit); // Run Circuit in a parallel thread
+            CircuitFuture = QtConcurrent::run(this, Simulator.RunCircuit); // Run Circuit in a parallel thread
 
             RunGraphicStep2();
         }
@@ -227,7 +227,7 @@ namespace SimulIDE.src.simulator
             }
             else
             {
-                startSim();
+                StartSim();
                 isrunning = false;
                 debugging = true;
                 Console.WriteLine("\n    Debugger Controllig Simulation... \n");
