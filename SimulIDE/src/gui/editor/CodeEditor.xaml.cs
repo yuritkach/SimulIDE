@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.gui.circuitwidget.components.mcu;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -520,69 +521,69 @@ namespace SimulIDE.src.gui.editor
 
         public bool InitDebbuger()
         {
-        //    m_outPane->writeText("-------------------------------------------------------\n");
-        //    m_outPane->writeText(tr("Starting Debbuger...") + "\n");
+            outPane.AppendText("-------------------------------------------------------\n");
+            outPane.AppendText("Starting Debbuger..." + "\n");
 
-        //    bool error = false;
+            bool error = false;
 
-        //    if (!McuComponent::self())             // Must be an Mcu in Circuit
-        //    {
-        //        m_outPane->writeText("\n    " + tr("Error: No Mcu in Simulator... ") + "\n");
-        //        error = true;
-        //    }
-        //    else if (!m_debugger)             // No debugger for this file type
-        //    {
-        //        m_outPane->writeText("\n    " + tr("Error: No Debugger Suited for this File... ") + "\n");
-        //        error = true;
-        //    }
-        //    else if (m_file == "")                                   // No File
-        //    {
-        //        m_outPane->writeText("\n    " + tr("Error: No File... ") + "\n");
-        //        error = true;
-        //    }
-        //    //else if( !m_isCompiled ) 
-        //    {
-        //        compile();
-        //        if (!m_isCompiled)                           // Error compiling
-        //        {
-        //            m_outPane->writeText("\n    " + tr("Error Compiling... ") + "\n");
-        //            error = true;
-        //        }
-        //    }
-        //    m_outPane->writeText("\n");
-        //    if (error)
-        //    {
-        //        stopDebbuger();
-        //    }
-        //    else                                          // OK: Start Debugging
-        //    {
-        //        if (!m_debugger->loadFirmware())      // Error Loading Firmware
-        //        {
-        //            m_outPane->writeText("\n    " + tr("Error Loading Firmware... ") + "\n");
-        //            stopDebbuger();
-        //        }
-        //        else
-        //        {
-        //            if (m_debugger->type == 1) EditorWindow::self()->enableStepOver(true);
-        //            else EditorWindow::self()->enableStepOver(false);
+            if (McuComponent.Self()==null)             // Must be an Mcu in Circuit
+            {
+                outPane.AppendText("\n   Error: No Mcu in Simulator... \n");
+                error = true;
+            }
+            else if (debugger==null)             // No debugger for this file type
+            {
+                outPane.AppendText("\n    Error: No Debugger Suited for this File... \n");
+                error = true;
+            }
+            else if (file == "")                                   // No File
+            {
+                outPane.AppendText("\n    Error: No File... \n");
+                error = true;
+            }
+            //else if( !m_isCompiled ) 
+            {
+                Compile();
+                if (!isCompiled)                           // Error compiling
+                {
+                    outPane.AppendText("\n    Error Compiling... \n");
+                    error = true;
+                }
+            }
+            outPane.AppendText("\n");
+            if (error)
+            {
+                StopDebbuger();
+            }
+            else                                          // OK: Start Debugging
+            {
+                if (!debugger.LoadFirmware())      // Error Loading Firmware
+                {
+                    outPane.AppendText("\n    Error Loading Firmware... \n");
+                    StopDebbuger();
+                }
+                else
+                {
+                    if (debugger.type == 1) EditorPage.Self().EnableStepOver(true);
+                    else EditorPage.Self().EnableStepOver(false);
 
-        //            m_debugging = true;
-        //            reset();
+                    debugging = true;
+                    Reset();
 
-        //            /*if( Simulator::self()->isRunning() ) Simulator::self()->stopSim();
+                    /*if( Simulator::self()->isRunning() ) Simulator::self()->stopSim();
 
-        //            if( m_driveCirc ) CircuitWidget::self()->powerCircDebug( false );
-        //            else
-        //            {
-        //                BaseProcessor::self()->setSteps( 0 );
-        //                CircuitWidget::self()->powerCircDebug( true );
-        //            }*/
-        //            setDriveCirc(m_driveCirc);
+                    if( m_driveCirc ) CircuitWidget::self()->powerCircDebug( false );
+                    else
+                    {
+                        BaseProcessor::self()->setSteps( 0 );
+                        CircuitWidget::self()->powerCircDebug( true );
+                    }*/
+                    //TYV SetDriveCirc(m_driveCirc);
 
-        //            m_outPane->writeText(tr("Debugger Started ") + "\n");
-        //            setReadOnly(true);
-        //        }
-        //    }
+                    outPane.AppendText("Debugger Started \n");
+                    //TYV SetReadOnly(true);
+                }
+            }
             return debugging;
         }
 
@@ -1036,8 +1037,8 @@ namespace SimulIDE.src.gui.editor
 
 
 
-        protected object debugger;
-        //TYV protected BaseDebugger debugger;
+        
+        protected BaseDebugger debugger;
 
         protected TextBox outPane;
 

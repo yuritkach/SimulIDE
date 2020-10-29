@@ -1,4 +1,5 @@
-﻿using SimulIDE.src.simulator.elements.processors;
+﻿using SimulIDE.src.gui.circuitwidget.components.mcu;
+using SimulIDE.src.simulator.elements.processors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,7 +74,7 @@ namespace SimulIDE.src.gui.editor
             }
         }
 
-        protected bool LoadFirmware()
+        public bool LoadFirmware()
         {
             if (firmware == "") return false;
 
@@ -96,16 +97,16 @@ namespace SimulIDE.src.gui.editor
             outPane.AppendText(firmware);
             outPane.AppendText("\n\n");
 
-//            if (McuComponent.Self())
-//            {
+            if (McuComponent.Self()!=null)
+            {
 //                McuComponent.Self().Load(firmware);
-//                outPane.AppendText("\nFirmWare Uploaded to " + McuComponent.Self().device() + "\n");
+//                outPane.AppendText("\nFirmWare Uploaded to " + McuComponent.Self().Device() + "\n");
 //                outPane.AppendText("\n\n");
 
-//                BaseProcessor.Self().getRamTable().SetDebugger(this);
-//                mapFlashToSource();
-//            }
-//            else outPane.AppendText("\nError: No Mcu in Simulator... \n");
+//                BaseProcessor.Self().GetRamTable().SetDebugger(this);
+//                MapFlashToSource();
+            }
+            else outPane.AppendText("\nError: No Mcu in Simulator... \n");
         }
 
         public void Stop()
@@ -204,7 +205,7 @@ namespace SimulIDE.src.gui.editor
         protected string fileDir;
         protected string fileName;
         protected string fileExt;
-        protected int type;
+        public int type;
 
         protected string compSetting;
 
@@ -212,10 +213,10 @@ namespace SimulIDE.src.gui.editor
         List<string> subs = new List<string>();
         List<int> subLines = new List<int>();
 
-        Dictionary<string, string> typesList = new Dictionary<string, string>();
-        Dictionary<string, string> varList = new Dictionary<string, string>();
-        Dictionary<int, int> flashToSource = new Dictionary<int, int>(); // Map flash adress to Source code line
-        Dictionary<int, int> sourceToFlash = new Dictionary<int, int>(); // Map .asm code line to flash adress
+        protected Dictionary<string, string> typesList = new Dictionary<string, string>();
+        protected Dictionary<string, string> varList = new Dictionary<string, string>();
+        protected Dictionary<int, int> flashToSource = new Dictionary<int, int>(); // Map flash adress to Source code line
+        protected Dictionary<int, int> sourceToFlash = new Dictionary<int, int>(); // Map .asm code line to flash adress
         
         //QProcess m_compProcess;
     }

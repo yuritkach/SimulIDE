@@ -23,8 +23,13 @@ namespace SimulIDE.src.gui.editor
     /// Interaction logic for EditorPage.xaml
     /// </summary>
     /// 
+    
+
     public partial class EditorPage : Page
     {
+        private static EditorPage editorPage=null;
+        public static EditorPage Self() { return editorPage; }
+
         public delegate void MyEventHandler(object obj);
         protected void DocumentWasChanged(object obj)
         {
@@ -47,7 +52,7 @@ namespace SimulIDE.src.gui.editor
         public EditorPage()
         {
             InitializeComponent();
-
+            editorPage = this;
             CreateWidgets();
             CreateActions();
             ReadSettings();
@@ -276,7 +281,7 @@ namespace SimulIDE.src.gui.editor
             //        //connect(m_codeEditor, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
         }
 
-        protected void EnableStepOver(bool en)
+        public void EnableStepOver(bool en)
         {
             debuggerStepOverButton.Visibility =en? Visibility.Visible:Visibility.Hidden;
         }
