@@ -100,22 +100,15 @@ namespace SimulIDE.src.simulator
             {
                 admit.Clear();
                 totalAdmit = 0;
-
-                QHashIterator<ePin, double> i(admitList); // ePin-Admit
-                while (i.hasNext())
+                foreach (var el in admitList)
                 {
-                    i.next();
-
-                    double adm = i.value();
-
-                    ePin epin = i.key();
+                    double adm = el.Value;
+                    ePin epin = el.Key;
                     int enode = nodeList[epin];
-
                     admit[enode] += adm;
                     totalAdmit += adm;
                 }
                 if (!single || switched) StampAdmit();
-
                 admitChanged = false;
             }
 
@@ -134,13 +127,11 @@ namespace SimulIDE.src.simulator
         public void StampAdmit()
         {
             int nonCero = 0;
-            QHashIterator<int, double> ai(admit); // iterate admitance hash: eNode-Admit
-            while (ai.hasNext())
+            foreach (var el in admit)
             {
-                ai.next();
-                int enode = ai.key();
-                double admit = ai.value();
-                if (enode > 0) CircMatrix.Self()->StampMatrix(nodeNum, enode, -admit);
+                int enode = el.Key;
+                double admit = el.Value;
+                if (enode > 0) CircMatrix.Self().StampMatrix(nodeNum, enode, -admit);
 
                 if (switched)                       // Find open/close events
                 {
@@ -151,6 +142,7 @@ namespace SimulIDE.src.simulator
                         && ((admit == 0) || (admitP == 0))) CircMatrix.Self().SetCircChanged();
                 }
             }
+            
             if (switched)
             {
                 admitPrev = admit;
@@ -177,7 +169,8 @@ namespace SimulIDE.src.simulator
             List<int> cons=new List<int>();
             foreach(var nodeNum in nodeList)
             {
-                if ((admit[nodeNum]).Value > 0) cons.Add(nodeNum.Value);
+                foreach (var el in admit)
+                    if (el.Value > 0) cons.Add((int)el.Value);
             }
             return cons;
         }
@@ -263,7 +256,7 @@ namespace SimulIDE.src.simulator
                 }
             }
             //qDebug() << "eNode::addBusPinList" <<this<< line << busSize<<"\n"<<pinList;
-            eBusPinList.Replace(line, pinList);
+            eBusPinList[line]=pinList;
         }
 
         public List<ePin> GetEpins() { return ePinList; }
