@@ -4,171 +4,177 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
+
 namespace SimulIDE.src.simulator
 {
-    class CircMatrix
+    public class CircMatrix
     {
 
-        CircMatrix* CircMatrix::m_pSelf = 0l;
+        protected static CircMatrix self = null;
 
-        CircMatrix::CircMatrix()
-{
-    m_pSelf = this;
-    m_numEnodes = 0;
-}
-    CircMatrix::~CircMatrix() { }
-
-    void CircMatrix::createMatrix(QList<eNode*> &eNodeList )
-    {
-        m_eNodeList = &eNodeList;
-        m_numEnodes = eNodeList.size();
-
-        m_circMatrix.clear();
-        m_coefVect.clear();
-
-        m_circMatrix.resize(m_numEnodes, d_vector_t(m_numEnodes, 0));
-        m_coefVect.resize(m_numEnodes, 0);
-
-        m_circChanged = true;
-        m_admitChanged = false;
-        m_currChanged = false;
-
-        std::cout << "\n  Initializing Matrix: " << m_numEnodes << " eNodes" << std::endl;
-        for (int i = 0; i < m_numEnodes; i++) m_eNodeList->at(i)->stampMatrix();
-    }
-
-    void CircMatrix::stampMatrix(int row, int col, double value)
-    {
-        m_admitChanged = true;
-
-        m_circMatrix[row - 1][col - 1] = value;      // eNode numbers start at 1
-    }
-
-    void CircMatrix::stampCoef(int row, double value)
-    {
-        m_currChanged = true;
-
-        m_coefVect[row - 1] = value;
-    }
-
-    void CircMatrix::addConnections(int enodNum, QList<int>* nodeGroup, QList<int>* allNodes)
-    {
-        nodeGroup->append(enodNum);
-        allNodes->removeOne(enodNum);
-
-        eNode* enod = m_eNodeList->at(enodNum - 1);
-        enod->setSingle(false);
-
-        QList<int> cons = enod->getConnections();
-
-        for (int nodeNum : cons)
+        public CircMatrix()
         {
-            if (nodeNum == 0) continue;
-            if (!nodeGroup->contains(nodeNum)) addConnections(nodeNum, nodeGroup, allNodes);
+            self = this;
+            numEnodes = 0;
         }
-    }
 
-    bool CircMatrix::solveMatrix()
-    {
-        if (!m_admitChanged && !m_currChanged) return true;
+    
 
-        bool isOk = true;
-
-        if (m_circChanged)          // Split Circuit into unconnected parts
+        public void CreateMatrix(List<eNode> eNodeList )
         {
-            //qDebug() <<"Spliting Circuit...";
-            QList<int> allNodes;
+            this.eNodeList = eNodeList;
+            numEnodes = eNodeList.Count();
 
-            for (int i = 0; i < m_numEnodes; i++) allNodes.append(i + 1);
+            circMatrix.clear();
+            coefVect.clear();
 
-            m_aList.clear();
-            m_aFaList.clear();
-            m_bList.clear();
-            m_ipvtList.clear();
-            m_eNodeActList.clear();
-            int group = 0;
+            ResizeArray<double>(ref circMatrix, numEnodes, numEnodes);
+            Array.Resize<double>(ref coefVect, numEnodes);
+            
 
-            while (!allNodes.isEmpty()) // Get a list of groups of nodes interconnected
+            circChanged = true;
+            admitChanged = false;
+            currChanged = false;
+            Console.WriteLine("\n  Initializing Matrix: " + numEnodes.ToString() + " eNodes");
+            for (int i = 0; i < numEnodes; i++) eNodeList[i].StampMatrix();
+        }
+
+        public void StampMatrix(int row, int col, double value)
+        {
+            admitChanged = true;
+            circMatrix[row - 1][col - 1] = value;      // eNode numbers start at 1
+        }
+
+        public void StampCoef(int row, double value)
+        {
+            currChanged = true;
+            coefVect[row - 1] = value;
+        }
+
+        public void AddConnections(int enodNum, List<int> nodeGroup, List<int> allNodes)
+        {
+            nodeGroup.Add(enodNum);
+            allNodes.Remove(enodNum);
+
+            eNode enod = eNodeList[enodNum - 1];
+            enod.SetSingle(false);
+
+            List<int> cons = enod.GetConnections();
+
+            foreach (int nodeNum in cons)
             {
-                QList<int> nodeGroup;
-                addConnections(allNodes.first(), &nodeGroup, &allNodes); // Get a group of nodes interconnected
+                if (nodeNum == 0) continue;
+                if (!nodeGroup.Contains(nodeNum)) AddConnections(nodeNum, nodeGroup, allNodes);
+            }
+        }
+
+        protected void ResizeArray<T>(ref T[,] original, int newCoNum, int newRoNum)
+        {
+            var newArray = new T[newCoNum, newRoNum];
+            int columnCount = original.GetLength(1);
+            int columnCount2 = newRoNum;
+            int columns = original.GetUpperBound(0);
+            for (int co = 0; co <= columns; co++)
+                Array.Copy(original, co * columnCount, newArray, co * columnCount2, columnCount);
+            original = newArray;
+        }
+
+        public bool SolveMatrix()
+        {
+            if (!admitChanged && !currChanged) return true;
+
+            bool isOk = true;
+
+            if (circChanged)          // Split Circuit into unconnected parts
+            {
+                //qDebug() <<"Spliting Circuit...";
+                List<int> allNodes=new List<int>();
+
+                for (int i = 0; i < numEnodes; i++) allNodes.Add(i + 1);
+
+                aList.Clear();
+                aFaList.Clear();
+                bList.Clear();
+                ipvtList.Clear();
+                eNodeActList.Clear();
+                int group = 0;
+
+                while (allNodes.Count!=0) // Get a list of groups of nodes interconnected
+                {
+                    List<int> nodeGroup = new List<int>();
+                    AddConnections(allNodes.First(), ref nodeGroup, ref allNodes); // Get a group of nodes interconnected
                                                                          //qDebug() <<"CircMatrix::solveMatrix split"<<nodeGroup<<allNodes;
 
-                //for( int num : nodeGroup ) allNodes.removeOne(num);
+                    //for( int num : nodeGroup ) allNodes.removeOne(num);
 
-                int numEnodes = nodeGroup.size();
-                if (numEnodes == 1)           // Sigle nodes do by themselves
-                {
-                    eNode* enod = m_eNodeList->at(nodeGroup[0] - 1);
-                    enod->setSingle(true);
-                    enod->solveSingle();
-                    //qDebug() <<"CircMatrix::solveMatrix solve single"<<enod->itemId();
-                }
-                else
-                {
-                    dp_matrix_t a;
-                    d_matrix_t ap;
-                    dp_vector_t b;
-                    i_vector_t ipvt;
-                    QList<eNode*> eNodeActive;
-
-                    a.resize(numEnodes, dp_vector_t(numEnodes, 0));
-                    ap.resize(numEnodes, d_vector_t(numEnodes, 0));
-                    b.resize(numEnodes, 0);
-                    ipvt.resize(numEnodes, 0);
-
-                    int ny = 0;
-                    for (int y = 0; y < m_numEnodes; y++)    // Copy data to reduced Matrix
+                    int numEnodes = nodeGroup.Count();
+                    if (numEnodes == 1)           // Sigle nodes do by themselves
                     {
-                        if (!nodeGroup.contains(y + 1)) continue;
-                        int nx = 0;
-                        for (int x = 0; x < m_numEnodes; x++)
-                        {
-                            if (!nodeGroup.contains(x + 1)) continue;
-                            a[nx][ny] = &(m_circMatrix[x][y]);
-                            //qDebug() <<"CircMatrix::solveMatrix cell"<<nx<<ny<<*(a[nx][ny]);
-                            nx++;
-                        }
-                        b[ny] = &(m_coefVect[y]);
-                        eNodeActive.append(m_eNodeList->at(y));
-                        //eNode* enod = m_eNodeList->at(y);
-                        //qDebug() <<"CircMatrix::solveMatrix node"<<enod->itemId();
-                        ny++;
+                        eNode enod = eNodeList[nodeGroup[0] - 1];
+                        enod.SetSingle(true);
+                        enod.SolveSingle();
+                        //qDebug() <<"CircMatrix::solveMatrix solve single"<<enod->itemId();
                     }
-                    m_aList.append(a);
-                    m_aFaList.append(ap);
-                    m_bList.append(b);
-                    m_ipvtList.append(ipvt);
-                    m_eNodeActList.append(eNodeActive);
-                    m_eNodeActive = &eNodeActive;
+                    else
+                    {
+                        double[,] a = new double[numEnodes, numEnodes];
+                        double[] b = new double[numEnodes];
+                        int[] ipvt = new int[numEnodes];
+                        List<eNode> eNodeActive=new List<eNode>();
+                        int ny = 0;
+                        for (int y = 0; y < numEnodes; y++)    // Copy data to reduced Matrix
+                        {
+                            if (!nodeGroup.Contains(y + 1)) continue;
+                            int nx = 0;
+                            for (int x = 0; x < numEnodes; x++)
+                            {
+                                if (!nodeGroup.Contains(x + 1)) continue;
+                                a[nx,ny] = circMatrix[x,y];
+                                //qDebug() <<"CircMatrix::solveMatrix cell"<<nx<<ny<<*(a[nx][ny]);
+                                nx++;
+                            }
+                            b[ny] = coefVect[y];
+                            eNodeActive.Add(eNodeList[y]);
+                            //eNode* enod = m_eNodeList->at(y);
+                            //qDebug() <<"CircMatrix::solveMatrix node"<<enod->itemId();
+                            ny++;
+                        }
+                        aList.Add(a);
+                        aFaList.Add(ap);
+                        bList.Add(b);
+                        ipvtList.append(ipvt);
+                        eNodeActList.append(eNodeActive);
+                        eNodeActive = &eNodeActive;
 
-                    factorMatrix(ny, group);
-                    isOk &= luSolve(ny, group);
+                        factorMatrix(ny, group);
+                        isOk &= LuSolve(ny, group);
+                            
+                        group++;
+                    }
+                }
+                circChanged = false;
+                //qDebug() <<"CircMatrix::solveMatrix"<<group<<"Circuits";
+            }
+            else
+            {
+                for (int i = 0; i < m_bList.size(); i++)
+                {
+                    m_eNodeActive = &(m_eNodeActList[i]);
+                    int n = m_eNodeActive->size();
 
-                    group++;
+                    if (m_admitChanged) factorMatrix(n, i);
+
+                    isOk &= luSolve(n, i);
                 }
             }
-            m_circChanged = false;
-            //qDebug() <<"CircMatrix::solveMatrix"<<group<<"Circuits";
+            m_currChanged = false;
+            m_admitChanged = false;
+            return isOk;
         }
-        else
-        {
-            for (int i = 0; i < m_bList.size(); i++)
-            {
-                m_eNodeActive = &(m_eNodeActList[i]);
-                int n = m_eNodeActive->size();
 
-                if (m_admitChanged) factorMatrix(n, i);
-
-                isOk &= luSolve(n, i);
-            }
-        }
-        m_currChanged = false;
-        m_admitChanged = false;
-        return isOk;
-    }
-
-    void CircMatrix::factorMatrix(int n, int group)
+        protected void CircMatrix::factorMatrix(int n, int group)
     {
         // factors a matrix into upper and lower triangular matrices by
         // gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
@@ -269,7 +275,7 @@ namespace SimulIDE.src.simulator
         }*/
     }
 
-    bool CircMatrix::luSolve(int n, int group)
+    protected bool LuSolve(int n, int group)
     {
         // Solves the set of n linear equations using a LU factorization
         // previously performed by solveMatrix.  On input, b[0..n-1] is the right
@@ -365,42 +371,28 @@ namespace SimulIDE.src.simulator
 
     }
 
+        public static CircMatrix Self() { return self; }
 
+        public double[,] GetMatrix() { return circMatrix; }
+        public double[] GetCoeffVect() { return coefVect; }
 
+        private int numEnodes;
+        private List<eNode> eNodeList;
 
+        private List<double[,]> aList;
+        private List<double[,]> aFaList;
+        private List<double[]> bList;
+        private List<int[]> ipvtList;
 
+        private List<eNode> eNodeActive;
+        private List<List<eNode>> eNodeActList;
 
+        private double[,] circMatrix;
+        private double[] coefVect;
 
-
-
-
-
-
-    public static CircMatrix* self() { return m_pSelf; }
-        public d_matrix_t getMatrix() { return m_circMatrix; }
-        public d_vector_t getCoeffVect() { return m_coefVect; }
-
-        private void factorMatrix(int n, int group);
-        private bool luSolve(int n, int group);
-        private void addConnections(int enodNum, QList<int>* nodeGroup, QList<int>* allNodes);
-
-        private int m_numEnodes;
-        private QList<eNode*>* m_eNodeList;
-
-        private QList<dp_matrix_t> m_aList;
-        private QList<d_matrix_t> m_aFaList;
-        private QList<dp_vector_t> m_bList;
-        private QList<i_vector_t> m_ipvtList;
-
-        private QList<eNode*>* m_eNodeActive;
-        private QList<QList<eNode*>> m_eNodeActList;
-
-        private d_matrix_t m_circMatrix;
-        private d_vector_t m_coefVect;
-
-        private bool m_admitChanged;
-        private bool m_circChanged;
-        private bool m_currChanged;
+        private bool admitChanged;
+        private bool circChanged;
+        private bool currChanged;
 
     }
 }
