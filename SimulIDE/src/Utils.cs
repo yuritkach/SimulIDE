@@ -39,7 +39,7 @@ namespace SimulIDE.src
                 if (i + 1 == 4) converted = " " + converted;
                 //if( (i+1)%8 == 0 ) converted = " " + converted;
 
-                value = Math.Floor(value / outbase);
+                value =(int) Math.Floor((double)(value / outbase));
             }
             return converted;
         }
