@@ -70,6 +70,7 @@
     <Compile Include="src\gui\RamTable.xaml.cs">
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
+    <Compile Include="src\simulator\CircMatrix.cs" />
     <Compile Include="src\simulator\eElement.cs" />
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />
     <Compile Include="src\simulator\eNode.cs" />
