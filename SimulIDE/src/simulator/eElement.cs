@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator
 {
-    class eElement
+    public class eElement
     {
 
         public eElement(string id )

@@ -82,7 +82,7 @@ namespace SimulIDE.src.simulator.elements.processors
             Simulator.Self().RunCircuit();
 
             msimStep++;
-            if (msimStep >= 50000 * Simulator.Self().stepsPerus()) // 20 fps
+            if (msimStep >= 50000 * Simulator.Self().StepsPerus()) // 20 fps
             {
                 msimStep = 0;
                 Simulator.Self().RunGraphicStep2();
@@ -106,7 +106,7 @@ namespace SimulIDE.src.simulator.elements.processors
         public virtual void HardReset(bool rst)
         {
             resetStatus = rst;
-            if (rst) McuComponent.Self().Reset();
+//TYV            if (rst) McuComponent.Self().Reset();
         }
 
         protected virtual int GetRegAddress(string name)
@@ -282,15 +282,13 @@ namespace SimulIDE.src.simulator.elements.processors
 
 
 
-        protected virtual bool LoadFirmware(string file) { return false; }
-        protected virtual bool GetLoadStatus() { return loadStatus; }
-
-
-        protected virtual void StepOne() { }
-        protected virtual void StepCpu() { }
-        protected virtual void Reset() { }
-        protected virtual int PC(){return 0;}
-        protected virtual UInt64 Cycle() { return 0; }
+        public virtual bool LoadFirmware(string file) { return false; }
+        public virtual bool GetLoadStatus() { return loadStatus; }
+        public virtual void StepOne() { }
+        public virtual void StepCpu() { }
+        public virtual void Reset() { }
+        public virtual int PC(){return 0;}
+        public virtual UInt64 Cycle() { return 0; }
         public virtual byte GetRamValue(int address) { return 0; }
 
         protected virtual List<string> GetRegList() { return regList; }

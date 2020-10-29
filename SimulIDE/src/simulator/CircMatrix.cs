@@ -26,10 +26,8 @@ namespace SimulIDE.src.simulator
         {
             this.eNodeList = eNodeList;
             numEnodes = eNodeList.Count();
-
-            circMatrix.clear();
-            coefVect.clear();
-
+            //circMatrix.clear();
+            //coefVect.clear();
             ResizeArray<double>(ref circMatrix, numEnodes, numEnodes);
             Array.Resize<double>(ref coefVect, numEnodes);
             
@@ -44,7 +42,7 @@ namespace SimulIDE.src.simulator
         public void StampMatrix(int row, int col, double value)
         {
             admitChanged = true;
-            circMatrix[row - 1][col - 1] = value;      // eNode numbers start at 1
+            circMatrix[row - 1,col - 1] = value;      // eNode numbers start at 1
         }
 
         public void StampCoef(int row, double value)
@@ -53,7 +51,7 @@ namespace SimulIDE.src.simulator
             coefVect[row - 1] = value;
         }
 
-        public void AddConnections(int enodNum, List<int> nodeGroup, List<int> allNodes)
+        public void AddConnections(int enodNum, ref List<int> nodeGroup, ref List<int> allNodes)
         {
             nodeGroup.Add(enodNum);
             allNodes.Remove(enodNum);
@@ -66,7 +64,7 @@ namespace SimulIDE.src.simulator
             foreach (int nodeNum in cons)
             {
                 if (nodeNum == 0) continue;
-                if (!nodeGroup.Contains(nodeNum)) AddConnections(nodeNum, nodeGroup, allNodes);
+                if (!nodeGroup.Contains(nodeNum)) AddConnections(nodeNum, ref nodeGroup, ref allNodes);
             }
         }
 
@@ -142,13 +140,13 @@ namespace SimulIDE.src.simulator
                             ny++;
                         }
                         aList.Add(a);
-                        aFaList.Add(ap);
+                   //TYV     aFaList.Add(ap);
                         bList.Add(b);
-                        ipvtList.append(ipvt);
-                        eNodeActList.append(eNodeActive);
-                        eNodeActive = &eNodeActive;
+                        ipvtList.Add(ipvt);
+                        eNodeActList.Add(eNodeActive);
+                    //TYV    eNodeActive = &eNodeActive;
 
-                        factorMatrix(ny, group);
+                        FactorMatrix(ny, group);
                         isOk &= LuSolve(ny, group);
                             
                         group++;
@@ -159,217 +157,218 @@ namespace SimulIDE.src.simulator
             }
             else
             {
-                for (int i = 0; i < m_bList.size(); i++)
+                for (int i = 0; i < bList.Count(); i++)
                 {
-                    m_eNodeActive = &(m_eNodeActList[i]);
-                    int n = m_eNodeActive->size();
+                    eNodeActive = eNodeActList[i];
+                    int n = eNodeActive.Count();
 
-                    if (m_admitChanged) factorMatrix(n, i);
+                    if (admitChanged) FactorMatrix(n, i);
 
-                    isOk &= luSolve(n, i);
+                    isOk &= LuSolve(n, i);
                 }
             }
-            m_currChanged = false;
-            m_admitChanged = false;
+            currChanged = false;
+            admitChanged = false;
             return isOk;
         }
 
-        protected void CircMatrix::factorMatrix(int n, int group)
-    {
-        // factors a matrix into upper and lower triangular matrices by
-        // gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
-        // matrix to be factored.  ipvt[] returns an integer vector of pivot
-        // indices, used in the solve routine.
-
-        dp_matrix_t & ap = m_aList[group];
-        i_vector_t & ipvt = m_ipvtList[group];
-
-        d_matrix_t & a = m_aFaList[group];
-        for (int i = 0; i < n; i++)
+        protected void FactorMatrix(int n, int group)
         {
-            for (int j = 0; j < n; j++)
-            {
-                a[i][j] = *(ap[i][j]);
-                //qDebug() << m_circMatrix[i][j];
-            }
+            // factors a matrix into upper and lower triangular matrices by
+            // gaussian elimination.  On entry, a[0..n-1][0..n-1] is the
+            // matrix to be factored.  ipvt[] returns an integer vector of pivot
+            // indices, used in the solve routine.
+
+            //dp_matrix_t & ap = m_aList[group];
+            //i_vector_t & ipvt = m_ipvtList[group];
+
+            //d_matrix_t & a = m_aFaList[group];
+            //for (int ic = 0; ic < n; ic++)
+            //{
+            //    for (int jc = 0; jc < n; jc++)
+            //    {
+            //        a[ic,jc] = *(ap[ic,jc]);
+            //        //qDebug() << m_circMatrix[i][j];
+            //    }
+            //}
+
+            ///*std::cout << "\nAdmitance Matrix:\n"<< std::endl;
+            //for( int i=0; i<n; i++ )
+            //{
+            //    for( int j=0; j<n; j++ )
+            //    {
+            //        std::cout << std::setw(10);
+            //        std::cout << a[i][j];
+            //    }
+            //    std::cout << std::setw(10);
+            //    std::cout << ipvt[i] << std::endl;
+            //    //std::cout << std::endl;
+            //}*/
+
+            //int i, j, k;
+
+            //for (j = 0; j < n; j++) // use Crout's method; loop through the columns
+            //{
+            //for (i = 0; i < j; i++) // calculate upper triangular elements for this column
+            //    {
+            //        double q = a[i,j];
+            //        for (k = 0; k < i; k++) q -= a[i][k] * a[k][j];
+                        
+            //        a[i][j] = q;
+            //    }
+            //    // calculate lower triangular elements for this column
+            //    double largest = 0;
+            //    int largestRow = -1;
+            //    for (i = j; i < n; i++)
+            //    {
+            //        double q = a[i][j];
+            //        for (k = 0; k < j; k++) q -= a[i][k] * a[k][j];
+
+            //        a[i][j] = q;
+            //        double x = fabs(q);
+
+            //        //qDebug() <<"is"<<x<<">="<<largest<<( x >= largest );
+            //        if (x >= largest)
+            //        {
+            //            largest = x;
+            //            largestRow = i;
+            //        }
+            //        //qDebug() <<"LTE"<<i<<j<<x<<q<<largest<<largestRow<<( !(x < largest) );
+            //    }
+
+            //    if (j != largestRow) // pivoting
+            //    {
+            //        double x;
+            //        for (k = 0; k < n; k++)
+            //        {
+            //            x = a[largestRow][k];
+            //            a[largestRow][k] = a[j][k];
+            //            a[j][k] = x;
+            //        }
+            //    }
+            //    ipvt[j] = largestRow;       // keep track of row interchanges
+            //                                //qDebug() <<"IPVT"<< j<<largestRow;
+
+            //    if (a[j][j] == 0.0) a[j][j] = 1e-18;           // avoid zeros
+
+            //    if (j != n - 1)
+            //    {
+            //        double div = a[j][j];
+            //        for (i = j + 1; i < n; i++) a[i][j] /= div;
+            //    }   
+            //}
+            //m_aFaList.replace(group, a);
+
+            ///*std::cout << "\nFactored Matrix:\n"<< std::endl;
+            //for( int i=0; i<n; i++ )
+            //{
+            //    for( int j=0; j<n; j++ )
+            //    {
+            //        std::cout << std::setw(10);
+            //        std::cout << a[i][j];
+            //    }
+            //    std::cout << std::setw(10);
+            //    std::cout << ipvt[i] << std::endl;
+            //    //std::cout << std::endl;
+            //}*/
         }
-
-        /*std::cout << "\nAdmitance Matrix:\n"<< std::endl;
-        for( int i=0; i<n; i++ )
-        {
-            for( int j=0; j<n; j++ )
-            {
-                std::cout << std::setw(10);
-                std::cout << a[i][j];
-            }
-            std::cout << std::setw(10);
-            std::cout << ipvt[i] << std::endl;
-            //std::cout << std::endl;
-        }*/
-
-        int i, j, k;
-
-        for (j = 0; j < n; j++) // use Crout's method; loop through the columns
-        {
-            for (i = 0; i < j; i++) // calculate upper triangular elements for this column
-            {
-                double q = a[i][j];
-                for (k = 0; k < i; k++) q -= a[i][k] * a[k][j];
-
-                a[i][j] = q;
-            }
-            // calculate lower triangular elements for this column
-            double largest = 0;
-            int largestRow = -1;
-            for (i = j; i < n; i++)
-            {
-                double q = a[i][j];
-                for (k = 0; k < j; k++) q -= a[i][k] * a[k][j];
-
-                a[i][j] = q;
-                double x = fabs(q);
-
-                //qDebug() <<"is"<<x<<">="<<largest<<( x >= largest );
-                if (x >= largest)
-                {
-                    largest = x;
-                    largestRow = i;
-                }
-                //qDebug() <<"LTE"<<i<<j<<x<<q<<largest<<largestRow<<( !(x < largest) );
-            }
-
-            if (j != largestRow) // pivoting
-            {
-                double x;
-                for (k = 0; k < n; k++)
-                {
-                    x = a[largestRow][k];
-                    a[largestRow][k] = a[j][k];
-                    a[j][k] = x;
-                }
-            }
-            ipvt[j] = largestRow;      // keep track of row interchanges
-                                       //qDebug() <<"IPVT"<< j<<largestRow;
-
-            if (a[j][j] == 0.0) a[j][j] = 1e-18;           // avoid zeros
-
-            if (j != n - 1)
-            {
-                double div = a[j][j];
-                for (i = j + 1; i < n; i++) a[i][j] /= div;
-            }
-        }
-        m_aFaList.replace(group, a);
-
-        /*std::cout << "\nFactored Matrix:\n"<< std::endl;
-        for( int i=0; i<n; i++ )
-        {
-            for( int j=0; j<n; j++ )
-            {
-                std::cout << std::setw(10);
-                std::cout << a[i][j];
-            }
-            std::cout << std::setw(10);
-            std::cout << ipvt[i] << std::endl;
-            //std::cout << std::endl;
-        }*/
-    }
 
     protected bool LuSolve(int n, int group)
     {
-        // Solves the set of n linear equations using a LU factorization
-        // previously performed by solveMatrix.  On input, b[0..n-1] is the right
-        // hand side of the equations, and on output, contains the solution.
+            //// Solves the set of n linear equations using a LU factorization
+            //// previously performed by solveMatrix.  On input, b[0..n-1] is the right
+            //// hand side of the equations, and on output, contains the solution.
 
-        const d_matrix_t&a = m_aFaList[group];
-        const dp_vector_t&bp = m_bList[group];
-        const i_vector_t&ipvt = m_ipvtList[group];
+            //const d_matrix_t&a = m_aFaList[group];
+            //const dp_vector_t&bp = m_bList[group];
+            //const i_vector_t&ipvt = m_ipvtList[group];
 
-        d_vector_t b;
-        b.resize(n, 0);
-        for (int i = 0; i < n; i++) b[i] = *(bp[i]);
+            //d_vector_t b;
+            //b.resize(n, 0);
+            //for (int i = 0; i < n; i++) b[i] = *(bp[i]);
 
-        /*std::cout << "\nAdmitance Matrix luSolve:\n"<< std::endl;
-        for( int i=0; i<n; i++ )
+            ///*std::cout << "\nAdmitance Matrix luSolve:\n"<< std::endl;
+            //for( int i=0; i<n; i++ )
+            //{
+            //    for( int j=0; j<n; j++ )
+            //    {
+            //        std::cout << std::setw(10);
+            //        std::cout << a[i][j]; // <<"\t";
+            //    }
+            //    std::cout << std::setw(10);
+            //    std::cout << b[i]<<"\t"<< ipvt[i] << std::endl;
+            //}*/
+
+            //int i;
+            //for (i = 0; i < n; i++)                 // find first nonzero b element
+            //{
+            //    int row = ipvt[i];
+
+            //    double swap = b[row];
+            //    b[row] = b[i];
+            //    b[i] = swap;
+            //    if (swap != 0) break;
+            //}
+
+            //int bi = i++;
+            //for ( /*i = bi*/; i < n; i++)
+            //{
+            //    int row = ipvt[i];
+            //    double tot = b[row];
+
+            //    b[row] = b[i];
+
+            //    for (int j = bi; j < i; j++) tot -= a[i][j] * b[j]; // forward substitution using the lower triangular matrix
+
+            //    b[i] = tot;
+            //}
+            //bool isOk = true;
+
+            //for (i = n - 1; i >= 0; i--)
+            //{
+            //    double tot = b[i];
+
+            //    // back-substitution using the upper triangular matrix
+            //    for (int j = i + 1; j < n; j++) tot -= a[i][j] * b[j];
+
+            //    double volt = tot / a[i][i];
+            //    b[i] = volt;
+
+            //    if (std::isnan(volt))
+            //    {
+            //        isOk = false;
+            //        volt = 0;
+            //    }
+            //    m_eNodeActive->at(i)->setVolt(volt);      // Set Node Voltages
+            //}
+            //return isOk;
+            return false;
+        }
+
+        public void SetCircChanged()
         {
-            for( int j=0; j<n; j++ )
+            circChanged = true;
+            admitChanged = true;
+        }
+
+        public void PrintMatrix()
+        {
+            Console.WriteLine("\nAdmitance Matrix:\n");
+            for (int i = 0; i < numEnodes; i++)
             {
-                std::cout << std::setw(10);
-                std::cout << a[i][j]; // <<"\t";
+                for (int j = 0; j < numEnodes; j++)
+                {
+                    Console.Write(circMatrix[i,j].ToString()+"\t");
+                }
+                Console.Write("\t");
+                Console.WriteLine(coefVect[i].ToString());
+                Console.WriteLine();
+                Console.WriteLine();
             }
-            std::cout << std::setw(10);
-            std::cout << b[i]<<"\t"<< ipvt[i] << std::endl;
-        }*/
 
-        int i;
-        for (i = 0; i < n; i++)                 // find first nonzero b element
-        {
-            int row = ipvt[i];
+            //std::cout << "\nSantized Matrix:\n"<< std::endl;
 
-            double swap = b[row];
-            b[row] = b[i];
-            b[i] = swap;
-            if (swap != 0) break;
         }
-
-        int bi = i++;
-        for ( /*i = bi*/; i < n; i++)
-        {
-            int row = ipvt[i];
-            double tot = b[row];
-
-            b[row] = b[i];
-
-            for (int j = bi; j < i; j++) tot -= a[i][j] * b[j]; // forward substitution using the lower triangular matrix
-
-            b[i] = tot;
-        }
-        bool isOk = true;
-
-        for (i = n - 1; i >= 0; i--)
-        {
-            double tot = b[i];
-
-            // back-substitution using the upper triangular matrix
-            for (int j = i + 1; j < n; j++) tot -= a[i][j] * b[j];
-
-            double volt = tot / a[i][i];
-            b[i] = volt;
-
-            if (std::isnan(volt))
-            {
-                isOk = false;
-                volt = 0;
-            }
-            m_eNodeActive->at(i)->setVolt(volt);      // Set Node Voltages
-        }
-        return isOk;
-    }
-
-    void CircMatrix::setCircChanged()
-    {
-        m_circChanged = true;
-        m_admitChanged = true;
-    }
-
-    void CircMatrix::printMatrix()
-    {
-        std::cout << "\nAdmitance Matrix:\n" << std::endl;
-        for (int i = 0; i < m_numEnodes; i++)
-        {
-            for (int j = 0; j < m_numEnodes; j++)
-            {
-                std::cout << m_circMatrix[i][j] << "\t";
-            }
-            std::cout << "\t";
-            std::cout << m_coefVect[i] << std::endl;
-            std::cout << std::endl;
-            std::cout << std::endl;
-        }
-
-        //std::cout << "\nSantized Matrix:\n"<< std::endl;
-
-    }
 
         public static CircMatrix Self() { return self; }
 

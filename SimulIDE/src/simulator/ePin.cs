@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator
 {
-    class ePin
+    public class ePin
     {
 
         public ePin(string id, int index )
@@ -98,7 +98,7 @@ namespace SimulIDE.src.simulator
         public void SetId(string id)
         {
             //Circuit::self()->removePin( m_id );
-            Circuit.Self().UpdatePin(this, id);
+      //TYV      Circuit.Self().UpdatePin(this, id);
             this.id = id;
         }
 

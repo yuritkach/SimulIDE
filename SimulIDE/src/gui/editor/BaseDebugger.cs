@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.simulator.elements.processors;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -116,14 +117,14 @@ namespace SimulIDE.src.gui.editor
 
         int Step()
         {
-            int pc = BaseProcessor.self().PC();
+            int pc = BaseProcessor.Self().PC();
 
             int i = 0;
             for (i = 0; i < 10; i++) // If runs 10 times and get to same PC return 0
             {
                 BaseProcessor.Self().StepOne();
 
-                int pc2 = BaseProcessor.self().PC();
+                int pc2 = BaseProcessor.Self().PC();
                 //qDebug() <<"BaseDebugger::step "<<pc<<pc2;
                 if (pc != pc2)
                 {

@@ -34,11 +34,11 @@ namespace SimulIDE.src.simulator
 
             stepsPerus = 1;
 
-            refTimer.Start();
+            //TYV   refTimer.Start();
         }
         ~Simulator()
         {
-            CircuitFuture.WaitForFinished();
+//TYV            CircuitFuture.WaitForFinished();
         }
 
         protected void SolveMatrix()
@@ -53,70 +53,70 @@ namespace SimulIDE.src.simulator
             }                                // m_matrix sets the eNode voltages
         }
 
-        protected void TimerEvent(TimerEvent e)  //update at m_timerTick rate (50 ms, 20 Hz max)
+        //TYV        protected void TimerEvent(TimerEvent e)  //update at m_timerTick rate (50 ms, 20 Hz max)
+        //TYV        {
+        //TYV        e.Aaccept();
+
+        //TYV            if (!isrunning) return;
+        //TYV            if (error)
+        //TYV            {
+        //TYV      CircuitWidget.Self().PowerCircOff();
+        //TYV      CircuitWidget.Self().SetRate(-1);
+        //TYV                return;
+        //TYV}
+        //TYV            if (!CircuitFuture.isFinished()) // Stop remaining parallel thread
+        //TYV            {
+        //TYV                isrunning = false;
+        //TYV                CircuitFuture.WaitForFinished();
+        //TYV                isrunning = true;
+        //TYV                //return;
+        //TYV            }
+        // Get Real Simulation Speed
+        //TYVrefTime = RefTimer.nsecsElapsed();
+        //TYVtStep = step;
+
+        //TYVRunGraphicStep1();
+        // Run Circuit in parallel thread
+        //TYV            CircuitFuture = QtConcurrent::run(this, Simulator.RunCircuit); // Run Circuit in a parallel thread
+
+        //TYVRunGraphicStep2();
+        //TYV}
+
+        public void RunGraphicStep()
         {
-            e.Aaccept();
-
-            if (!isrunning) return;
-            if (error)
-            {
-                CircuitWidget.Self().PowerCircOff();
-                CircuitWidget.Self().SetRate(-1);
-                return;
-            }
-            if (!CircuitFuture.isFinished()) // Stop remaining parallel thread
-            {
-                isrunning = false;
-                CircuitFuture.WaitForFinished();
-                isrunning = true;
-                //return;
-            }
-            // Get Real Simulation Speed
-            refTime = RefTimer.nsecsElapsed();
-            tStep = step;
-
             RunGraphicStep1();
-            // Run Circuit in parallel thread
-            CircuitFuture = QtConcurrent::run(this, Simulator.RunCircuit); // Run Circuit in a parallel thread
-
             RunGraphicStep2();
         }
 
-        protected void RunGraphicStep()
-        {
-            RunGraphicStep1();
-            RunGraphicStep2();
-        }
-
-        protected void RunGraphicStep1()
+        public void RunGraphicStep1()
         {
             foreach (eElement el in  updateList) el.UpdateStep();
             //emit stepTerms();
             //TerminalWidget::self()->step();
         }
 
-        protected void RunGraphicStep2()
+        public void RunGraphicStep2()
         {
             //qDebug() <<"Simulator::runGraphicStep";
             if (debugging) tStep = step;        // Debugger driving, not timer
 
-            if (Circuit.Self().Animate())
-            {
-                Circuit.Self().UpdateConnectors();
-                foreach (eNode enode in eNodeList) enode.SetVoltChanged(false);
-            }
+            //TYV        if (Circuit.Self().Animate())
+            //TYV        {
+            //TYV            Circuit.Self().UpdateConnectors();
+            //TYV            foreach (eNode enode in eNodeList) enode.SetVoltChanged(false);
+            //TYV        }
 
             UInt64 deltaRefTime = refTime - lastRefTime;
             if (deltaRefTime >= 1e9)               // We want steps per Sec = 1e9 ns
             {
-                stepsPerSec = (tStep - lastStep) * 1e9 / deltaRefTime;
-                CircuitWidget.Self().SetRate((stepsPerSec * 100) / (1e6 * stepsPerus) /*m_simuRate*/ );
+                stepsPerSec = (ulong)((tStep - lastStep) * 1e9 / deltaRefTime);
+           //TYV     CircuitWidget.Self().SetRate((stepsPerSec * 100) / (1e6 * stepsPerus) /*m_simuRate*/ );
                 lastStep = tStep;
                 lastRefTime = refTime;
             }
 
-            CircuitView.Self().SetCircTime(tStep / stepsPerus);
-            PlotterWidget.Self().Step();
+            //TYV  CircuitView.Self().SetCircTime(tStep / stepsPerus);
+            //TYV PlotterWidget.Self().Step();
         }
 
         public void RunCircuit()
@@ -130,9 +130,9 @@ namespace SimulIDE.src.simulator
                 circTime = 0;
             }*/
 
-            for (UInt64 i = 0; i < circuitRate; i++)
+            for (int i = 0; i < circuitRate; i++)
             {
-                circTime = step * stepNS;         // Circuit Time in nanoseconds
+                circTime =(ulong) (step * stepNS);         // Circuit Time in nanoseconds
 
                 if (runMcu) BaseProcessor.Self().Step();             // Run MCU
 
@@ -140,7 +140,7 @@ namespace SimulIDE.src.simulator
                 {
                     foreach (eElement el in simuClock) el.SimuClockStep();
                 }
-                if (!changedFast.isEmpty())                  // Run Fast elements
+                if (changedFast.Count()!=0)                  // Run Fast elements
                 {
                     foreach (eElement el in changedFast) el.SetVChanged();
                     changedFast.Clear();
@@ -161,18 +161,18 @@ namespace SimulIDE.src.simulator
                     int counter = 0;
                     int limit = (noLinAcc - 2) * 100;
 
-                    while (!nonLinear.isEmpty())      // Run untill all converged
+                    while (nonLinear.Count()!=0)      // Run untill all converged
                     {
                         foreach (eElement el in nonLinear) el.SetVChanged();
                         nonLinear.Clear();
 
-                        if (!eChangedNodeList.IsEmpty()) SolveMatrix();
+                        if (eChangedNodeList.Count()!=0) SolveMatrix();
 
                         if (++counter > limit) break; // Limit the number of loops
                     }
                     //if( counter > 0 ) qDebug() << "\nSimulator::runCircuit  Non-Linear Solved in steps:"<<counter;
                 }
-                if (!eChangedNodeList.IsEmpty()) SolveMatrix();
+                if (eChangedNodeList.Count()!=0) SolveMatrix();
 
                 step++;
                 if (!isrunning) break; // Keep this at the end for debugger to run 1 step
@@ -241,14 +241,14 @@ namespace SimulIDE.src.simulator
 
             foreach (eNode busNode in eNodeBusList) busNode.Initialize(); // Clear Buses
 
-            Console.WriteLine("  Initializing " + elementList.Size().ToString() + "\teElements");
+            Console.WriteLine("  Initializing " + elementList.Count().ToString() + "\teElements");
             foreach (eElement el in elementList)    // Initialize all Elements
             {
                 //std::cout << "initializing  "<< el->getId()<<  std::endl;
                 if (!paused) el.ResetState();
                 el.Initialize();
             }
-            Console.WriteLine("  Initializing " + eNodeBusList.Size().ToString() + "\tBuses");
+            Console.WriteLine("  Initializing " + eNodeBusList.Count().ToString() + "\tBuses");
             foreach (eNode busNode in eNodeBusList) busNode.CreateBus(); // Create Buses
 
             nonLinear.Clear();
@@ -259,14 +259,14 @@ namespace SimulIDE.src.simulator
             // Connect Elements with internal circuits.
             foreach (eElement el in elementList) el.Attach();
 
-            if (McuComponent.Self()!=null && !paused) McuComponent.Self().RunAutoLoad();
+//TYV            if (McuComponent.Self()!=null && !paused) McuComponent.Self().RunAutoLoad();
 
 
-            numEnodes = eNodeList.Size();
-            Console.WriteLine("  Initializing " + eNodeList.Size().ToString() + "\teNodes");
+            numEnodes = eNodeList.Count();
+            Console.WriteLine("  Initializing " + eNodeList.Count().ToString() + "\teNodes");
             for (int i = 0; i < numEnodes; i++)
             {
-                eNode enode = eNodeList.Items[i];
+                eNode enode = eNodeList[i];
                 enode.SetNodeNumber(i + 1);
                 enode.Initialize();
             }
@@ -280,8 +280,8 @@ namespace SimulIDE.src.simulator
             if (!matrix.SolveMatrix())
             {
                 Console.WriteLine("Simulator::startSim, Failed to solve Matrix");
-                CircuitWidget.Self().PowerCircOff();
-                CircuitWidget.Self().SetRate(-1);
+//TYV                CircuitWidget.Self().PowerCircOff();
+//TYV                CircuitWidget.Self().SetRate(-1);
                 return;
             }
             //////for( eElement* el : m_elementList ) el->setVChanged();
@@ -290,13 +290,13 @@ namespace SimulIDE.src.simulator
             {
                 lastStep = 0;
                 lastRefTime = 0;
-                updtCounter = circuitRate;
-                reacCounter = stepsPrea;
+                updtCounter = (ulong) circuitRate;
+                reacCounter = (ulong) stepsPrea;
             }
             isrunning = true;
             paused = false;
             error = false;
-            CircuitView.Self().SetCircTime(0);
+//TYV            CircuitView.Self().SetCircTime(0);
         }
 
         public void StopDebug()
@@ -319,10 +319,10 @@ namespace SimulIDE.src.simulator
             foreach (eElement el in elementList) el.ResetState();
             foreach (eElement el in updateList) el.UpdateStep();
 
-            if (McuComponent.Self()!=null) McuComponent.Self().Reset();
+//TYV            if (McuComponent.Self()!=null) McuComponent.Self().Reset();
 
-            CircuitWidget.Self().SetRate(0);
-            Circuit.Self().Update();
+//TYV            CircuitWidget.Self().SetRate(0);
+//TYV            Circuit.Self().Update();
             Console.WriteLine("\n    Simulation Stopped \n");
         }
 
@@ -352,7 +352,7 @@ namespace SimulIDE.src.simulator
                 isrunning = false;
                 //TYV this->killTimer(m_timerId); 
                 timerId = 0;
-                CircuitFuture.WaitForFinished();
+//TYV                CircuitFuture.WaitForFinished();
             }
         }
 
@@ -381,9 +381,9 @@ namespace SimulIDE.src.simulator
                 //double mcuSteps = McuComponent::self()->freq()*1e6;
                 //if( mcuSteps > rate ) m_stepsPerus = (int)
 
-                double mcuSteps = McuComponent.Self().Freq() / stepsPerus;
-                BaseProcessor.Self().SetSteps(mcuSteps);
-                mcuStepNS = 1000 / McuComponent.Self().Freq();
+//TYV                double mcuSteps = McuComponent.Self().Freq() / stepsPerus;
+//TYV                BaseProcessor.Self().SetSteps(mcuSteps);
+//TYV                mcuStepNS = 1000 / McuComponent.Self().Freq();
                 runMcu = true;
                 //qDebug() <<"Simulator::simuRateChanged mcuSteps"<<mcuSteps<<m_mcuStepNS;
             }
@@ -393,7 +393,7 @@ namespace SimulIDE.src.simulator
             int mult = 20;
             if (fps == 40) mult = 40;
 
-            circuitRate = (ulong)(rate / fps);
+            circuitRate = (rate / fps);
 
             if (rate < fps)
             {
@@ -410,9 +410,9 @@ namespace SimulIDE.src.simulator
             }
 
             ////PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
-            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / stepsPerus));
+//TYV            PlotterWidget.Self().SetPlotterTick(circuitRate * mult / stepsPerus));
 
-            simuRate = circuitRate * fps;
+            simuRate = (int)(circuitRate * fps);
             Console.WriteLine("\nFPS:              " + fps.ToString()
                       + "\nCircuit Rate:     " + circuitRate.ToString()
                       + "\nSimulation Speed: " + simuRate.ToString()
@@ -595,7 +595,7 @@ namespace SimulIDE.src.simulator
         
         public UInt64 stepsPerSec;
 
-        public UInt64 mS() { return refTimer.Elapsed(); }
+//TYV        public UInt64 mS() { return refTimer.Elapsed(); }
 
         public event Action OnPauseDebug;
         public event Action OnResumeDebug;
@@ -603,7 +603,7 @@ namespace SimulIDE.src.simulator
 
         private static Simulator mself=null;
 
-        private QFuture<void> CircuitFuture;
+ //TYV       private QFuture<void> CircuitFuture;
 
         private CircMatrix matrix;
 
@@ -638,7 +638,7 @@ namespace SimulIDE.src.simulator
         private double stepNS;
         private double mcuStepNS;
 
-        private UInt64 circuitRate;
+        private int circuitRate;
         private UInt64 circTime;
         private UInt64 reacCounter;
         private UInt64 updtCounter;
@@ -648,5 +648,7 @@ namespace SimulIDE.src.simulator
         private UInt64 refTime;
         private UInt64 lastRefTime;
         private Timer refTimer;
+
+        public object CircuitWidget { get; private set; }
     }
 }
