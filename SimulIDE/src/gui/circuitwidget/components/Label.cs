@@ -13,16 +13,17 @@ namespace SimulIDE.src.gui.circuitwidget.components
     public class Label:Canvas
     {
 
-        public Label(Canvas parent,string text,double x, double y,double rotate,int fontsize, Color color)  //     : QGraphicsTextItem(parent )
+        public Label(Canvas parent)  //     : QGraphicsTextItem(parent )
         {
             parentComp = parent;
             parentComp.Children.Add(this);
-            Canvas.SetLeft(this, x);
-            Canvas.SetTop(this, y);
-            labelrot = rotate;
-            this.text = text;
-            this.color = color;
-            this.fontsize = fontsize;
+            labelx = 0;
+            labely = 0;
+            labelrot = 0;
+            fontsize = 10;
+            text = "";
+            color = Color.FromRgb(0,0,0);
+            fontsize = 10;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -33,7 +34,12 @@ namespace SimulIDE.src.gui.circuitwidget.components
         public void SetPlainText(string txt)
         {
             text = txt;
-            InvalidateVisual();
+            //InvalidateVisual();
+        }
+
+        public string ToPlainText()
+        {
+            return text;
         }
 
         protected override void OnMouseEnter(MouseEventArgs e)
@@ -48,7 +54,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
             Brush brush = new SolidColorBrush(color);
             FormattedText txt = new FormattedText(text,
                   System.Globalization.CultureInfo.CurrentCulture,
-                  FlowDirection.LeftToRight, typeface, 10, brush);
+                  FlowDirection.LeftToRight, typeface, fontsize, brush);
             Transform transform = new RotateTransform(labelrot);
             dc.PushTransform(transform);
 
@@ -56,11 +62,11 @@ namespace SimulIDE.src.gui.circuitwidget.components
             width = txt.Width;
             dc.DrawText(txt, new Point(0, 0));
             
-            Pen pen = new Pen();
-            pen.Thickness = 1;
-            pen.Brush = brush;
-            Rect rect = new Rect(0, 0, width, height);
-            dc.DrawRectangle(null, pen, rect);
+            //Pen pen = new Pen();
+            //pen.Thickness = 1;
+            //pen.Brush = brush;
+            //Rect rect = new Rect(0, 0, width, height);
+            //dc.DrawRectangle(null, pen, rect);
         }
 
         //void Label::focusOutEvent(QFocusEvent*event )
@@ -128,10 +134,24 @@ namespace SimulIDE.src.gui.circuitwidget.components
 
         public void SetLabelPos()
         {
-//            SetX(labelx);
-//            SetY(labely);
-//            SetRotation(labelrot);
-//            AdjustSize();
+            Canvas.SetLeft(this, labelx);
+            Canvas.SetTop(this, labely);
+            parentComp.InvalidateVisual();
+        }
+
+        public void SetDefaultTextColor(Color clr)
+        {
+            color = clr;
+        }
+
+        public void SetFontSize(int size)
+        {
+            fontsize = size;
+        }
+
+        public void SetVisible(bool visible)
+        {
+            this.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
         }
 
         //void Label::rotateCW()
@@ -194,11 +214,13 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //void contextMenuEvent(QGraphicsSceneContextMenuEvent* event);
         //void focusOutEvent(QFocusEvent*event);
 
-        
+
         private Canvas parentComp;
         private Color color;
         private int fontsize;
-        private double labelrot;
+        public double labelx;
+        public double labely;
+        public double labelrot;
         private string text;
         private double height;
         private double width;

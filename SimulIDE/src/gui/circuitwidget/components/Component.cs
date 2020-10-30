@@ -23,68 +23,64 @@ namespace SimulIDE.src.gui.circuitwidget.components
 
         public Component(Canvas parent, string type, string id)
         {
-            //help = null;
-            //value = 0;
-            //unitMult = 1;
-            //Hflip = 1;
-            //Vflip = 1;
-            //mult = " ";
-            //unit = " ";
-            //this.type = type;
-            //color = Color.FromRgb(255, 255, 255);// White;
-            //showId = false;
-            //moving = false;
-            //printable = false;
-            //BackGround = "";
+            help = null;
+            value = 0;
+            unitMult = 1;
+            Hflip = 1;
+            Vflip = 1;
+            mult = " ";
+            unit = " ";
+            this.type = type;
+            color = Color.FromRgb(255, 255, 255);// White;
+            showId = false;
+            moving = false;
+            printable = false;
+            BackGround = "";
 
-            //if ((type != "Connector") && (type != "Node"))
-            //{
-            //     LibraryItem li = ItemLibrary.Self().libraryItem(type);
+            if ((type != "Connector") && (type != "Node"))
+            {
+                 LibraryItem li = ItemLibrary.Self().libraryItem(type);
 
-            //     if (li)
-            //     {
-            //          if ((type == "Subcircuit")
-            //           || (type == "AVR")
-            //           || (type == "PIC")
-            //           || (type == "Arduino"))
-            //          {
-            //               string name = id;
-            //               name = name.Split('-').First();
-            //               help = new string(li.GetHelpFile(name));
-            //          }
-            //          else help = li.Help();
-            //     }
-            //}
+                 if (li)
+                 {
+                      if ((type == "Subcircuit")
+                       || (type == "AVR")
+                       || (type == "PIC")
+                       || (type == "Arduino"))
+                      {
+                           string name = id;
+                           name = name.Split('-').First();
+                           help = new string(li.GetHelpFile(name));
+                      }
+                      else help = li.Help();
+                 }
+            }
 
-            //Font f;
-            //f.setPixelSize(10);
+            idLabel = new Label(this);
+            idLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 128)); // darkBlue
+            idLabel.SetFontSize(10);
+            SetLabelPos(-16, -24, 0);
+            SetShowId(false);
 
-            //m_idLabel = new Label(this);
-            //m_idLabel->setDefaultTextColor(Qt::darkBlue);
-            //m_idLabel->setFont(f);
-            //setLabelPos(-16, -24, 0);
-            //setShowId(false);
+            valLabel = new Label(this);
+            valLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 0)); // black
+            SetValLabelPos(0, 0, 0);
+            valLabel.SetFontSize(10);
+            SetShowVal(false);
 
-            //m_valLabel = new Label(this);
-            //m_valLabel->setDefaultTextColor(Qt::black);
-            //setValLabelPos(0, 0, 0);
-            //f.setPixelSize(9);
-            //m_valLabel->setFont(f);
-            //setShowVal(false);
-
-            //setObjectName(id);
-            //setIdLabel(id);
-            //setId(id);
+            //SetObjectName(id);
+            SetIdLabel(id);
+            SetId(id);
 
             //setCursor(Qt::OpenHandCursor);
-            //this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            this.SetFlag(QGraphicsItem::ItemIsSelectable, true);
 
-            ////setTransformOriginPoint( boundingRect().center() );
+            //setTransformOriginPoint( boundingRect().center() );
 
-            //if (type == "Connector") Circuit::self()->conList()->append(this);
-            //else if (type == "SerialPort") Circuit::self()->compList()->append(this);
-            //else if (type == "SerialTerm") Circuit::self()->compList()->append(this);
-            //else Circuit::self()->compList()->prepend(this);
+//            if (type == "Connector") Circuit::self()->conList()->append(this);
+//            else if (type == "SerialPort") Circuit::self()->compList()->append(this);
+//            else if (type == "SerialTerm") Circuit::self()->compList()->append(this);
+//            else Circuit::self()->compList()->prepend(this);
 
         }
 
@@ -327,31 +323,31 @@ namespace SimulIDE.src.gui.circuitwidget.components
             }
         }
 
-        //void Component::setLabelPos(int x, int y, int rot)
-        //{
-        //    m_idLabel->m_labelx = x;
-        //    m_idLabel->m_labely = y;
-        //    m_idLabel->m_labelrot = rot;
-        //    m_idLabel->setLabelPos();
-        //}
+        public void SetLabelPos(int x, int y, int rot)
+        {
+            idLabel.labelx = x;
+            idLabel.labely = y;
+            idLabel.labelrot = rot;
+            idLabel.SetLabelPos();
+        }
 
-        //void Component::setLabelPos()
-        //{
-        //    m_idLabel->setLabelPos();
-        //}
+        public void SetLabelPos()
+        {
+            idLabel.SetLabelPos();
+        }
 
-        //void Component::setValLabelPos(int x, int y, int rot)
-        //{
-        //    m_valLabel->m_labelx = x;
-        //    m_valLabel->m_labely = y;
-        //    m_valLabel->m_labelrot = rot;
-        //    m_valLabel->setLabelPos();
-        //}
+        public void SetValLabelPos(int x, int y, int rot)
+        {
+            valLabel.labelx = x;
+            valLabel.labely = y;
+            valLabel.labelrot = rot;
+            valLabel.SetLabelPos();
+        }
 
-        //void Component::setValLabelPos()
-        //{
-        //    m_valLabel->setLabelPos();
-        //}
+        public void SetValLabelPos()
+        {
+            valLabel.SetLabelPos();
+        }
 
         public void SetValue(double val)
         {
@@ -390,7 +386,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
             valLabel.SetPlainText(value.ToString() + mult + unit);
         }
 
-        //QString Component::unit() { return m_mult + m_unit; }
+        public string Unit() { return mult + unit; }
         
         public void SetUnit(string un)
         {
@@ -419,36 +415,37 @@ namespace SimulIDE.src.gui.circuitwidget.components
             valLabel.SetPlainText(value.ToString() + mult + unit);
         }
 
-        //double Component::getmultValue() { return m_value * m_unitMult; }
+        public double GetmultValue() { return value * unitMult; }
 
-        //bool Component::showId() { return m_showId; }
-        //void Component::setShowId(bool show)
-        //{
-        //    m_idLabel->setVisible(show);
-        //    m_showId = show;
-        //}
+        public bool ShowId() { return showId; }
+        
+        public void SetShowId(bool show)
+        {
+            idLabel.SetVisible(show);
+            showId = show;
+        }
 
-        //bool Component::showVal() { return m_showVal; }
-        //void Component::setShowVal(bool show)
-        //{
-        //    m_valLabel->setVisible(show);
-        //    m_showVal = show;
-        //}
+        public bool ShowVal() { return showVal; }
+        public void SetShowVal(bool show)
+        {
+            valLabel.SetVisible(show);
+            showVal = show;
+        }
 
-        //QString Component::idLabel() { return m_idLabel->toPlainText(); }
-        //void Component::setIdLabel(QString id) { m_idLabel->setPlainText(id); }
+        public string IdLabel() { return idLabel.ToPlainText(); }
+        public void SetIdLabel(string id) { idLabel.SetPlainText(id); }
 
-        //QString Component::itemID() { return m_id; }
-        //void Component::setId(QString id) { m_id = id; }
+        public string ItemID() { return id; }
+        public void SetId(string id) { id = id; }
 
-        //int Component::labelx() { return m_idLabel->m_labelx; }
-        //void Component::setLabelX(int x) { m_idLabel->m_labelx = x; }
+        public double LabelX() { return idLabel.labelx; }
+        public void SetLabelX(double x) { idLabel.labelx = x; }
 
-        //int Component::labely() { return m_idLabel->m_labely; }
-        //void Component::setLabelY(int y) { m_idLabel->m_labely = y; }
+        public double LabelY() { return idLabel.labely; }
+        public void SetLabelY(double y) { idLabel.labely = y; }
 
-        //int Component::labelRot() { return m_idLabel->m_labelrot; }
-        //void Component::setLabelRot(int rot) { m_idLabel->m_labelrot = rot; }
+        public double LabelRot() { return idLabel.labelrot; }
+        public void SetLabelRot(double rot) { idLabel.labelrot = rot; }
 
         //int Component::valLabelx() { return m_valLabel->m_labelx; }
         //void Component::setValLabelX(int x) { m_valLabel->m_labelx = x; }

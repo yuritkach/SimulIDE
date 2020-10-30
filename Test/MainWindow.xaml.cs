@@ -25,9 +25,12 @@ namespace Test
             InitializeComponent();
 
             SimulIDE.src.gui.circuitwidget.components.Label label = 
-                new SimulIDE.src.gui.circuitwidget.components.Label(canvas,"blablabla",100,100,45,10,Color.FromRgb(255,0,0));
-            //canvas.Children.Add(label);
-
+                new SimulIDE.src.gui.circuitwidget.components.Label(canvas);
+            label.SetPlainText("blablabla");
+            label.labelx = 100;
+            label.labely = 100;
+            label.labelrot = 45;
+            label.SetLabelPos();
         }
     }
 }
