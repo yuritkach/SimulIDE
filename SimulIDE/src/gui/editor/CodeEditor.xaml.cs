@@ -659,12 +659,12 @@ namespace SimulIDE.src.gui.editor
         //    }
         //}
 
-        //void CodeEditor::updateScreen()
-        //{
+        public void UpdateScreen()
+        {
         //    setTextCursor(QTextCursor(document()->findBlockByLineNumber(m_debugLine - 1)));
         //    ensureCursorVisible();
-        //    update();
-        //}
+        //    Update();
+        }
 
         //int CodeEditor::lineNumberAreaWidth()
         //{

@@ -54,7 +54,7 @@ namespace SimulIDE.src.gui.editor
             firmware = firmPath;
         }
 
-        public int Compile()
+        public override int Compile()
         {
             //           // QApplication::setOverrideCursor(Qt::WaitCursor);
 

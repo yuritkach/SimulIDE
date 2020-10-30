@@ -207,6 +207,7 @@ namespace SimulIDE.src.gui.editor
         protected string fileExt;
         public int type;
 
+        public virtual int Compile() { return -1; }
         protected string compSetting;
 
         List<string> varNames = new List<string>();

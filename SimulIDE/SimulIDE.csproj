@@ -57,6 +57,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="src\gui\circuitwidget\Chip.cs" />
+    <Compile Include="src\gui\circuitwidget\CircuitPage.xaml.cs">
+      <DependentUpon>CircuitPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\gui\circuitwidget\components\Component.cs" />
     <Compile Include="src\gui\circuitwidget\components\mcu\McuComponent.cs" />
     <Compile Include="src\gui\circuitwidget\components\CircLabel.cs" />
@@ -96,6 +99,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="src\gui\circuitwidget\CircuitPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="src\gui\editor\CodeEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
