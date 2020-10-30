@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SimulIDE.src.gui.circuitwidget
 {
@@ -15,7 +16,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //    QT_TRANSLATE_NOOP("App::Property","Logic Symbol")
 //};
 
-        public Chip(object parent, string type, string id):base(parent, type, id )
+        public Chip(Canvas parent, string type, string id):base(parent, type, id )
   //  , eElement(id.toStdString() )
         {
             //Q_UNUSED(Chip_properties);

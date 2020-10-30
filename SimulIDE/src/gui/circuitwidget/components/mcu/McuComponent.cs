@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SimulIDE.src.gui.circuitwidget.components.mcu
 {
@@ -21,7 +22,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
         public static McuComponent Self() { return self; }
         public bool canCreate = true;
 
-        public McuComponent(object parent, string type, string id):base(parent, type, id )
+        public McuComponent(Canvas parent, string type, string id):base(parent, type, id )
 //??????            , MemData()
         {
             //    Q_UNUSED(McuComponent_properties);

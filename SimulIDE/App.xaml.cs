@@ -11,7 +11,25 @@ namespace SimulIDE
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
+    /// 
+    
     public partial class App : Application
     {
+        public App()
+        {
+            self = this;
+        }
+
+        public event Action<int, int, int> OnContentsChange;
+        public static App Self() { return self; }
+
+        public void ContentsChange(int a, int b, int c)
+        {
+            OnContentsChange?.Invoke(a,b,c);
+        }
+
+        private static App self = null;
     }
+
+    
 }

@@ -59,6 +59,7 @@
     <Compile Include="src\gui\circuitwidget\Chip.cs" />
     <Compile Include="src\gui\circuitwidget\components\Component.cs" />
     <Compile Include="src\gui\circuitwidget\components\mcu\McuComponent.cs" />
+    <Compile Include="src\gui\circuitwidget\components\Label.cs" />
     <Compile Include="src\gui\editor\BaseDebugger.cs" />
     <Compile Include="src\gui\editor\CodeEditor.xaml.cs">
       <DependentUpon>CodeEditor.xaml</DependentUpon>
