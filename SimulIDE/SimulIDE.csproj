@@ -59,7 +59,9 @@
     <Compile Include="src\gui\circuitwidget\Chip.cs" />
     <Compile Include="src\gui\circuitwidget\components\Component.cs" />
     <Compile Include="src\gui\circuitwidget\components\mcu\McuComponent.cs" />
-    <Compile Include="src\gui\circuitwidget\components\Label.cs" />
+    <Compile Include="src\gui\circuitwidget\components\CircLabel.cs" />
+    <Compile Include="src\gui\circuitwidget\Connector.cs" />
+    <Compile Include="src\gui\circuitwidget\Pin.cs" />
     <Compile Include="src\gui\editor\BaseDebugger.cs" />
     <Compile Include="src\gui\editor\CodeEditor.xaml.cs">
       <DependentUpon>CodeEditor.xaml</DependentUpon>
@@ -74,6 +76,7 @@
     <Compile Include="src\gui\RamTable.xaml.cs">
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
+    <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simulator\CircMatrix.cs" />
     <Compile Include="src\simulator\eElement.cs" />
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />

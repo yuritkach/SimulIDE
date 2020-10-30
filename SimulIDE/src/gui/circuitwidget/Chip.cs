@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace SimulIDE.src.gui.circuitwidget
 {
@@ -17,25 +18,19 @@ namespace SimulIDE.src.gui.circuitwidget
 //};
 
         public Chip(Canvas parent, string type, string id):base(parent, type, id )
-  //  , eElement(id.toStdString() )
         {
-            //Q_UNUSED(Chip_properties);
-
-            //m_numpins = 0;
-            //m_isLS = false;
-            //m_initialized = false;
-
-            //m_pkgeFile = "";
-
-            //m_lsColor = QColor(255, 255, 255);
-            //m_icColor = QColor(50, 50, 70);
-
-            //setLabelPos(m_area.x(), m_area.y() - 20, 0);
+            numpins = 0;
+            isLS = false;
+            initialized = false;
+            pkgeFile = "";
+            lsColor = Color.FromRgb(255, 255, 255);
+            icColor = Color.FromRgb(50, 50, 70);
+            SetLabelPos(area.Left, area.Top - 20, 0);
         }
-//        Chip::~Chip() { }
 
-//        void Chip::initChip()
-//        {
+
+        protected virtual void InitChip()
+        {
 //            //qDebug() << "Chip::initChip m_pkgeFile"<<m_pkgeFile;
 
 //            m_error = 0;
@@ -109,7 +104,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //            if (m_isLS) m_color = m_lsColor;
 //            else m_color = m_icColor;
 
-//            m_area = QRect(0, 0, 8 * m_width, 8 * m_height);
+ //           area = QRect(0, 0, 8 * m_width, 8 * m_height);
 //            //setTransformOriginPoint( togrid( boundingRect().center()) );
 
 //            setShowId(true);
@@ -163,10 +158,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //                node = node.nextSibling();
 //            }
 //            m_initialized = true;
-//        }
+        }
 
-//        void Chip::addPin(QString id, QString type, QString label, int pos, int xpos, int ypos, int angle)
-//        {
+        protected virtual void AddPin(string id, string type, string label, int pos, int xpos, int ypos, int angle)
+        {
 //            Pin* pin = new Pin(angle, QPoint(xpos, ypos), m_id + "-" + id, pos - 1, this); // pos in package starts at 1
 
 //            //m_pinMap[id] = pin;
@@ -194,10 +189,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //        bool Chip::logicSymbol()
 //        {
 //            return m_isLS;
-//        }
+        }
 
-//        void Chip::setLogicSymbol(bool ls)
-//        {
+        public virtual void SetLogicSymbol(bool ls)
+        {
 //            if (m_initialized && (m_isLS == ls)) return;
 
 //            if (ls && m_pkgeFile.endsWith(".package")) m_pkgeFile.replace(".package", "_LS.package");
@@ -207,17 +202,17 @@ namespace SimulIDE.src.gui.circuitwidget
 //            Chip::initChip();
 
 //            if (m_error == 0) Circuit::self()->update();
-//        }
+        }
 
-//        void Chip::remove()
-//        {
+        public virtual void Remove()
+        {
 //            /*for( uint i=0; i<m_ePin.size(); i++ )
 //            {
 //                Pin* pin = static_cast<Pin*>(m_ePin[i]);
 //                if( pin->connector() ) pin->connector()->remove();
 //            }*/
 //            Component::remove();
-//        }
+        }
 
 //        void Chip::contextMenuEvent(QGraphicsSceneContextMenuEvent* event )
 //{
@@ -235,8 +230,8 @@ namespace SimulIDE.src.gui.circuitwidget
 //        menu->deleteLater();
 //}
 
-//    void Chip::paint(QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget)
-//    {
+//        public virtual void Paint(QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget)
+//        {
 //        Component::paint(p, option, widget);
 
 //        p->drawRoundedRect(m_area, 1, 1);
@@ -246,7 +241,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //            p->setPen(QColor(170, 170, 150));
 //            p->drawArc(boundingRect().width() / 2 - 6, -4, 8, 8, 0, -2880 /* -16*180 */ );
 //        }
-//    }
+//        }
 
 
 
@@ -260,49 +255,36 @@ namespace SimulIDE.src.gui.circuitwidget
     //    Q_PROPERTY(bool Logic_Symbol READ logicSymbol WRITE setLogicSymbol DESIGNABLE true USER true )
 
     //    public:
-    //        Chip(QObject* parent, QString type, QString id);
-    //        ~Chip();
 
     //        bool logicSymbol();
     //        virtual void setLogicSymbol(bool ls);
 
-    //        virtual void initEpins() {; }
-
-    //        virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget );
-
-    //    public slots:
-    //        virtual void remove();
+    public virtual void InitEpins() {}
 
     //        protected:
     //        virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* event);
 
-    //        virtual void addPin(QString id, QString type, QString label,
-    //                             int pos, int xpos, int ypos, int angle);
+        protected virtual void UpdatePin(string id, string type, string label,int pos, int xpos, int ypos, int angle){ }
 
-    //        virtual void updatePin(QString id, QString type, QString label,
-    //                                int pos, int xpos, int ypos, int angle)
-    //        {; }
+        protected int numpins;
+        protected int width;
+        protected int height;
 
-    //        virtual void initChip();
+        protected bool isLS;
+        protected bool initialized;
 
-    //        int m_numpins;
-    //        int m_width;
-    //        int m_height;
+        protected Color lsColor;
+        protected Color icColor;
 
-    //        bool m_isLS;
-    //        bool m_initialized;
+        protected string pkgeFile;     // file containig package defs
+                                       //QString m_dataFile;     // xml file containig entry
 
-    //        QColor m_lsColor;
-    //        QColor m_icColor;
+        protected List<Pin> topPin;
+        protected List<Pin> botPin;
+        protected List<Pin> lefPin;
+        protected List<Pin> rigPin;
+        
 
-    //        QString m_pkgeFile;     // file containig package defs
-    //                                //QString m_dataFile;     // xml file containig entry
 
-    //        QList<Pin*> m_topPin;
-    //        QList<Pin*> m_botPin;
-    //        QList<Pin*> m_lefPin;
-    //    //    QList<Pin*> m_rigPin;
-    //};
-
-}
+    }
 }

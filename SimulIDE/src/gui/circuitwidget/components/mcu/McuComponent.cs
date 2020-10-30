@@ -9,8 +9,6 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 {
     public class McuComponent:Chip
     {
-
-
 ////        static const char* McuComponent_properties[] = {
 ////    QT_TRANSLATE_NOOP("App::Property","Program"),
 ////    QT_TRANSLATE_NOOP("App::Property","Mhz"),

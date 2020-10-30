@@ -317,15 +317,15 @@ namespace SimulIDE.src.gui.editor
         //    m_debugLine = -1;
         //    update();
 
-        //    int error = -2;
+            int error = -2;
         //    m_isCompiled = false;
 
         //    m_outPane->appendText("-------------------------------------------------------\n");
         //    m_outPane->appendText("Exec: ");
 
-        //    if (m_file.endsWith("Makefile")
-        //    || m_file.endsWith("makefile"))          // Is a Makefile, make it
-        //    {
+        if (file.EndsWith("Makefile")
+            || file.EndsWith("makefile"))          // Is a Makefile, make it
+        {
         //        m_outPane->writeText("make " + m_file + "\n");
 
         //        QProcess makeproc( 0l );
@@ -345,33 +345,32 @@ namespace SimulIDE.src.gui.editor
         //            error = -1;
         //        }
         //        else error = 0;
-        //    }
-        //    else
-        //    {
-        //        if (!debugger)
-        //        {
-        //            m_outPane->writeText("\n" + tr("File type not supported") + "\n");
-        //            return;
-        //        }
-        //        error = debugger->compile();
-        //    }
+        }
+            else
+            {
+                if (debugger==null)
+                {
+                    outPane.AppendText("\nFile type not supported\n");
+                    return;
+                }
+                error = debugger.Compile();
+            }
 
-        //    if (error == 0)
-        //    {
-        //        m_outPane->writeText("\n" + tr("     SUCCESS!!! Compilation Ok") + "\n");
+            if (error == 0)
+            {
+                outPane.AppendText("\n     SUCCESS!!! Compilation Ok\n");
+                isCompiled = true;
+            }
+            else
+            {
+                outPane.AppendText("\n     ERROR!!! Compilation Failed\n");
 
-        //        m_isCompiled = true;
-        //    }
-        //    else
-        //    {
-        //        m_outPane->writeText("\n" + tr("     ERROR!!! Compilation Failed") + "\n");
-
-        //        if (error > 0) // goto error line number
-        //        {
-        //            m_debugLine = error; // Show arrow in error line
-        //            updateScreen();
-        //        }
-        //    }
+                if (error > 0) // goto error line number
+                {
+                    debugLine = error; // Show arrow in error line
+                    UpdateScreen();
+                }
+            }
         }
 
         public void Upload()

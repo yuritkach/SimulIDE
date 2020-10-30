@@ -109,6 +109,8 @@ namespace SimulIDE.src.gui.editor
             //Cursor.Current = Cursors.WaitCursor;
             CodeEditor ce = GetCodeEditor();
             ce.AppendText(File.ReadAllText(fileName));
+            ce.SetFile(fileName);
+
             ce.IsModified = false;
             ce.FileName=fileName;
             lastDir = System.IO.Path.GetDirectoryName(fileName);

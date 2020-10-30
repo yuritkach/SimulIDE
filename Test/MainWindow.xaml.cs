@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.gui.circuitwidget.components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,7 @@ namespace Test
         {
             InitializeComponent();
 
-            SimulIDE.src.gui.circuitwidget.components.Label label = 
-                new SimulIDE.src.gui.circuitwidget.components.Label(canvas);
+            CircLabel label = new CircLabel(canvas);
             label.SetPlainText("blablabla");
             label.labelx = 100;
             label.labely = 100;

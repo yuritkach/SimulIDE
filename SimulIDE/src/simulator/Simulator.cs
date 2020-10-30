@@ -244,7 +244,7 @@ namespace SimulIDE.src.simulator
             Console.WriteLine("  Initializing " + elementList.Count().ToString() + "\teElements");
             foreach (eElement el in elementList)    // Initialize all Elements
             {
-                //std::cout << "initializing  "<< el->getId()<<  std::endl;
+                Console.WriteLine("initializing  "+el.GetId());
                 if (!paused) el.ResetState();
                 el.Initialize();
             }

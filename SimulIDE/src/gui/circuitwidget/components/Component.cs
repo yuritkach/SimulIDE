@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SimulIDE.src.gui.circuitwidget.components
 {
-    public class Component:Canvas // +добавить интерфейсы..
+    public class Component:Canvas,INamedObject // +добавить интерфейсы..
     {
 
 
@@ -26,8 +27,8 @@ namespace SimulIDE.src.gui.circuitwidget.components
             help = null;
             value = 0;
             unitMult = 1;
-            Hflip = 1;
-            Vflip = 1;
+            hflip = 1;
+            vflip = 1;
             mult = " ";
             unit = " ";
             this.type = type;
@@ -39,9 +40,9 @@ namespace SimulIDE.src.gui.circuitwidget.components
 
             if ((type != "Connector") && (type != "Node"))
             {
-                 LibraryItem li = ItemLibrary.Self().libraryItem(type);
-
-                 if (li)
+                 //TYV  LibraryItem li = ItemLibrary.Self().libraryItem(type);
+                 object li = null;
+                 if (li!=null)
                  {
                       if ((type == "Subcircuit")
                        || (type == "AVR")
@@ -50,30 +51,30 @@ namespace SimulIDE.src.gui.circuitwidget.components
                       {
                            string name = id;
                            name = name.Split('-').First();
-                           help = new string(li.GetHelpFile(name));
+                   //TYV        help = new string(li.GetHelpFile(name));
                       }
-                      else help = li.Help();
+                   //TYV   else help = li.Help();
                  }
             }
 
-            idLabel = new Label(this);
+            idLabel = new CircLabel(this);
             idLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 128)); // darkBlue
             idLabel.SetFontSize(10);
             SetLabelPos(-16, -24, 0);
             SetShowId(false);
 
-            valLabel = new Label(this);
+            valLabel = new CircLabel(this);
             valLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 0)); // black
             SetValLabelPos(0, 0, 0);
             valLabel.SetFontSize(10);
             SetShowVal(false);
 
-            //SetObjectName(id);
+            SetObjectName(id);
             SetIdLabel(id);
             SetId(id);
 
             //setCursor(Qt::OpenHandCursor);
-            this.SetFlag(QGraphicsItem::ItemIsSelectable, true);
+            IsSelectable=true;
 
             //setTransformOriginPoint( boundingRect().center() );
 
@@ -304,7 +305,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //    emit moved();
         //}
 
-        public void UpdateLabel(Label label, string txt)
+        public void UpdateLabel(CircLabel label, string txt)
         {
             int x;
             if (label == idLabel) id = txt;
@@ -323,7 +324,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
             }
         }
 
-        public void SetLabelPos(int x, int y, int rot)
+        public void SetLabelPos(double x, double y, double rot)
         {
             idLabel.labelx = x;
             idLabel.labely = y;
@@ -336,7 +337,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
             idLabel.SetLabelPos();
         }
 
-        public void SetValLabelPos(int x, int y, int rot)
+        public void SetValLabelPos(double x, double y, double rot)
         {
             valLabel.labelx = x;
             valLabel.labely = y;
@@ -447,44 +448,44 @@ namespace SimulIDE.src.gui.circuitwidget.components
         public double LabelRot() { return idLabel.labelrot; }
         public void SetLabelRot(double rot) { idLabel.labelrot = rot; }
 
-        //int Component::valLabelx() { return m_valLabel->m_labelx; }
-        //void Component::setValLabelX(int x) { m_valLabel->m_labelx = x; }
+        public double ValLabelX() { return valLabel.labelx; }
+        public void SetValLabelX(double x) { valLabel.labelx = x; }
 
-        //int Component::valLabely() { return m_valLabel->m_labely; }
-        //void Component::setValLabelY(int y) { m_valLabel->m_labely = y; }
+        public double ValLabelY() { return valLabel.labely; }
+        public void SetValLabelY(double y) { valLabel.labely = y; }
 
-        //int Component::valLabRot() { return m_valLabel->m_labelrot; }
-        //void Component::setValLabRot(int rot) { m_valLabel->m_labelrot = rot; }
+        public double ValLabRot() { return valLabel.labelrot; }
+        public void SetValLabRot(double rot) { valLabel.labelrot = rot; }
 
-        //int Component::hflip() { return m_Hflip; }
-        //void Component::setHflip(int hf)
-        //{
-        //    if ((hf != 1) & (hf != -1)) hf = 1;
-        //    m_Hflip = hf;
-        //    setflip();
-        //}
+        public int Hflip() { return hflip; }
+        public void SetHflip(int hf)
+        {
+            if ((hf != 1) & (hf != -1)) hf = 1;
+            hflip = hf;
+            Setflip();
+        }
 
-        //int Component::vflip() { return m_Vflip; }
-        //void Component::setVflip(int vf)
-        //{
-        //    if ((vf != 1) & (vf != -1)) vf = 1;
-        //    m_Vflip = vf;
-        //    setflip();
-        //}
+        public int Vflip() { return vflip; }
+        public void SetVflip(int vf)
+        {
+            if ((vf != 1) & (vf != -1)) vf = 1;
+            vflip = vf;
+            Setflip();
+        }
 
-        //void Component::setflip()
-        //{
-        //    setTransform(QTransform::fromScale(m_Hflip, m_Vflip));
-        //    m_idLabel->setTransform(QTransform::fromScale(m_Hflip, m_Vflip));
-        //    m_valLabel->setTransform(QTransform::fromScale(m_Hflip, m_Vflip));
-        //    emit moved();
-        //}
+        public void Setflip()
+        {
+//            SetTransform(QTransform::fromScale(m_Hflip, m_Vflip));
+//            m_idLabel->setTransform(QTransform::fromScale(m_Hflip, m_Vflip));
+//            m_valLabel->setTransform(QTransform::fromScale(m_Hflip, m_Vflip));
+//            emit moved();
+        }
 
-        //QString Component::itemType() { return m_type; }
-        //QString Component::category() { return m_category; }
+        public string IitemType() { return type; }
+        public string Category() { return category; }
         //QIcon Component::icon() { return m_icon; }
 
-        ////bool Component::isChanged(){ return m_changed;}
+        public bool IsChanged(){ return changed;}
 
         //void Component::setPrintable(bool p)
         //{
@@ -549,11 +550,21 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //    Q_PROPERTY(int vflip     READ vflip     WRITE setVflip)
 
         //    public:
-        //        QRectF boundingRect() const { return QRectF(m_area.x()-2, m_area.y()-2, m_area.width()+4 , m_area.height()+4 );
-        //    }
+        public Rect BoundingRect()
+        {
+            Rect result = new Rect(area.Left - 2, area.Top - 2, area.Width + 4, area.Height + 4);
+            return result;
+        }
 
-        //    Component(QObject* parent, QString type, QString id);
-        //    ~Component();
+        public void SetObjectName(string name)
+        {
+            objectName = name;
+        }
+
+        public string GetObjectName()
+        {
+            return objectName;
+        }
 
         //    enum { Type = UserType + 1 };
         //    int type() const { return Type; }
@@ -651,37 +662,35 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //void setflip();
 
         protected double value;
-
+        protected bool changed;
         protected string multUnits;
-        string unit;
-        string mult;
-        double unitMult;
+        protected string unit;
+        protected string mult;
+        protected double unitMult;
+        protected static int error;
 
-        int Hflip;
-        int Vflip;
-        static int error;
-
-        Label idLabel;
-        Label valLabel;
-
-        string id;
-        string type;
-        string category;
-        string BackGround;   // BackGround Image
-
-        string help;
+        protected CircLabel idLabel;
+        protected CircLabel valLabel;
+        protected int vflip;
+        protected int hflip;
+        protected string id;
+        protected string type;
+        protected string category;
+        protected string BackGround;   // BackGround Image
+        protected string help;
 
         //Icon icon;
-        Color color;
-   //     Rect area;         // bounding rect
-   //     Point eventpoint;
+        protected Color color;
+        public Rect area;         // bounding rect
+        Point eventpoint;
 
-        bool showId;
-        bool showVal;
-        bool moving;
-        bool printable;
-
-    //    Pin[] pin;
+        protected bool showId;
+        protected bool showVal;
+        protected bool moving;
+        protected bool printable;
+        protected bool IsSelectable;
+        private string objectName;
+        //    Pin[] pin;
 
         //typedef Component* (* createItemPtr) (QObject* parent, QString type, QString id);
     }

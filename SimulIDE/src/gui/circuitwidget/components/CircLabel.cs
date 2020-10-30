@@ -10,10 +10,10 @@ using System.Windows.Media;
 
 namespace SimulIDE.src.gui.circuitwidget.components
 {
-    public class Label:Canvas
+    public class CircLabel:Canvas
     {
 
-        public Label(Canvas parent)  //     : QGraphicsTextItem(parent )
+        public CircLabel(Canvas parent)  //     : QGraphicsTextItem(parent )
         {
             parentComp = parent;
             parentComp.Children.Add(this);
@@ -37,6 +37,11 @@ namespace SimulIDE.src.gui.circuitwidget.components
             //InvalidateVisual();
         }
 
+        public void SetText(string txt)
+        {
+            text = txt;
+            //InvalidateVisual();
+        }
         public string ToPlainText()
         {
             return text;

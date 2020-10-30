@@ -7,7 +7,7 @@ using System.Windows.Controls;
 
 namespace SimulIDE.src.gui.editor
 {
-    public class InoDebugger:BaseDebugger
+    public class InoDebugger:BaseDebugger,INamedObject
     {
 
 
@@ -18,7 +18,7 @@ namespace SimulIDE.src.gui.editor
         public InoDebugger(object parent, TextBox outPane, string filePath):base(parent, outPane, filePath )
         {
             //Q_UNUSED(InoDebugger_properties);
-//            setObjectName("Arduino Compiler/Debugger");
+            SetObjectName("Arduino Compiler/Debugger");
             compilerPath = "";
             compSetting = "arduino_Path";
             ReadSettings();
@@ -343,6 +343,16 @@ namespace SimulIDE.src.gui.editor
         BoardType Board() { return board; }
         public void SetBoard(BoardType b) { board = b; }
 
+        public void SetObjectName(string name)
+        {
+            objectName=name;
+        }
+
+        public string GetObjectName()
+        {
+            return objectName;
+        }
+
         private int lastInoLine;
         private int loopInoLine;
         private int processorType;
@@ -351,6 +361,7 @@ namespace SimulIDE.src.gui.editor
 
         private string customBoard;
         private BoardType board;
+        private string objectName;
 
     }
 }

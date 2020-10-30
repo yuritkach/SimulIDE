@@ -65,6 +65,8 @@ namespace SimulIDE.src.simulator
             ePin[num] = pin;
         }
 
+        public string GetId() { return elmId; }
+
         public virtual void Initialize() { }
         public virtual void ResetState() { }
         public virtual void Attach() { }
