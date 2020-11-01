@@ -11,6 +11,11 @@
       Title="CircuitPage">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
         <ToolBar x:Name="circuitToolBar" Grid.Row="0" Visibility="Visible" HorizontalAlignment="Left" Height="29" VerticalAlignment="Top" Width="800">
             <Button x:Name="circuitNewButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitNewButton_Click">
                 <Button.Background>

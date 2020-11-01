@@ -37,9 +37,9 @@ namespace SimulIDE.src.gui.circuitwidget
         protected void Init()
         {
             self = this;
-//            circView = new CircuitView(canvas);
+            circView = new CircuitView(control);
 //            rateLabel = new CircLabel(canvas);
-            rateLabel.SetFontSize(10);
+//            rateLabel.SetFontSize(10);
             //            string appPath = QCoreApplication::applicationDirPath();
             //            lastCircDir = MainWindow.Self().Settings().Value("lastCircDir");
             //if (lastCircDir=="") lastCircDir = appPath + "..share/simulide/examples";
@@ -221,60 +221,13 @@ namespace SimulIDE.src.gui.circuitwidget
         protected OpenGLControl control;
 
 
-
-        private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            OpenGL gl = args.OpenGL;
-            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            gl.LoadIdentity();
-            gl.Translate(0.0f, 0.0f, 0.0f);
-            circuit.Draw(gl);
-            gl.Flush();
-        }
-
-        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            OpenGL gl = openGLControl.OpenGL;
-            gl.ClearColor(0, 0, 0, 0);
-        }
-
-        private void OpenGLControl_Resized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            circuit.SetViewPortSize(control.ActualWidth, control.ActualHeight);
-        }
-
-        private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)
-        {
-
-            circuit.MouseMove(e, sender as IInputElement);
-        }
-
-        private void OpenGLControl_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            circuit.MouseDown(e, sender as IInputElement);
-        }
-
-        private void OpenGLControl_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            circuit.MouseUp(e, this);
-        }
-
-        private void OpenGLControl_MouseLeave(object sender, MouseEventArgs e)
-        {
-            circuit.MouseLeave(e, this);
-        }
-
-        private void OpenGLControl_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            circuit.MouseWheel(e, this);
-        }
-
-        private void OpenGLControl_MouseEnter(object sender, MouseEventArgs e)
-        {
-            circuit.MouseEnter(e, this);
-        }
-               
-
+        private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)=>circView.OnMouseMove(e, sender as IInputElement);
+        private void OpenGLControl_MouseDown(object sender, MouseButtonEventArgs e)=>circView.OnMouseDown(sender as IInputElement,e);
+        private void OpenGLControl_MouseUp(object sender, MouseButtonEventArgs e)=>circView.OnMouseUp(this,e);
+        private void OpenGLControl_MouseLeave(object sender, MouseEventArgs e)=>circView.OnMouseLeave(this,e);
+        private void OpenGLControl_MouseWheel(object sender, MouseWheelEventArgs e)=>circView.OnMouseWheel(this,e);
+        private void OpenGLControl_MouseEnter(object sender, MouseEventArgs e)=>circView.OnMouseEnter(this,e);
+        
         private void CircuitNewButton_Click(object sender, RoutedEventArgs e) => NewCircuit();
         private void CircuitOpenButton_Click(object sender, RoutedEventArgs e) => OpenCirc();
         private void CircuitSaveButton_Click(object sender, RoutedEventArgs e) => SaveCirc();
@@ -283,6 +236,26 @@ namespace SimulIDE.src.gui.circuitwidget
         private void CircuitPauseButton_Click(object sender, RoutedEventArgs e) => PauseSim();
         private void CircuitOpenInfoButton_Click(object sender, RoutedEventArgs e) => OpenInfo();
 
+        private void OpenGLControl_OpenGLInitialized(object sender, OpenGLRoutedEventArgs args)
+        {
+            OpenGL gl = openGLControl.OpenGL;
+            gl.ClearColor(0, 0, 0, 0);
+        }
+
+        private void OpenGLControl_OpenGLDraw(object sender, OpenGLRoutedEventArgs args)
+        {
+            OpenGL gl = args.OpenGL;
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.LoadIdentity();
+            gl.Translate(0.0f, 0.0f, 0.0f);
+            circView.Draw(gl);
+            gl.Flush();
+        }
+
+        private void OpenGLControl_Resized(object sender, OpenGLRoutedEventArgs args)
+        {
+            circView.SetViewPortSize(control.ActualWidth, control.ActualHeight);
+        }
     }
 }
 

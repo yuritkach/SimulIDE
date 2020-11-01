@@ -1,4 +1,5 @@
-﻿using SimulIDE.src.gui.circuitwidget.components;
+﻿using SharpGL.WPF;
+using SimulIDE.src.gui.circuitwidget.components;
 using SimulIDE.src.gui.graphics;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace SimulIDE.src.gui.circuitwidget
         private static CircuitView self = null;
         public static CircuitView Self() { return self; }
 
-        public CircuitView(Canvas parent)
+        public CircuitView(OpenGLControl parent):base(parent)
         {
             self = this;
 
