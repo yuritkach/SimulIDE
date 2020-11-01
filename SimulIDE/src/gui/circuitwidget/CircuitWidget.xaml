@@ -1,0 +1,69 @@
+﻿<Page x:Class="SimulIDE.src.gui.circuitwidget.CircuitWidget"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:wpf="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
+
+      xmlns:local="clr-namespace:SimulIDE.src.gui.circuitwidget"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="CircuitPage">
+
+    <Grid>
+        <ToolBar x:Name="circuitToolBar" Grid.Row="0" Visibility="Visible" HorizontalAlignment="Left" Height="29" VerticalAlignment="Top" Width="800">
+            <Button x:Name="circuitNewButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitNewButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/new.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="circuitOpenButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitOpenButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/open.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="circuitSaveButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitSaveButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/save.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="circuitSaveAsButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitSaveAsButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/saveas.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Separator />
+            <Button x:Name="circuitPowerButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitPowerButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/poweron.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="circuitPauserButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitPauseButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/pause.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="circuitOpenInfoButton" Height="24" VerticalAlignment="Top" Width="24" Click="CircuitOpenInfoButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/help.png" Stretch="None"/>
+                </Button.Background>
+            </Button>
+        </ToolBar>
+        <wpf:OpenGLControl Grid.Row="1" Grid.Column="0" Name="openGLControl"
+                           OpenGLDraw="OpenGLControl_OpenGLDraw"
+                               OpenGLInitialized="OpenGLControl_OpenGLInitialized"
+                               Resized="OpenGLControl_Resized"
+                           MouseMove="OpenGLControl_MouseMove"  
+                           MouseDown="OpenGLControl_MouseDown"
+                           MouseUp="OpenGLControl_MouseUp"
+                           MouseLeave="OpenGLControl_MouseLeave"
+                           MouseEnter="OpenGLControl_MouseEnter"    
+                           MouseWheel="OpenGLControl_MouseWheel"    
+                               DrawFPS="True"
+                                                      
+                           >
+
+        </wpf:OpenGLControl>
+
+    </Grid>
+</Page>

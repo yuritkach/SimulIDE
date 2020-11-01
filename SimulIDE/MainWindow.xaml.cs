@@ -125,7 +125,7 @@ namespace SimulIDE
             //            m_fileSystemTree->setObjectName("fileExplorer");
             //            m_sidepanel->addTab(m_fileSystemTree, tr("File explorer"));
 
-            m_circuit = new CircuitPage();
+            m_circuit = new CircuitWidget();
             CircuitFrame.Content = m_circuit;
             //            m_circuit->setObjectName("circuit");
             //            m_Centralsplitter->addWidget(m_circuit);
@@ -310,7 +310,7 @@ namespace SimulIDE
 
     //        QHash<QString, QPluginLoader*> m_plugins;
 
-    protected CircuitPage m_circuit;
+    protected CircuitWidget m_circuit;
     //        ComponentSelector m_components;
     //        PropertiesWidget m_itemprop;
     protected EditorPage m_editor;
