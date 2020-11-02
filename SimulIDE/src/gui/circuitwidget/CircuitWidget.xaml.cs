@@ -239,12 +239,13 @@ namespace SimulIDE.src.gui.circuitwidget
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLRoutedEventArgs args)
         {
             OpenGL gl = openGLControl.OpenGL;
-            gl.ClearColor(0, 0, 0, 0);
+            gl.ClearColor((byte)100, (byte)100, (byte)100, (byte)128);
         }
 
         private void OpenGLControl_OpenGLDraw(object sender, OpenGLRoutedEventArgs args)
         {
             OpenGL gl = args.OpenGL;
+            gl.ClearColor(0.95f, 0.95f, 0.95f, 0f);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
             gl.Translate(0.0f, 0.0f, 0.0f);

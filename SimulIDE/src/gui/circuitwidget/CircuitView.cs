@@ -311,7 +311,7 @@ namespace SimulIDE.src.gui.circuitwidget
 
             gl.LineWidth(2);
             gl.Begin(OpenGL.GL_LINES);
-            gl.Color(1f, 1f, 1f);
+            gl.Color(0f, 0f, 0f);
 
             
             var xx1 = XX(gl, 0);

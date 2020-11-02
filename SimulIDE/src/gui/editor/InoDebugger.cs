@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,137 +58,143 @@ namespace SimulIDE.src.gui.editor
 
         public override int Compile()
         {
-            //           // QApplication::setOverrideCursor(Qt::WaitCursor);
+            // QApplication::setOverrideCursor(Qt::WaitCursor);
+            compilerPath = "C:\\Program Files (x86)\\Arduino";  //Временно!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if (!Directory.Exists(compilerPath))
+            {
+                outPane.AppendText("\nArduino");
+                ToolChainNotFound();
+                return -1;
+            }
+            string filePath = fileDir +"\\"+ fileName + fileExt;
+            // Doing build in the user directory
+            string buildPath = AppDomain.CurrentDomain.BaseDirectory+"codeeditor\\buildIno";
 
-            //            QDir arduinoDir(m_compilerPath );
-            //            if (!arduinoDir.exists())
-            //            {
-            //                m_outPane->appendText("\nArduino");
-            //                toolChainNotFound();
-            //                return -1;
-            //            }
-            //            QString filePath = m_fileDir + m_fileName + m_fileExt;
-            //            // Doing build in the user directory
-            //            QString buildPath = SIMUAPI_AppPath::self()->RWDataFolder().absoluteFilePath("codeeditor/buildIno");
+            if (Directory.Exists(buildPath))
+                Directory.Delete(buildPath, true);
+            else
+                Directory.CreateDirectory(buildPath);
+            Directory.CreateDirectory(buildPath+'\\'+fileName);
+            var fileList = Directory.EnumerateFiles(fileDir);
+            foreach (string fileName in fileList) // Copy files to sketch folder
+            {
+                string fn = System.IO.Path.GetFileName(fileName);
+                string fne = System.IO.Path.GetFileNameWithoutExtension(fileName);
 
-            //            QDir dir(buildPath);
-            //            dir.removeRecursively();                         // Remove old files
-            //            dir.mkpath(buildPath + "/" + m_fileName);        // Create sketch folder
+                File.Copy(fileDir +"\\"+ fn, buildPath + "\\" +fne+"\\"+ fn );
+            }
+            string ProcInoFile = buildPath + "\\" + fileName + "\\" + fileName + fileExt;
 
-            //            QDir directory(m_fileDir );
-            //            QStringList fileList = directory.entryList(QDir::Files);
+            var inoLines = File.ReadLines(filePath);
+            String line;
+            int inoLineNumber = 0;
 
-            //            for (QString fileName : fileList) // Copy files to sketch folder
-            //            {
-            //                QFile::copy(m_fileDir + fileName, buildPath + "/" + m_fileName + "/" + fileName);
-            //            }
-            //            QString ProcInoFile = buildPath + "/" + m_fileName + "/" + m_fileName + m_fileExt;
-            //            QFile file(ProcInoFile );
+            varList.Clear();
+            foreach (string inoLine in inoLines)                        // Get Variables
+            {
+                line = inoLine;
+                line = line.Replace("\t", " ");
+                int idx = line.IndexOf(';');
+                if (idx!=-1)
+                    line = line.Remove(idx);
+                var wordList = line.Split(' ').ToList<string>();
+                wordList.RemoveAll((a)=>a=="");
 
-            //            if (!file.open(QFile::WriteOnly | QFile::Text))
-            //            {
-            //                QMessageBox::warning(0l, "InoDebugger::compile",
-            //                tr("Cannot write file %1:\n%2.").arg(ProcInoFile).arg(file.errorString()));
-            //                return -1;
-            //            }
-            //            QTextStream out(&file);
-            //    out.setCodec("UTF-8");
+                if (wordList.Count!=0)      // Fix crash on empty list.first()
+                {
+                    string type = wordList[0];
+                    if (type == "unsigned")
+                        type = "u" + wordList[1];
+                                
+                    if (typesList.ContainsKey(type))
+                    {
+                         string varName = wordList[1];
+                         if (!varList.ContainsKey(varName))
+                             varList[varName] = typesList[type];
+                             //qDebug() << "InoDebugger::compile  variable "<<type<<varName<<m_typesList[ type ];
+                    }
+                }
+                if (inoLine.Contains("loop()")) loopInoLine = inoLineNumber;
+                inoLineNumber++;
 
-            //            QStringList inoLines = fileToStringList(filePath, "InoDebugger::compile");
-            //            QString line;
-            //            int inoLineNumber = 0;
+                Console.WriteLine(inoLine.ToString()+" // INOLINE "+inoLineNumber.ToString()+"\n");
+            }
+            
 
-            //            m_varList.clear();
-            //            for (QString inoLine : inoLines)                        // Get Variables
-            //            {
-            //                line = inoLine;
-            //                line = line.replace("\t", " ").remove(";");
-            //                QStringList wordList = line.split(" ");
-            //                wordList.removeAll("");
-            //                if (!wordList.isEmpty())      // Fix crash on empty list.first()
-            //                {
-            //                    QString type = wordList.takeFirst();
-            //                    if (type == "unsigned") type = "u" + wordList.takeFirst();
+            ///TODO: verify arduino version, older versions can compile, but no sorce code emited into .lst file
+            /// , then debugger will hang!
+            string cBuildPath = buildPath;
+            //string preferencesPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/preferences.txt");
+            string cmd = compilerPath + "\\"+"arduino";
 
-            //                    if (m_typesList.contains(type))
-            //                    {
-            //                        QString varName = wordList.at(0);
-            //                        if (!m_varList.contains(varName))
-            //                            m_varList[varName] = m_typesList[type];
 
-            //                        //qDebug() << "InoDebugger::compile  variable "<<type<<varName<<m_typesList[ type ];
-            //                    }
-            //                }
-            //                if (inoLine.contains("loop()")) m_loopInoLine = inoLineNumber;
-            //                inoLineNumber++;
+//            # ifndef Q_OS_UNIX
+//                    command += "_debug";
+//                    command = addQuotes(command);
+//                    cBuildPath = addQuotes(cBuildPath);
+//                     ProcInoFile = addQuotes(ProcInoFile);
+//            #endif
 
-            //        out << inoLine << " // INOLINE " << inoLineNumber << "\n";
-            //            }
-            //            file.close();
+            string boardName;
 
-            //            ///TODO: verify arduino version, older versions can compile, but no sorce code emited into .lst file
-            //            /// , then debugger will hang!
-            //            QString cBuildPath = buildPath;
-            //            QString preferencesPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/preferences.txt");
-            //            QString command = m_compilerPath + "arduino";
+            if (board < BoardType.Custom)
+                boardName = boardList[(int)board];
+            else boardName = customBoard;
+            string args=" -v --board arduino:avr:" + boardName + " --pref build.path=" + cBuildPath;
+//            if (!preferencesPath.isEmpty())
+//                command += " --preferences-file " + preferencesPath;
+            args += " --preserve-temp-files --verify " + ProcInoFile;
+            firmware = "";
 
-            //# ifndef Q_OS_UNIX
-            //            command += "_debug";
-            //            command = addQuotes(command);
-            //            cBuildPath = addQuotes(cBuildPath);
-            //            ProcInoFile = addQuotes(ProcInoFile);
-            //#endif
+            outPane.AppendText(cmd+args);
+            outPane.AppendText("\n\n");
 
-            //            QString boardName;
 
-            //            if (m_board < Custom) boardName = boardList.at(m_board);
-            //            else boardName = m_customBoard;
+            Process compProc = new Process();
+            compProc.StartInfo.WorkingDirectory = fileDir;
+            compProc.StartInfo.FileName = cmd;
+            compProc.StartInfo.Arguments = args;
+            compProc.StartInfo.UseShellExecute = false;
+            compProc.StartInfo.CreateNoWindow = false;
+            compProc.StartInfo.RedirectStandardOutput = true;
+            compProc.Start();
+            string stdout = compProc.StandardOutput.ReadToEnd();
+            string stderr = compProc.StandardError.ReadToEnd();
+            compProc.WaitForExit();
+            compProc.Close();
 
-            //            command += " -v --board arduino:avr:" + boardName + " --pref build.path=" + cBuildPath;
-            //            if (!preferencesPath.isEmpty())
-            //                command += " --preferences-file " + preferencesPath;
-            //            command += " --preserve-temp-files --verify " + ProcInoFile;
-            //            m_firmware = "";
+            outPane.AppendText(stderr);
+            outPane.AppendText( "\n\n" );
 
-            //            m_outPane->appendText(command);
-            //            m_outPane->writeText("\n\n");
+            int error = -1;
+            if (stderr == "")
+            {
+               outPane.AppendText("\nArduino");
+               ToolChainNotFound();
+               error = -1;
+            }
+            else if (stderr.ToUpper().Contains("ERROR:"))
+            {
+                string[] lines = stderr.Split('\n');
+                foreach (string lin in lines)
+                {
+                    if (!(lin.Contains("error:"))) continue;
 
-            //            m_compProcess.start(command);
-            //            m_compProcess.waitForFinished(-1);
-
-            //            QString p_stderr = m_compProcess.readAllStandardError();
-            //            //m_outPane->appendText( p_stderr );
-            //            //m_outPane->writeText( "\n\n" );
-
-            //            int error = -1;
-            //            if (p_stderr == "")
-            //            {
-            //                m_outPane->appendText("\nArduino");
-            //                toolChainNotFound();
-            //                error = -1;
-            //            }
-            //            else if (p_stderr.toUpper().contains("ERROR:"))
-            //            {
-            //                QStringList lines = p_stderr.split("\n");
-            //                for (QString line : lines)
-            //                {
-            //                    if (!(line.contains("error:"))) continue;
-
-            //                    m_outPane->appendText(line);
-            //                    m_outPane->writeText("\n\n");
-            //                    QStringList words = line.split(":");
-            //                    error = words.at(1).toInt() - 1;
-            //                    break;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                m_firmware = buildPath + "/" + m_fileName + ".ino.hex";
-            //                error = 0;
-            //            }
-            //            QApplication::restoreOverrideCursor();
-            //            return error;
-            return 0;
+                    outPane.AppendText(lin);
+                    outPane.AppendText("\n\n");
+                    string[] words = lin.Split(':');
+                    error = int.Parse(words[1]) - 1;
+                    break;
+                }
+            }
+            else
+            {
+                 firmware = buildPath + "/" + fileName + ".ino.hex";
+                 error = 0;
+            }
+            //QApplication::restoreOverrideCursor();
+            return error;
+            
         }
 
         public void GetVariables()

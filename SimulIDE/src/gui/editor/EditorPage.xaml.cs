@@ -131,14 +131,14 @@ namespace SimulIDE.src.gui.editor
             LoadFile(fileList[tabControl.SelectedIndex]);
         }
 
-        protected bool Save()
+        public bool Save()
         {
                 string file = GetCodeEditor().FileName??"";
                 if (file=="") return SaveAs();
                 else return SaveFile(file);
         }
 
-        protected bool SaveAs()
+        public bool SaveAs()
         {
             CodeEditor ce = GetCodeEditor();
             string fileName = ce.FileName;

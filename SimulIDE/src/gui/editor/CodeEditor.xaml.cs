@@ -1,6 +1,8 @@
 ﻿using SimulIDE.src.gui.circuitwidget.components.mcu;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -313,42 +315,47 @@ namespace SimulIDE.src.gui.editor
 
         public void Compile()
         {
-        //    if (document()->isModified()) EditorWindow::self()->save();
-        //    m_debugLine = -1;
-        //    update();
+            if (IsModified) EditorPage.Self().Save();
+            debugLine = -1;
+            //Update();  //TYV
 
             int error = -2;
-        //    m_isCompiled = false;
+            isCompiled = false;
 
-        //    m_outPane->appendText("-------------------------------------------------------\n");
-        //    m_outPane->appendText("Exec: ");
+            outPane.AppendText("-------------------------------------------------------\n");
+            outPane.AppendText("Exec: ");
 
-        if (file.EndsWith("Makefile")
-            || file.EndsWith("makefile"))          // Is a Makefile, make it
-        {
-        //        m_outPane->writeText("make " + m_file + "\n");
+            if (file.EndsWith("Makefile")
+                || file.EndsWith("makefile"))          // Is a Makefile, make it
+            {
+                outPane.AppendText("make " + file + "\n");
 
-        //        QProcess makeproc( 0l );
-        //        makeproc.setWorkingDirectory(m_fileDir);
-        //        makeproc.start("make");
-        //        makeproc.waitForFinished(-1);
+                Process makeproc = new Process();
+                makeproc.StartInfo.WorkingDirectory=fileDir;
+                makeproc.StartInfo.FileName= "make";
+                makeproc.StartInfo.UseShellExecute = false;
+                makeproc.StartInfo.CreateNoWindow = false;
+                makeproc.StartInfo.RedirectStandardOutput = true;
+                makeproc.Start();
+                string stdout = makeproc.StandardOutput.ReadToEnd();
+                string stderr = makeproc.StandardError.ReadToEnd();
+                makeproc.WaitForExit();
+                makeproc.Close();
 
-        //        QString p_stdout = makeproc.readAllStandardOutput();
-        //        QString p_stderr = makeproc.readAllStandardError();
-        //        m_outPane->appendText(p_stderr);
-        //        m_outPane->appendText("\n");
-        //        m_outPane->appendText(p_stdout);
-        //        m_outPane->writeText("\n\n");
+                outPane.AppendText(stderr);
+                outPane.AppendText("\n");
+                outPane.AppendText(stdout);
+                outPane.AppendText("\n\n");
 
-        //        if (p_stderr.toUpper().contains("ERROR") || p_stdout.toUpper().contains("ERROR"))
-        //        {
-        //            error = -1;
-        //        }
-        //        else error = 0;
-        }
+                if (stderr.ToUpper().Contains("ERROR") || stdout.ToUpper().Contains("ERROR"))
+                {
+                    error = -1;
+                }
+                else error = 0;
+            }
             else
             {
-                if (debugger==null)
+                if (debugger == null)
                 {
                     outPane.AppendText("\nFile type not supported\n");
                     return;

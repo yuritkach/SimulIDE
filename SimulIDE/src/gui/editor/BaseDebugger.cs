@@ -44,7 +44,7 @@ namespace SimulIDE.src.gui.editor
             return varNames;
         }
 
-        protected void ToolChainNotFound()
+        public void ToolChainNotFound()
         {
             outPane.AppendText(": ToolChain not found"+"\n");
             outPane.AppendText("\n Right-Click on Document Tab to set Path\n\n");
