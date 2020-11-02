@@ -1,46 +1,35 @@
 ﻿using SharpGL;
 using SimulIDE.src.gui.circuitwidget.components;
+using SimulIDE.src.simulator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Xml;
 
 namespace SimulIDE.src.gui.circuitwidget
 {
     class Circuit
     {
 
-
-//        static const char* Circuit_properties[] = {
-//    QT_TRANSLATE_NOOP("App::Property","Speed"),
-//    QT_TRANSLATE_NOOP("App::Property","ReactStep"),
-//    QT_TRANSLATE_NOOP("App::Property","NoLinAcc"),
-//    QT_TRANSLATE_NOOP("App::Property","Draw Grid"),
-//    QT_TRANSLATE_NOOP("App::Property","Show ScrollBars"),
-//    QT_TRANSLATE_NOOP("App::Property","Animate"),
-//    QT_TRANSLATE_NOOP("App::Property","Font Scale"),
-//    QT_TRANSLATE_NOOP("App::Property","Auto Backup Secs")
-//};
-
         private static Circuit self = null;
         public static Circuit Self() { return self; }
 
         public Circuit()
         {
-//            Q_UNUSED(Circuit_properties);
-
               //SetObjectName("Circuit");
               self = this;
 
-             busy = false;
-             changed = false;
+             //busy = false;
+             //changed = false;
 //            m_pasting = false;
 //            m_deleting = false;
 //            m_con_started = false;
 
-            new_connector = null;
-            seqNumber = 0;
+            //new_connector = null;
+            //seqNumber = 0;
 
             //            m_hideGrid = MainWindow::self()->settings()->value("Circuit/hideGrid").toBool();
             //            m_showScroll = MainWindow::self()->settings()->value("Circuit/showScroll").toBool();
@@ -50,12 +39,10 @@ namespace SimulIDE.src.gui.circuitwidget
             //            //m_bckpTimer.start( m_autoBck*1000 );
 
 
-            compList.Add();
-
         }
 
-//        Circuit::~Circuit()
-//        {
+        ~Circuit()
+        {
 //            m_bckpTimer.stop();
 
 //            // Avoid PropertyEditor problem: comps not unregistered
@@ -78,30 +65,28 @@ namespace SimulIDE.src.gui.circuitwidget
 //                if (!file.exists()) return;
 //                QFile::remove(m_backupPath); // Remove backup file
 //            }
-//        }
+        }
 
-//        void Circuit::setLang(Langs lang)
-//        {
-//            if (lang == m_lang) return;
-//            m_lang = lang;
-
+        protected void SetLang(Langs lang)
+        {
+            if (lang == this.lang) return;
+            this.lang = lang;
 //            MainWindow::self()->settings()->setValue("language", loc());
-//        }
+        }
 
-//        QString Circuit::loc()
-//        {
-//            QString locale = "en";
-//            if (m_lang == French) locale = "fr";
-//            else if (m_lang == German) locale = "de";
-//            else if (m_lang == Russian) locale = "ru";
-//            else if (m_lang == Spanish) locale = "es";
-//            else if (m_lang == Pt_Brasil) locale = "pt_BR";
+        protected string Loc()
+        {
+            string locale = "en";
+            if (lang == Langs.French) locale = "fr";
+            else if (lang == Langs.German) locale = "de";
+            else if (lang == Langs.Russian) locale = "ru";
+            else if (lang == Langs.Spanish) locale = "es";
+            else if (lang == Langs.Pt_Brasil) locale = "pt_BR";
+            return locale;
+        }
 
-//            return locale;
-//        }
-
-//        void Circuit::setLoc(QString loc)
-//        {
+        protected void SetLoc(string loc)
+        {
 //            Langs lang = English;
 
 //            if (loc == "fr") lang = French;
@@ -111,23 +96,21 @@ namespace SimulIDE.src.gui.circuitwidget
 //            else if (loc == "pt_BR") lang = Pt_Brasil;
 
 //            m_lang = lang;
-//        }
+        }
 
-//        QString Circuit::getCompId(QString name)
-//        {
-//            QStringList nameSplit = name.split("-");
-//            if (nameSplit.isEmpty()) return "";
+        protected string GetCompId(string name)
+        {
+            var nameSplit = name.Split('-');
+            if (nameSplit.Length==0) return "";
 
-//            QString compId = nameSplit.takeFirst();
-//            if (nameSplit.isEmpty()) return "";
+            string compId = nameSplit.First();
+            string compNum = nameSplit.First();
 
-//            QString compNum = nameSplit.takeFirst();
+            return compId + "-" + compNum;
+        }
 
-//            return compId + "-" + compNum;
-//        }
-
-//        Pin* Circuit::findPin(int x, int y, QString id)
-//        {
+        protected Pin FindPin(int x, int y, string id)
+        {
 //            qDebug() << "Circuit::findPin" << id;
 //            QRectF itemRect = QRectF(x - 4, y - 4, 8, 8);
 
@@ -144,11 +127,11 @@ namespace SimulIDE.src.gui.circuitwidget
 //                Pin* pin = qgraphicsitem_cast<Pin*>(it);
 //                if (pin) return pin;
 //            }
-//            return 0l;
-//        }
+            return null;
+        }
 
-//        void Circuit::loadCircuit(QString &fileName )
-//        {
+        protected void LoadCircuit(string fileName)
+        {
 //            if (m_con_started) return;
 
 //            m_filePath = fileName;
@@ -187,10 +170,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //                saveState();
 //                saveChanges();
 //            }
-//        }
+        }
 
-//        void Circuit::loadDomDoc(QDomDocument* doc)
-//        {
+        protected void LoadDomDoc(XmlDocument doc)
+        {
 //            QApplication::setOverrideCursor(Qt::WaitCursor);
 
 //            QList<Component*> compList;   // Component List
@@ -395,10 +378,10 @@ namespace SimulIDE.src.gui.circuitwidget
 
 //            m_busy = false;
 //            QApplication::restoreOverrideCursor();
-//        }
+        }
 
-//        void Circuit::circuitToDom()
-//        {
+        protected void CircuitToDom()
+        {
 //            m_domDoc.clear();
 //            QDomElement circuit = m_domDoc.createElement("circuit");
 
@@ -424,10 +407,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            objectToDom(&m_domDoc, PlotterWidget::self());
 
 //            circuit.appendChild(m_domDoc.createTextNode("\n \n"));
-//        }
+        }
 
-//        void Circuit::listToDom(QDomDocument* doc, QList<Component*>* complist)
-//        {
+        protected void ListToDom(XmlDocument doc, List<Component> complist)
+        {
 //            int count = complist->count();
 //            for (int i = 0; i < count; i++)
 //            {
@@ -439,10 +422,10 @@ namespace SimulIDE.src.gui.circuitwidget
 
 //                if (isNumber) objectToDom(doc, item);
 //            }
-//        }
+        }
 
-//        void Circuit::objectToDom(QDomDocument* doc, QObject* object )
-//        {
+        protected void ObjectToDom(XmlDocument doc, object obj)
+        {
 //            QDomElement root = doc->firstChild().toElement();
 //            QDomElement elm = m_domDoc.createElement("item");
 //            const QMetaObject* metaobject = object->metaObject();
@@ -490,10 +473,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            blank = m_domDoc.createTextNode(": \n");
 //            root.appendChild(blank);
 //            root.appendChild(elm);
-//        }
+        }
 
-//        bool Circuit::saveDom(QString &fileName, QDomDocument* doc)
-//        {
+        protected bool SaveDom(string fileName, XmlDocument doc)
+        {
 //            QFile file(fileName );
 
 //            if (!file.open(QFile::WriteOnly | QFile::Text))
@@ -508,11 +491,11 @@ namespace SimulIDE.src.gui.circuitwidget
 //    out << doc->toString();
 //            file.close();
 
-//            return true;
-//        }
+            return true;
+        }
 
-//        bool Circuit::saveCircuit(QString &fileName )
-//        {
+        protected bool SaveCircuit(string fileName )
+        {
 //            if (m_con_started) return false;
 
 //            QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -523,7 +506,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //            m_filePath = fileName;
 
 //            circuitToDom();
-//            bool saved = saveDom(fileName, &m_domDoc);
+            bool saved = SaveDom(fileName, domDoc);
 
 //            if (saved)
 //            {
@@ -536,12 +519,12 @@ namespace SimulIDE.src.gui.circuitwidget
 //            else m_filePath = oldFilePath;
 
 //            QApplication::restoreOverrideCursor();
-//            return saved;
-//        }
+            return saved;
+        }
 
 
-//        void Circuit::importCirc(QPointF eventpoint)
-//        {
+        protected void ImportCirc(Point eventpoint)
+        {
 //            if (m_con_started) return;
 
 //            m_pasting = true;
@@ -556,10 +539,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //                loadCircuit(fileName);
 
 //            m_pasting = false;
-//        }
+        }
 
-//        Component* Circuit::createItem(QString type, QString id)
-//        {
+        protected Component CreateItem(string type, string id)
+        {
 //            //qDebug() << "Circuit::createItem" << type << id;
 //            for (LibraryItem* libItem : ItemLibrary::self()->items())
 //            {
@@ -578,11 +561,11 @@ namespace SimulIDE.src.gui.circuitwidget
 //                    return comp;
 //                }
 //            }
-//            return 0l;
-//        }
+            return null;
+        }
 
-//        void Circuit::loadProperties(QDomElement element, Component* Item)
-//        {
+        protected void LoadProperties(XmlElement element, Component Item)
+        {
 //            loadObjectProperties(element, Item);
 
 //            Item->setLabelPos();
@@ -593,10 +576,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            int number = Item->objectName().split("-").last().toInt();
 
 //            if (number > m_seqNumber) m_seqNumber = number;               // Adjust item counter: m_seqNumber
-//        }
+        }
 
-//        void Circuit::loadObjectProperties(QDomElement element, QObject* Item)
-//        {
+        protected void LoadObjectProperties(XmlElement element, object Item)
+        {
 //            QHash<QString, QString> atrMap;          // Make properties case insentive
 //            QDomNamedNodeMap atrs = element.attributes();
 
@@ -656,10 +639,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //                else Item->setProperty(chName, value);
 //                //else qDebug() << "    ERROR!!! Circuit::loadObjectProperties\n  unknown type:  "<<"name "<<name<<"   value "<<value ;
 //            }
-//        }
+        }
 
-//        void Circuit::removeItems()                     // Remove Selected items
-//        {
+        protected void RemoveItems()                     // Remove Selected items
+        {
 //            if (m_con_started) return;
 
 //            m_busy = true;
@@ -692,10 +675,10 @@ namespace SimulIDE.src.gui.circuitwidget
 
 //            if (pauseSim) Simulator::self()->runContinuous();
 //            m_busy = false;
-//        }
+        }
 
-//        void Circuit::removeComp(Component* comp)
-//        {
+        protected void RemoveComp(Component comp)
+        {
 //            m_compRemoved = false;
 //            comp->remove();
 //            if (!m_compRemoved) return;
@@ -705,15 +688,15 @@ namespace SimulIDE.src.gui.circuitwidget
 //            if (items().contains(comp)) removeItem(comp);
 //            //comp->deleteLater();
 //            delete comp;
-//        }
+        }
 
-//        void Circuit::compRemoved(bool removed) // Arduino doesn't like to be removed while circuit is running
-//        {
+        protected void СompRemoved(bool removed) // Arduino doesn't like to be removed while circuit is running
+        {
 //            m_compRemoved = removed;
-//        }
+        }
 
-//        void Circuit::remove() // Remove everything ( Clear Circuit )
-//        {
+        protected void Remove() // Remove everything ( Clear Circuit )
+        {
 //            if (m_con_started) return;
 
 //            //qDebug() << m_compList.size();
@@ -738,20 +721,20 @@ namespace SimulIDE.src.gui.circuitwidget
 //            }
 //            //m_deleting = false;
 //            m_busy = false;
-//        }
+        }
 
-//        bool Circuit::deleting()
-//        {
-//            return m_deleting;
-//        }
+        protected bool Deleting()
+        {
+            return deleting;
+        }
 
-//        void Circuit::deselectAll()
-//        {
+        protected void DeselectAll()
+        {
 //            for (QGraphicsItem* item : selectedItems()) item->setSelected(false);
-//        }
+        }
 
-//        void Circuit::saveState()
-//        {
+        protected void SaveState()
+        {
 //            if (m_con_started) return;
 
 //            //qDebug() << "saving state";
@@ -784,10 +767,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            if (!title.endsWith('*')) MainWindow::self()->setWindowTitle(title + '*');
 
 //            m_deleting = false;
-//        }
+        }
 
-//        void Circuit::saveChanges()
-//        {
+        protected void SaveChanges()
+        {
 //            //qDebug() << "Circuit::saveChanges";
 //            if (m_busy)
 //            {
@@ -816,16 +799,16 @@ namespace SimulIDE.src.gui.circuitwidget
 
 //            if (saveDom(m_backupPath, &m_domDoc))
 //                MainWindow::self()->settings()->setValue("backupPath", m_backupPath);
-//        }
+        }
 
-//        void Circuit::setChanged()
-//        {
+        protected void SetChanged()
+        {
 //            m_changed = true;
-//        }
+        }
 
 
-//        void Circuit::undo()
-//        {
+        protected void Undo()
+        {
 //            if (m_con_started) return;
 
 //            if (m_undoStack.isEmpty()) return;
@@ -845,10 +828,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            loadDomDoc(&m_domDoc);
 
 //            if (pauseSim) Simulator::self()->runContinuous();
-//        }
+        }
 
-//        void Circuit::redo()
-//        {
+        protected void Redo()
+        {
 //            if (m_con_started) return;
 
 //            if (m_redoStack.isEmpty()) return;
@@ -868,10 +851,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            loadDomDoc(&m_domDoc);
 
 //            if (pauseSim) Simulator::self()->runContinuous();
-//        }
+        }
 
-//        void Circuit::copy(QPointF eventpoint)
-//        {
+        protected void Copy(Point eventpoint)
+        {
 //            if (m_con_started) return;
 
 //            m_eventpoint = togrid(eventpoint);
@@ -910,10 +893,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //            QString clipTextText = px + "," + py + "eventpoint" + m_copyDoc.toString();
 //            QClipboard* clipboard = QApplication::clipboard();
 //            clipboard->setText(clipTextText);
-//        }
+        }
 
-//        void Circuit::paste(QPointF eventpoint)
-//        {
+        protected void Paste(Point eventpoint)
+        {
 //            if (m_con_started) return;
 
 //            QClipboard* clipboard = QApplication::clipboard();
@@ -945,13 +928,13 @@ namespace SimulIDE.src.gui.circuitwidget
 //            setAnimate(animate);
 
 //            if (pauseSim) Simulator::self()->runContinuous();
-//        }
+        }
 
-//        bool Circuit::pasting() { return m_pasting; }
-//        QPointF Circuit::deltaMove() { return m_deltaMove; }
+        protected bool Pasting() { return pasting; }
+        protected Point DeltaMove() { return deltaMove; }
 
-//        void Circuit::newconnector(Pin* startpin)
-//        {
+        protected void Newconnector(Pin startpin)
+        {
 //            saveState();
 
 //            //if ( m_subcirmode ) return;
@@ -970,37 +953,37 @@ namespace SimulIDE.src.gui.circuitwidget
 //            new_connector->addConLine(p1.x(), p1.y(), p2.x(), p2.y(), 0);
 
 //            addItem(new_connector);
-//        }
+        }
 
-//        void Circuit::closeconnector(Pin* endpin)
-//        {
+        protected void Closeconnector(Pin endpin)
+        {
 //            m_con_started = false;
 //            new_connector->closeCon(endpin, /*connect=*/true);
-//        }
+        }
 
-//        void Circuit::deleteNewConnector()
-//        {
+        protected void DeleteNewConnector()
+        {
 //            if (m_con_started)
 //            {
 //                new_connector->remove();
 //                m_con_started = false;
 //            }
-//        }
+        }
 
-//        void Circuit::updateConnectors()
-//        {
+        protected void UpdateConnectors()
+        {
 //            for (Component* comp : m_conList)
 //            {
 //                Connector* con = static_cast<Connector*>(comp);
 //                con->updateLines();
 //            }
-//        }
+        }
 
-//        void Circuit::constarted(bool started) { m_con_started = started; }
-//        bool Circuit::is_constarted() { return m_con_started; }
+        protected void Constarted(bool started) { con_started = started; }
+        protected bool Is_constarted() { return con_started; }
 
-//        void Circuit::convertSubCircs() // Convert old subcircuits:
-//        {
+        protected void ConvertSubCircs() // Convert old subcircuits:
+        {
 //            QString subCirPath = QFileDialog::getExistingDirectory(0L,
 //                                   tr("Select Directory"),
 //                                   m_filePath,
@@ -1081,10 +1064,10 @@ namespace SimulIDE.src.gui.circuitwidget
 //                QString pkgPath = subCirPath + "converted/" + strippedName(packag); // Copy pkg file as well
 //                pkgFile.copy(pkgPath);
 //            }
-//        }
+        }
 
-//        void Circuit::createSubcircuit()
-//        {
+        protected void CreateSubcircuit()
+        {
 //            if (m_con_started) return;
 
 //            QString fileName = m_filePath;
@@ -1308,11 +1291,11 @@ namespace SimulIDE.src.gui.circuitwidget
 //    out << subcircuit;
 //            file.close();
 //            //qDebug() <<"Circuit::createSubcircuit\n" << subcircuit;
-//        }
+        }
 
 
-//        void Circuit::bom()
-//        {
+        protected void Bom()
+        {
 //            if (m_con_started) return;
 
 //            QString fileName = m_filePath;
@@ -1379,9 +1362,9 @@ namespace SimulIDE.src.gui.circuitwidget
 //    {
 //        QGraphicsScene::mousePressEvent( event );
 //        }
-//    }
+    }
 
-//    void Circuit::mouseReleaseEvent(QGraphicsSceneMouseEvent* event )
+//    protected void MouseReleaseEvent(QGraphicsSceneMouseEvent* event )
 //    {
 //        if ( event->button() == Qt::LeftButton )
 //    {
@@ -1538,7 +1521,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //        }
 //    }
 
-//    void Circuit::drawBackground(QPainter* painter, const QRectF & rect )
+//    protected void DrawBackground(QPainter painter, Rect rect )
 //    {
 //        Q_UNUSED(rect);
 //        /*painter->setBrush(QColor( 255, 255, 255 ) );
@@ -1568,44 +1551,44 @@ namespace SimulIDE.src.gui.circuitwidget
 //        }
 //    }
 
-//    void Circuit::updatePin(ePin* epin, std::string newId)
-//    {
+    protected void UpdatePin(ePin epin, string newId)
+    {
 //        QString pinId = QString::fromStdString(newId);
 //        Pin* pin = static_cast<Pin*>(epin);
 
 //        addPin(pin, pinId);
-//    }
+    }
 
-//    void Circuit::addPin(Pin* pin, QString pinId)
-//    {
+    protected void AddPin(Pin pin, string pinId)
+    {
 //        //qDebug() <<"Pin::Pin"<<pinId;
 //        m_pinMap[pinId] = pin;
-//    }
+    }
 
-//    void Circuit::removePin(QString pinId)
-//    {
+    protected void RemovePin(string pinId)
+    {
 //        m_pinMap.remove(pinId);
-//    }
+    }
 
-//    bool Circuit::drawGrid()
-//    {
-//        return !m_hideGrid;
-//    }
-//    void Circuit::setDrawGrid(bool draw)
-//    {
+    protected bool DrawGrid()
+    {
+        return !hideGrid;
+    }
+    protected void SetDrawGrid(bool draw)
+    {
 //        m_hideGrid = !draw;
 //        if (m_hideGrid) MainWindow::self()->settings()->setValue("Circuit/hideGrid", "true");
 //        else MainWindow::self()->settings()->setValue("Circuit/hideGrid", "false");
 //        update();
-//    }
+    }
 
-//    bool Circuit::showScroll()
-//    {
-//        return m_showScroll;
-//    }
+    protected bool ShowScroll()
+    {
+        return showScroll;
+    }
 
-//    void Circuit::setShowScroll(bool show)
-//    {
+    protected void SetShowScroll(bool show)
+    {
 //        m_showScroll = show;
 //        if (show)
 //        {
@@ -1619,266 +1602,119 @@ namespace SimulIDE.src.gui.circuitwidget
 //            m_graphicView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 //            MainWindow::self()->settings()->setValue("Circuit/showScroll", "false");
 //        }
-//    }
+    }
 
-//    bool Circuit::animate()
-//    {
-//        return m_animate;
-//    }
+    protected bool Animate()
+    {
+        return animate;
+    }
 
-//    void Circuit::setAnimate(bool an)
-//    {
+    protected void SetAnimate(bool an)
+    {
 //        m_animate = an;
 //        update();
-//    }
+    }
 
-//    double Circuit::fontScale()
-//    {
-//        return MainWindow::self()->fontScale();
-//    }
+    protected double FontScale()
+    {
+        return MainWindow.Self().FontSize;
+    }
 
-//    void Circuit::setFontScale(double scale)
-//    {
+    protected void SetFontScale(double scale)
+    {
 //        MainWindow::self()->setFontScale(scale);
-//    }
+    }
 
-//    int Circuit::autoBck()
-//    {
-//        return MainWindow::self()->autoBck();
-//    }
+    protected int AutoBck()
+    {
+            //return MainWindow.Self().AutoBck();
+            return 0;
+    }
 
-//    void Circuit::setAutoBck(int secs)
-//    {
+    protected void SetAutoBck(int secs)
+    {
 //        //qDebug() << "Circuit::setAutoBck"<< secs;
 //        m_bckpTimer.stop();
 //        if (secs < 1) secs = 0;
 //        else m_bckpTimer.start(secs * 1000);
 
 //        MainWindow::self()->setAutoBck(secs);
-//    }
+    }
 
-//    int Circuit::noLinAcc()
-//    {
-//        return Simulator::self()->noLinAcc();
-//    }
+    protected int NoLinAcc()
+    {
+        return Simulator.Self().NoLinAcc();
+    }
 
-//    void Circuit::setNoLinAcc(int ac)
-//    {
+    protected void SetNoLinAcc(int ac)
+    {
 //        Simulator::self()->setNoLinAcc(ac);
-//    }
+    }
 
-//    int Circuit::reactStep()
-//    {
-//        return Simulator::self()->reaClock();
-//    }
+    protected int ReactStep()
+    {
+        return Simulator.Self().ReaClock();
+    }
 
-//    void Circuit::setReactStep(int steps)
-//    {
-//        Simulator::self()->setReaClock(steps);
-//    }
+    protected void SetReactStep(int steps)
+    {
+        Simulator.Self().SetReaClock(steps);
+    }
 
-//    int Circuit::circSpeed()
-//    {
-//        return Simulator::self()->simuRate();
-//    }
-//    void Circuit::setCircSpeed(int rate)
-//    {
+    protected int CircSpeed()
+    {
+        return Simulator.Self().SimuRate();
+    }
+    protected void SetCircSpeed(int rate)
+    {
 //        Simulator::self()->simuRateChanged(rate);
-//    }
+    }
 
-//    QList<Component*>* Circuit::compList() { return &m_compList; }
-//    QList<Component*>* Circuit::conList() { return &m_conList; }
+    protected enum Langs{English = 0,French,German,Russian,Spanish,Pt_Brasil}
+    protected Langs Lang() { return lang; }
+    protected Connector GetNewConnector() { return new_connector; }
+    
+    protected string GetFileName(){ return filePath; }
 
+    protected Langs lang;
 
+    protected XmlDocument domDoc;
+    protected XmlDocument copyDoc;
 
+    protected string filePath;
+    protected string backupPath;
 
-
-
-    //        class MAINMODULE_EXPORT Circuit : public QGraphicsScene
-    //{
-    //    Q_OBJECT
-
-    //    Q_PROPERTY(int Speed     READ circSpeed WRITE setCircSpeed DESIGNABLE true USER true )
-    //    Q_PROPERTY(int ReactStep READ reactStep WRITE setReactStep DESIGNABLE true USER true )
-    //    Q_PROPERTY(int NoLinAcc  READ noLinAcc  WRITE setNoLinAcc  DESIGNABLE true USER true )
-
-
-    //    Q_PROPERTY(bool Draw_Grid        READ drawGrid   WRITE setDrawGrid   DESIGNABLE true USER true )
-    //    Q_PROPERTY(bool Show_ScrollBars  READ showScroll WRITE setShowScroll DESIGNABLE true USER true )
-    //    Q_PROPERTY(bool Animate          READ animate    WRITE setAnimate    DESIGNABLE true USER true )
-    //    Q_PROPERTY(double Font_Scale     READ fontScale  WRITE setFontScale  DESIGNABLE true USER true )
-    //    Q_PROPERTY(int Auto_Backup_Secs READ autoBck    WRITE setAutoBck    DESIGNABLE true USER true )
-    //    Q_PROPERTY(Langs Language        READ lang       WRITE setLang       DESIGNABLE true USER true )
-    //    Q_ENUMS(Langs )
-
-    //    public:
-    //        Circuit(qreal x, qreal y, qreal width, qreal height, QGraphicsView* parent);
-    //        ~Circuit();
-
-    //        enum Langs
-    //        {
-    //            English = 0,
-    //            French,
-    //            German,
-    //            Russian,
-    //            Spanish,
-    //            Pt_Brasil
-    //        };
-
-    //        static Circuit* self() { return m_pSelf; }
-
-    //        int reactStep();
-    //        void setReactStep(int steps);
-
-    //        int circSpeed();
-    //        void setCircSpeed(int rate);
-
-    //        int noLinAcc();
-    //        void setNoLinAcc(int ac);
-
-    //        bool drawGrid();
-    //        void setDrawGrid(bool draw);
-
-    //        bool showScroll();
-    //        void setShowScroll(bool show);
-
-    //        bool animate();
-    //        void setAnimate(bool an);
-
-    //        double fontScale();
-    //        void setFontScale(double scale);
-
-    //        int autoBck();
-    //        void setAutoBck(int secs);
-
-    //        Langs lang() { return m_lang; }
-    //        void setLang(Langs lang);
-
-    //        QString loc();
-    //        void setLoc(QString loc);
-
-    //        void removeItems();
-    //        void removeComp(Component* comp);
-    //        void remove();
-    //        bool deleting();
-    //        void compRemoved(bool removed);
-    //        void saveState();
-    //        void setChanged();
-
-    //        void deselectAll();
-
-    //        void drawBackground(QPainter* painter, const QRectF &rect );
-
-    //        Pin* findPin(int x, int y, QString id);
-
-    //        void loadCircuit(QString &fileName );
-    //        bool saveCircuit(QString &fileName );
-
-    //        Component* createItem(QString name, QString id);
-
-    //        QString newSceneId();
-
-    //        void newconnector(Pin* startpin);
-    //        void closeconnector(Pin* endpin);
-    //        void deleteNewConnector();
-    //        void updateConnectors();
-    //        Connector* getNewConnector() { return new_connector; }
-
-    //        QList<Component*>* compList();
-    //        QList<Component*>* conList();
-
-    //        void constarted(bool started);
-    //        bool is_constarted();
-
-    //        bool pasting();
-    //        QPointF deltaMove();
-
-    //        void addPin(Pin* pin, QString pinId);
-    //        void updatePin(ePin* epin, std::string newId);
-    //        void removePin(QString pinId);
-
-    //        const QString getFileName() const { return m_filePath; }
-
-    //    QString getCompId(QString name);
-
-    //    signals:
-    //        void keyEvent(QString key, bool pressed);
-
-    //    public slots:
-    //        void createSubcircuit();
-    //    void copy(QPointF eventpoint);
-    //    void paste(QPointF eventpoint);
-    //    void undo();
-    //    void redo();
-    //    void importCirc(QPointF eventpoint);
-    //    void bom();
-    //    void saveChanges();
-
-    //    protected:
-    //        void mousePressEvent(QGraphicsSceneMouseEvent* event );
-    //    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event );
-    //    void mouseMoveEvent(QGraphicsSceneMouseEvent* event );
-    //    void keyPressEvent(QKeyEvent* event );
-    //    void keyReleaseEvent(QKeyEvent* event );
-    //    void dropEvent(QGraphicsSceneDragDropEvent* event );
-
-    //    private:
-    //        void loadDomDoc(QDomDocument* doc);
-    //    void loadProperties(QDomElement element, Component* Item);
-    //    void loadObjectProperties(QDomElement element, QObject* Item);
-    //    void circuitToDom();
-    //    void listToDom(QDomDocument* doc, QList<Component*>* complist);
-    //    void objectToDom(QDomDocument* doc, QObject* object );
-    //    bool saveDom(QString &fileName, QDomDocument* doc);
-
-    //    void updatePinName(QString* name);
-
-    //    void convertSubCircs();
-
-    //    static Circuit* m_pSelf;
-
-    //    Langs m_lang;
-
-    //    QDomDocument m_domDoc;
-    //    QDomDocument m_copyDoc;
-
-    //    QString m_filePath;
-    //    QString m_backupPath;
-
-    //    QRect m_scenerect;
+    protected Rect scenerect;
     //    QGraphicsView* m_graphicView;
-    //    Connector* new_connector;
+    protected Connector new_connector;
 
-    //    int m_seqNumber;
-    //    int m_error;
+    protected int seqNumber;
+    protected int error;
 
-    //    bool m_con_started;
-    //    bool m_pasting;
-    //    bool m_hideGrid;
-    //    bool m_showScroll;
-    //    bool m_compRemoved;
-    //    bool m_animate;
-    //    bool m_changed;
-    //    bool m_deleting;
-    //    bool m_busy;
+    protected bool con_started;
+    protected bool pasting;
+    protected bool hideGrid;
+    protected bool showScroll;
+    protected bool compRemoved;
+    protected bool animate;
+    protected bool changed;
+    protected bool deleting;
+    protected bool busy;
 
-    //    QPointF m_eventpoint;
-    //    QPointF m_deltaMove;
+    protected Point eventpoint;
+    protected Point deltaMove;
 
         List<Component> compList=new List<Component>();   // Component list
         List<Component> conList= new List<Component>();    // Connector list
 
-        //    QHash<QString, Pin*> m_pinMap;    // Pin list
+        Dictionary<string, Pin> pinMap;    // Pin list
 
-        //    QList<QDomDocument*> m_undoStack;
-        //    QList<QDomDocument*> m_redoStack;
+        List<XmlDocument> undoStack;
+        List<XmlDocument> redoStack;
 
-        //    Simulator simulator;
+        protected Simulator simulator;
 
         //    QTimer m_bckpTimer;
-        //};
-
-
 
 
         public void Draw(OpenGL gl)
