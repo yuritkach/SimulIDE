@@ -157,9 +157,11 @@ namespace SimulIDE.src.gui.editor
             compProc.StartInfo.UseShellExecute = false;
             compProc.StartInfo.CreateNoWindow = false;
             compProc.StartInfo.RedirectStandardOutput = true;
+            compProc.StartInfo.RedirectStandardError = true;
             compProc.Start();
             string stdout = compProc.StandardOutput.ReadToEnd();
             string stderr = compProc.StandardError.ReadToEnd();
+
             compProc.WaitForExit();
             compProc.Close();
 
