@@ -1,4 +1,5 @@
-﻿using SharpGL.WPF;
+﻿using SharpGL;
+using SharpGL.WPF;
 using SimulIDE.src.gui.circuitwidget.components;
 using SimulIDE.src.gui.graphics;
 using System;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SimulIDE.src.gui.circuitwidget
 {
@@ -19,8 +21,8 @@ namespace SimulIDE.src.gui.circuitwidget
         public CircuitView(OpenGLControl parent):base(parent)
         {
             self = this;
-
-     //       circuit = null;
+            ScaleCoef = 1;
+            circuit = null;
             enterItem = null;
             Clear();
 
@@ -89,18 +91,17 @@ namespace SimulIDE.src.gui.circuitwidget
 
         public void Clear()
         {
-        //            if (m_circuit)
-        //            {
-        //                m_circuit->remove();
-        //                m_circuit->deleteLater();
-        //            }
-        //            resetMatrix();
+                    if (circuit!=null)
+                    {
+//                        circuit.Remove();
+//                        circuit.DeleteLater();
+                    }
+                    //????????TYV ResetMatrix();
 
-        //            m_enterItem = 0l;
-
-        //            m_circuit = new Circuit(-1600, -1200, 3200, 2400, this);
-        //            setScene(m_circuit);
-        //            centerOn(900, 600);
+                    enterItem = null;
+                    circuit = new Circuit();
+//                  SetScene(circuit);
+//                    centerOn(900, 600);
         //            //setCircTime( 0 );
         }
 
@@ -300,11 +301,147 @@ namespace SimulIDE.src.gui.circuitwidget
         //        QPlainTextEdit* m_info;
 
         Component enterItem;
-    //    Circuit circuit;
+        Circuit circuit;
 
         Point eventpoint;
-        
+
+        protected override void DrawSelf(OpenGL gl)
+        {
+            base.DrawSelf(gl);
+
+            gl.LineWidth(2);
+            gl.Begin(OpenGL.GL_LINES);
+            gl.Color(1f, 1f, 1f);
+
+            
+            var xx1 = XX(gl, 0);
+            var xx2 = XX(gl, 100);
+            var yy1 = YY(gl, 0);
+            var yy2 = YY(gl, 100);
+            gl.Vertex(xx1, yy1, 0f);
+            gl.Vertex(xx2, yy2, 0f);
+
+            gl.End();
+
+            circuit.Draw(gl);
+
+        }
+
+
+        public override void Draw(OpenGL gl)
+        {
+            //base.Draw(gl);
+            gl.Scale(ScaleCoef, ScaleCoef, 0);
+            gl.Translate(OffsetX * (2 / ViewPortWidth)/ScaleCoef, -OffsetY * (2 / ViewPortHeight) / ScaleCoef, 0);
+            DrawSelf(gl);
+            DrawChild(gl);
+
+        }
+
+        public override void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(sender, e);
+            double oldScaleCoef = ScaleCoef;
+            double scaleOffset = e.Delta > 0 ? 0.1 : -0.1;
+            if ((ScaleCoef + scaleOffset) >= 0.1)
+                ScaleCoef += scaleOffset;
+            else
+                ScaleCoef = oldScaleCoef;
+        }
+
+        protected bool leftMouseDown;
+        protected bool middleMouseDown;
+
+        protected enum MouseModes { none, MoveSelected, DoOffset, MoveModifier };
+        protected MouseModes mode;
+
+        protected void SetMouseButtonsState(MouseEventArgs e)
+        {
+            leftMouseDown = (e.LeftButton == MouseButtonState.Pressed);
+            middleMouseDown = (e.RightButton == MouseButtonState.Pressed);
+            mode = MouseModes.none;
+        }
+
+        public override void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(sender, e);
+            SetMouseButtonsState(e);
+        }
+
+        public override void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(sender, e);
+            SetMouseButtonsState(e);
+            bool ctrl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            bool alt = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+            bool shift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+
+            //      if (ctrl)
+            //          AddPoint(false);
+            //      else
+            //          if (alt)
+            //          MakeSpline();
+            //      else
+            //          SelectPoint(shift);
+            mode = MouseModes.DoOffset;
+        }
+
+        public override void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            base.OnMouseMove(sender,e);
+            double x = e.GetPosition(sender as UIElement).X;
+            double y = e.GetPosition(sender as UIElement).Y;
+            //var point = FindPointUnderMouse();
+            if (leftMouseDown)
+            {
+                //if (point != null)
+                //{
+                //    if (point.IsModifier)
+                //        mode = MouseModes.MoveModifier;
+                //    else
+                //        if (point.Selected)
+                //        mode = MouseModes.MoveSelected;
+                //    else mode = MouseModes.none;
+                //}
+
+            }
+            else
+            if (middleMouseDown)
+                mode = MouseModes.DoOffset;
+
+            switch (mode)
+            {
+//                case MouseModes.MoveSelected: MoveSelectedPoints(x, y); break;
+//                case MouseModes.MoveModifier: MovePoint(point, x, y); break;
+                case MouseModes.DoOffset:
+                    {
+                        OffsetX += (x - currentMouseX);
+                        OffsetY += (y - currentMouseY);
+                    }; break;
+
+                default: break;
+            }
+            SetMouseCoordinats(x, y);
+
+            MainWindow.Self().Title = "x="+x.ToString() + "  y=" + y.ToString();
+
+        }
+
+
+        public void SetMouseCoordinats(double x, double y)
+        {
+            if (x >= 0 && x < ViewPortWidth)
+                currentMouseX = x;
+            if (y >= 0 && y < ViewPortHeight)
+                currentMouseY = y;
+        }
+
+        protected double currentMouseX;
+        protected double currentMouseY;
 
 
     }
 }
+
+
+

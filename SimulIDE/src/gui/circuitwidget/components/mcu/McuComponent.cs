@@ -20,7 +20,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
         public static McuComponent Self() { return self; }
         public bool canCreate = true;
 
-        public McuComponent(Canvas parent, string type, string id):base(parent, type, id )
+        public McuComponent(string type, string id):base(type, id )
 //??????            , MemData()
         {
             //    Q_UNUSED(McuComponent_properties);

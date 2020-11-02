@@ -14,17 +14,18 @@ namespace SimulIDE.src.gui.graphics
 
     public class Drawable
     {
-        public List<Drawable> Children { get; set; }
+        public List<Drawable> Children = new List<Drawable>();
 
         public double ViewPortWidth { get; set; }
         public double ViewPortHeight { get; set; }
+
 
         protected double XX(OpenGL gl, double x) { return 2 / (double)gl.RenderContextProvider.Width * x - 1; }
         protected double YY(OpenGL gl, double y) { return (2 / (double)gl.RenderContextProvider.Height * y - 1) * -1; }
 
         public double ScaleCoef { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
         public double RotateUngle { get; set; }
 
 
@@ -50,19 +51,38 @@ namespace SimulIDE.src.gui.graphics
             gl.End();
         }
 
-        public virtual void SetViewPortSize(double width, double height) { }
-        public virtual void OnMouseMove(object e, IInputElement element) { }
+        public double VP2CX(double x)
+        {
+            double offset = (ViewPortWidth * ScaleCoef - ViewPortWidth) / 2f;
+            //return ((x + offset) / ScaleCoef - OffsetX - OffsetLeft) / backgroundScale;
+            return 0;
+        }
+        public double VP2CY(double y)
+        {
+            double offset = (ViewPortHeight * ScaleCoef - ViewPortHeight) / 2f;
+            //return ((y + offset) / ScaleCoef - OffsetY - OffsetTop) / backgroundScale;
+            return 0;
+        }
+
+
+        public virtual void SetViewPortSize(double width, double height)
+        {
+          ViewPortWidth = width;
+          ViewPortHeight = height;
+        }
+
+        public virtual void OnMouseMove(object sender,MouseEventArgs e) { }
         public virtual void OnMouseDown(object sender, MouseButtonEventArgs e) { }
         public virtual void OnMouseUp(object sender, MouseButtonEventArgs e) { }
         public virtual void OnMouseLeave(object sender, MouseEventArgs e) { }
         public virtual void OnMouseWheel(object sender, MouseWheelEventArgs e) { }
         public virtual void OnMouseEnter(object sender, MouseEventArgs e) { }
 
-        public virtual void DrawSelf(OpenGL gl)
+        protected virtual void DrawSelf(OpenGL gl)
         {
         }
 
-        public virtual void DrawChild(OpenGL gl)
+        protected virtual void DrawChild(OpenGL gl)
         {
             foreach (var el in Children)
                 el.Draw(gl);

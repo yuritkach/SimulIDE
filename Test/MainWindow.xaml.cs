@@ -25,7 +25,7 @@ namespace Test
         {
             InitializeComponent();
 
-            CircLabel label = new CircLabel(canvas);
+            CircLabel label = new CircLabel();
             label.SetPlainText("blablabla");
             label.labelx = 100;
             label.labely = 100;

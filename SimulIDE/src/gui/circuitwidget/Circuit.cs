@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SharpGL;
+using SimulIDE.src.gui.circuitwidget.components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,37 +23,36 @@ namespace SimulIDE.src.gui.circuitwidget
 //    QT_TRANSLATE_NOOP("App::Property","Auto Backup Secs")
 //};
 
-//        Circuit* Circuit::m_pSelf = 0l;
+        private static Circuit self = null;
+        public static Circuit Self() { return self; }
 
-//        Circuit::Circuit(qreal x, qreal y, qreal width, qreal height, QGraphicsView* parent)
-//       : QGraphicsScene(x, y, width, height, parent)
-//        {
+        public Circuit()
+        {
 //            Q_UNUSED(Circuit_properties);
 
-//            setObjectName("Circuit");
-//            setParent(parent);
-//            m_graphicView = parent;
-//            m_scenerect.setRect(x, y, width, height);
-//            setSceneRect(QRectF(x, y, width, height));
+              //SetObjectName("Circuit");
+              self = this;
 
-//            m_pSelf = this;
-
-//            m_busy = false;
-//            m_changed = false;
+             busy = false;
+             changed = false;
 //            m_pasting = false;
 //            m_deleting = false;
 //            m_con_started = false;
 
-//            new_connector = 0l;
-//            m_seqNumber = 0;
+            new_connector = null;
+            seqNumber = 0;
 
-//            m_hideGrid = MainWindow::self()->settings()->value("Circuit/hideGrid").toBool();
-//            m_showScroll = MainWindow::self()->settings()->value("Circuit/showScroll").toBool();
-//            m_filePath = qApp->applicationDirPath() + "/new.simu";
+            //            m_hideGrid = MainWindow::self()->settings()->value("Circuit/hideGrid").toBool();
+            //            m_showScroll = MainWindow::self()->settings()->value("Circuit/showScroll").toBool();
+            //            m_filePath = qApp->applicationDirPath() + "/new.simu";
 
-//            connect(&m_bckpTimer, SIGNAL(timeout()), this, SLOT(saveChanges()));
-//            //m_bckpTimer.start( m_autoBck*1000 );
-//        }
+            //            connect(&m_bckpTimer, SIGNAL(timeout()), this, SLOT(saveChanges()));
+            //            //m_bckpTimer.start( m_autoBck*1000 );
+
+
+            compList.Add();
+
+        }
 
 //        Circuit::~Circuit()
 //        {
@@ -1864,18 +1865,32 @@ namespace SimulIDE.src.gui.circuitwidget
     //    QPointF m_eventpoint;
     //    QPointF m_deltaMove;
 
-    //    QList<Component*> m_compList;   // Component list
-    //    QList<Component*> m_conList;    // Connector list
+        List<Component> compList=new List<Component>();   // Component list
+        List<Component> conList= new List<Component>();    // Connector list
 
-    //    QHash<QString, Pin*> m_pinMap;    // Pin list
+        //    QHash<QString, Pin*> m_pinMap;    // Pin list
 
-    //    QList<QDomDocument*> m_undoStack;
-    //    QList<QDomDocument*> m_redoStack;
+        //    QList<QDomDocument*> m_undoStack;
+        //    QList<QDomDocument*> m_redoStack;
 
-    //    Simulator simulator;
+        //    Simulator simulator;
 
-    //    QTimer m_bckpTimer;
-    //};
+        //    QTimer m_bckpTimer;
+        //};
 
-}
+
+
+
+        public void Draw(OpenGL gl)
+        {
+            // Draw components
+            foreach (var comp in compList)
+                comp.Draw(gl);
+            //Draw connectors
+//            foreach (var con in conList)
+//                con.Draw(gl);
+            
+        }
+
+    }
 }

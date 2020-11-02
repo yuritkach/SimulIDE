@@ -17,7 +17,7 @@ namespace SimulIDE.src.gui.circuitwidget
 //    QT_TRANSLATE_NOOP("App::Property","Logic Symbol")
 //};
 
-        public Chip(Canvas parent, string type, string id):base(parent, type, id )
+        public Chip(string type, string id):base(type, id )
         {
             numpins = 0;
             isLS = false;

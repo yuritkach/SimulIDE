@@ -221,7 +221,7 @@ namespace SimulIDE.src.gui.circuitwidget
         protected OpenGLControl control;
 
 
-        private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)=>circView.OnMouseMove(e, sender as IInputElement);
+        private void OpenGLControl_MouseMove(object sender, MouseEventArgs e)=>circView.OnMouseMove(sender as IInputElement,e);
         private void OpenGLControl_MouseDown(object sender, MouseButtonEventArgs e)=>circView.OnMouseDown(sender as IInputElement,e);
         private void OpenGLControl_MouseUp(object sender, MouseButtonEventArgs e)=>circView.OnMouseUp(this,e);
         private void OpenGLControl_MouseLeave(object sender, MouseEventArgs e)=>circView.OnMouseLeave(this,e);

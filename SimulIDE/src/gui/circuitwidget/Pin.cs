@@ -14,7 +14,7 @@ namespace SimulIDE.src.gui.circuitwidget
     public class Pin:CircLabel,INamedObject
     {
 
-        public Pin(int angle, Point pos, string id, int index, Canvas parent):base(parent)
+        public Pin(int angle, Point pos, string id, int index):base()
         {
             epin = new ePin(id, index);
 

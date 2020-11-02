@@ -11,7 +11,7 @@ namespace SimulIDE.src.gui.circuitwidget
     public class Connector:Component
     {
 
-        public Connector(Canvas parent, string type, string id, Pin startpin, Pin endpin):base(parent, type, id )
+        public Connector(string type, string id, Pin startpin, Pin endpin):base(type, id )
         {
         //    //m_eNode = 0l;
         //    m_actLine = 0;

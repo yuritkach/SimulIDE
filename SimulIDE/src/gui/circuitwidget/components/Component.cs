@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpGL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Windows.Media;
 
 namespace SimulIDE.src.gui.circuitwidget.components
 {
-    public class Component:Canvas,INamedObject // +добавить интерфейсы..
+    public class Component:INamedObject // +добавить интерфейсы..
     {
 
 
@@ -22,7 +23,7 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //    QT_TRANSLATE_NOOP("App::Property","Color")
         //};
 
-        public Component(Canvas parent, string type, string id)
+        public Component(string type, string id)
         {
             help = null;
             value = 0;
@@ -57,13 +58,13 @@ namespace SimulIDE.src.gui.circuitwidget.components
                  }
             }
 
-            idLabel = new CircLabel(this);
+            idLabel = new CircLabel();
             idLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 128)); // darkBlue
             idLabel.SetFontSize(10);
             SetLabelPos(-16, -24, 0);
             SetShowId(false);
 
-            valLabel = new CircLabel(this);
+            valLabel = new CircLabel();
             valLabel.SetDefaultTextColor(Color.FromRgb(0, 0, 0)); // black
             SetValLabelPos(0, 0, 0);
             valLabel.SetFontSize(10);
@@ -693,6 +694,12 @@ namespace SimulIDE.src.gui.circuitwidget.components
         //    Pin[] pin;
 
         //typedef Component* (* createItemPtr) (QObject* parent, QString type, QString id);
+
+        public virtual void Draw(OpenGL gl)
+        {
+
+        }
+
     }
 }
 

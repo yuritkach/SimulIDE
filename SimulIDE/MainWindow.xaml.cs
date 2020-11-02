@@ -25,9 +25,13 @@ namespace SimulIDE
     /// </summary>
     public partial class MainWindow : Window
     {
+        protected static MainWindow self = null;
+        public static MainWindow Self() { return self; }
+
         public MainWindow()
         {
             InitializeComponent();
+            self = this;
 
             LoadCircHelp();
             CreateWidgets();
