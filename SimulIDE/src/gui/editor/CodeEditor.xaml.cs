@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
@@ -52,10 +53,31 @@ namespace SimulIDE.src.gui.editor
         }
     }
 
-    /// <summary>
-    /// Interaction logic for CodeEditor.xaml
-    /// </summary>
-    public partial class CodeEditor : ICSharpCode.AvalonEdit.TextEditor
+
+    public class BreakpointMargin : AbstractMargin
+    {
+        protected override HitTestResult HitTestCore(PointHitTestParameters hit)
+        {
+            return new PointHitTestResult(this, hit.HitPoint);
+        }
+
+        /// <inheritdoc/>
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            return new Size(20, 00);
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            //
+        }
+
+    }
+
+        /// <summary>
+        /// Interaction logic for CodeEditor.xaml
+        /// </summary>
+        public partial class CodeEditor : ICSharpCode.AvalonEdit.TextEditor
     {
         public CodeEditor()
         {
@@ -105,6 +127,12 @@ namespace SimulIDE.src.gui.editor
             TextArea.Caret.PositionChanged += (sender, e) =>
                 TextArea.TextView.InvalidateLayer(KnownLayer.Background);
 
+            BreakpointMargin z = new BreakpointMargin();
+            z.MouseLeftButtonDown += BreakpointArea_MouseLeftButtonDown;
+
+            TextArea.LeftMargins.Insert(0, z);
+
+
             //            QSettings* settings = MainWindow::self()->settings();
 
 
@@ -121,15 +149,19 @@ namespace SimulIDE.src.gui.editor
 
 //            connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
 //            connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
-//            connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
 //            connect(Simulator::self(), SIGNAL(pauseDebug()), this, SLOT(pause()));
 //            connect(Simulator::self(), SIGNAL(resumeDebug()), this, SLOT(resume()));
 
 //            setLineWrapMode(QPlainTextEdit::NoWrap);
 //            UpdateLineNumberAreaWidth(0);
-              HighlightCurrentLine();
         }
+
+        private void BreakpointArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //brkPoints.Add()
+        }
+
         ~CodeEditor()
         {
 //            QPropertyEditorWidget::self()->removeObject(this);
@@ -265,10 +297,10 @@ namespace SimulIDE.src.gui.editor
         //    return coincidences;
         //}
 
-        //QString CodeEditor::getFilePath()
-        //{
-        //    return (m_file);
-        //}
+        public string GetFilePath()
+        {
+           return file;
+        }
 
         public void SetCompilerPath()
         {
@@ -366,19 +398,14 @@ namespace SimulIDE.src.gui.editor
         //    if (debugger) debugger->upload();
         }
 
-        //void CodeEditor::addBreakPoint(int line)
-        //{
-        //    if (!m_debugging) return;
+        public void AddBreakPoint(int line)
+        {
+            if (!debugging) return;
+            int validLine = debugger.GetValidLine(line);
+            if (!brkPoints.Contains(line)) brkPoints.Add(validLine);
+        }
 
-
-        //    int validLine = debugger->getValidLine(line);
-
-        //    //qDebug() <<"CodeEditor::addBreakPoint" <<validLine;
-
-        //    if (!m_brkPoints.contains(line)) m_brkPoints.append(validLine);
-        //}
-
-        //void CodeEditor::remBreakPoint(int line) { m_brkPoints.removeOne(line); }
+        public void RemBreakPoint(int line) { brkPoints.RemoveAt(line); }
 
         public void Run()
         {
@@ -669,24 +696,6 @@ namespace SimulIDE.src.gui.editor
         //    m_lNumArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
         //}
 
-        protected void HighlightCurrentLine()
-        {
-
-        //    QList<QTextEdit::ExtraSelection> extraSelections;
-
-        //    if (!isReadOnly())
-        //    {
-        //        QTextEdit::ExtraSelection selection;
-        //        QColor lineColor = QColor(250, 240, 220);
-
-        //        selection.format.setBackground(lineColor);
-        //        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        //        selection.cursor = textCursor();
-        //        selection.cursor.clearSelection();
-        //        extraSelections.append(selection);
-        //    }
-        //    setExtraSelections(extraSelections);
-        }
 
         //void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent*event )
         //{
@@ -1111,7 +1120,6 @@ namespace SimulIDE.src.gui.editor
 //    private slots:
 //        void updateLineNumberAreaWidth(int newBlockCount);
 //    void updateLineNumberArea( const QRect &, int );
-//    void highlightCurrentLine();
 //    void runClockTick();
 
 //    private:
