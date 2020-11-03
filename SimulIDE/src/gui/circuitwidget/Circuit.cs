@@ -1674,7 +1674,7 @@ namespace SimulIDE.src.gui.circuitwidget
     protected Langs Lang() { return lang; }
     protected Connector GetNewConnector() { return new_connector; }
     
-    protected string GetFileName(){ return filePath; }
+    public string GetFileName(){ return filePath; }
 
     protected Langs lang;
 

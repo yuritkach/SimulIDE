@@ -85,7 +85,7 @@ namespace SimulIDE.src.gui.editor
             return true;
         }
 
-        public void Upload()
+        public virtual void Upload()
         {
             if (loadStatus)
             {

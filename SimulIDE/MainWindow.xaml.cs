@@ -48,7 +48,6 @@ namespace SimulIDE
 
         }
 
-
         protected void ReadSettings()
         {
             //        restoreGeometry(m_settings.value("geometry").toByteArray());

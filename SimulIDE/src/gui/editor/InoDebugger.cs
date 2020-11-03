@@ -1,11 +1,14 @@
-﻿using System;
+﻿using SimulIDE.src.gui.circuitwidget;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace SimulIDE.src.gui.editor
 {
@@ -38,23 +41,30 @@ namespace SimulIDE.src.gui.editor
         }
         
 
-        public void Upload()
+        public override void Upload()
         {
-            //TYV            string circDir = Circuit.Self().GetFileName();
+            string circDir = Circuit.Self().GetFileName();
             string firmPath = firmware;
 
-            //TYV            if (circDir != "")
-            //TYV            {
-            //TYVQDir circuitDir = QFileInfo(circDir).absoluteDir();
-            //TYVm_firmware = circuitDir.absolutePath() + "/" + m_fileName + ".hex";
-            //TYV//qDebug() <<"InoDebugger::upload"<<m_firmware<<firmPath;
-            //TYVcircuitDir.remove(m_fileName + ".hex");
-            //TYVQFile::copy(firmPath, m_firmware);
-            //TYV}
-
+            if (circDir != "")
+            {
+                string circuitDir = System.IO.Path.GetDirectoryName(circDir);
+                firmware = circuitDir+ "\\" + fileName + ".hex";
+                if (File.Exists(firmware))
+                    File.Delete(firmware);
+                File.Copy(firmPath, firmware);
+            }
             base.Upload();
             firmware = firmPath;
         }
+
+        public static void DoEvents()
+        {
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                  new Action(delegate { }));
+        }
+
+        private string compError;
 
         public override int Compile()
         {
@@ -76,12 +86,10 @@ namespace SimulIDE.src.gui.editor
                 Directory.CreateDirectory(buildPath);
             Directory.CreateDirectory(buildPath+'\\'+fileName);
             var fileList = Directory.EnumerateFiles(fileDir);
-            foreach (string fileName in fileList) // Copy files to sketch folder
+            foreach (string filName in fileList) // Copy files to sketch folder
             {
-                string fn = System.IO.Path.GetFileName(fileName);
-                string fne = System.IO.Path.GetFileNameWithoutExtension(fileName);
-
-                File.Copy(fileDir +"\\"+ fn, buildPath + "\\" +fne+"\\"+ fn );
+                string fn = System.IO.Path.GetFileName(filName);
+                File.Copy(fileDir +"\\"+ fn, buildPath + "\\" +fileName+"\\"+ fn );
             }
             string ProcInoFile = buildPath + "\\" + fileName + "\\" + fileName + fileExt;
 
@@ -125,7 +133,7 @@ namespace SimulIDE.src.gui.editor
             /// , then debugger will hang!
             string cBuildPath = buildPath;
             //string preferencesPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/preferences.txt");
-            string cmd = compilerPath + "\\"+"arduino";
+            string cmd = compilerPath + "\\"+"arduino_debug";
 
 
 //            # ifndef Q_OS_UNIX
@@ -149,21 +157,32 @@ namespace SimulIDE.src.gui.editor
             outPane.AppendText(cmd+args);
             outPane.AppendText("\n\n");
 
+            compError = "";
 
             Process compProc = new Process();
             compProc.StartInfo.WorkingDirectory = fileDir;
             compProc.StartInfo.FileName = cmd;
             compProc.StartInfo.Arguments = args;
             compProc.StartInfo.UseShellExecute = false;
-            compProc.StartInfo.CreateNoWindow = false;
+            compProc.StartInfo.CreateNoWindow = true;
             compProc.StartInfo.RedirectStandardOutput = true;
             compProc.StartInfo.RedirectStandardError = true;
+            compProc.ErrorDataReceived += CompProc_ErrorDataReceived;
+         
             compProc.Start();
-            string stdout = compProc.StandardOutput.ReadToEnd();
-            string stderr = compProc.StandardError.ReadToEnd();
+            compProc.BeginErrorReadLine();
+            while (!compProc.StandardOutput.EndOfStream)
+            {
+                outPane.AppendText(compProc.StandardOutput.ReadLine()+"\n");
+                DoEvents();
+            }
 
             compProc.WaitForExit();
             compProc.Close();
+            string stderr = compError;
+
+            byte[] bytes = Encoding.Default.GetBytes(stderr);
+            stderr = Encoding.UTF8.GetString(bytes);
 
             outPane.AppendText(stderr);
             outPane.AppendText( "\n\n" );
@@ -197,6 +216,11 @@ namespace SimulIDE.src.gui.editor
             //QApplication::restoreOverrideCursor();
             return error;
             
+        }
+
+        private void CompProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            compError += e.Data+"\n";
         }
 
         public void GetVariables()
