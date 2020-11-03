@@ -1,4 +1,6 @@
-﻿using ICSharpCode.AvalonEdit.Highlighting;
+﻿using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Rendering;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
 using System;
 using System.Collections.Generic;
@@ -18,49 +20,37 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static SimulIDE.src.gui.editor.EditorPage;
 
-//# include <QPlainTextEdit>
-//# include <QObject>
-//# include "highlighter.h"
-//# include "outpaneltext.h"
-//# include "ramtable.h"
-
-//#include "utils.h"
-//#include "codeeditor.h"
-//#include "gcbdebugger.h"
-//#include "inodebugger.h"
-//#include "b16asmdebugger.h"
-//#include "avrasmdebugger.h"
-//#include "picasmdebugger.h"
-//#include "mcucomponent.h"
-//#include "mainwindow.h"
-//#include "simulator.h"
-//#include "circuitwidget.h"
-//#include "editorwindow.h"
-//#include "simuapi_apppath.h"
-
-
 namespace SimulIDE.src.gui.editor
 {
-
-    public class LineNumberArea : Page
+    public class HighlightCurrentLineBackgroundRenderer : IBackgroundRenderer
     {
+        private TextEditor _editor;
 
-        public LineNumberArea(CodeEditor editor)
+        public HighlightCurrentLineBackgroundRenderer(TextEditor editor)
         {
+            _editor = editor;
         }
-    
-//        public Size SizeHint(){
-//            return Size(codeEditor.LineNumberAreaWidth(), 0);
-//        }
 
-        public int LastPos;
+        public KnownLayer Layer
+        {
+            get { return KnownLayer.Background; }
+        }
 
-//    protected void ContextMenuEvent(event ContextMenuEvent);
-//    void paintEvent(QPaintEvent*event) { m_codeEditor->lineNumberAreaPaintEvent(event); }
+        public void Draw(TextView textView, DrawingContext drawingContext)
+        {
+            if (_editor.Document == null)
+                return;
 
-    private CodeEditor codeEditor;
+            textView.EnsureVisualLines();
+            var currentLine = _editor.Document.GetLineByOffset(_editor.CaretOffset);
+            foreach (var rect in BackgroundGeometryBuilder.GetRectsForSegment(textView, currentLine))
+            {
+                drawingContext.DrawRectangle(
+                    new SolidColorBrush(Color.FromArgb(0x40, 0, 0, 0xFF)), null,
+                    new Rect(rect.Location, new Size(textView.ActualWidth, rect.Height)));
+            }
+        }
     }
-
 
     /// <summary>
     /// Interaction logic for CodeEditor.xaml
@@ -71,15 +61,6 @@ namespace SimulIDE.src.gui.editor
         {
             InitializeComponent();
         }
-
-
-
-        //        static const char* CodeEditor_properties[] = {
-        //    QT_TRANSLATE_NOOP("App::Property","Font Size"),
-        //    QT_TRANSLATE_NOOP("App::Property","Tab Size"),
-        //    QT_TRANSLATE_NOOP("App::Property","Spaces Tabs"),
-        //    QT_TRANSLATE_NOOP("App::Property","Show Spaces")
-        //};
 
         public static readonly List<string> picInstr = new List<string>() {"addlw","addwf","andlw","andwf","bcf","bov","bsf","btfsc","btg","btfss",
             "clrf","clrw","clrwdt","comf","decf","decfsz","goto","incf","incfsz","iorlw","iorwf","movf","movlw","movwf","reset","retfie","retlw","return",
@@ -105,38 +86,27 @@ namespace SimulIDE.src.gui.editor
             parent.Children.Add(this);
             Name = "Editor";
             this.outPane = outPane;
-            lNumArea = new LineNumberArea(this);
-            //hlighter = new Highlighter(document());
             //appPath   = QCoreApplication::applicationDirPath();
 
             debugger = null;
-//            m_debugLine = 0;
-//            m_brkAction = 0;
-//            m_state = DBG_STOPPED;
-            //m_running   = false;
+            debugLine = 0;
+            brkAction = 0;
+            state = DBG_STOPPED;
+            running   = false;
             isCompiled = false;
             debugging = false;
             stepOver = false;
             driveCirc = false;
             ShowLineNumbers = true;
-            this.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance.GetDefinition("C++");
+            SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C++");
 
-            //            font.setFamily("Monospace");
-            //            m_font.setFixedPitch(true);
-            //            m_font.setPixelSize(m_fontSize);
-            //            setFont(m_font);
+            TextArea.TextView.BackgroundRenderers.Add(
+                new HighlightCurrentLineBackgroundRenderer(this));
+            TextArea.Caret.PositionChanged += (sender, e) =>
+                TextArea.TextView.InvalidateLayer(KnownLayer.Background);
 
             //            QSettings* settings = MainWindow::self()->settings();
 
-            //            if (settings->contains("Editor_show_spaces"))
-            //                setShowSpaces(settings->value("Editor_show_spaces").toBool());
-
-            //            if (settings->contains("Editor_tab_size"))
-            //                setTabSize(settings->value("Editor_tab_size").toInt());
-            //            else setTabSize(4);
-
-            //            if (settings->contains("Editor_font_size"))
-            //                setFontSize(settings->value("Editor_font_size").toInt());
 
             bool spacesTab = false;
 //            if (settings->contains("Editor_spaces_tabs"))
@@ -158,7 +128,7 @@ namespace SimulIDE.src.gui.editor
 
 //            setLineWrapMode(QPlainTextEdit::NoWrap);
 //            UpdateLineNumberAreaWidth(0);
-            HighlightCurrentLine();
+              HighlightCurrentLine();
         }
         ~CodeEditor()
         {
@@ -701,6 +671,7 @@ namespace SimulIDE.src.gui.editor
 
         protected void HighlightCurrentLine()
         {
+
         //    QList<QTextEdit::ExtraSelection> extraSelections;
 
         //    if (!isReadOnly())
@@ -1036,19 +1007,9 @@ namespace SimulIDE.src.gui.editor
         //    if (menu.exec(event->globalPos()) != 0) lastPos = event->pos().y();
         //}
 
-
-
-
-
-
-
         
         protected BaseDebugger debugger;
-
         protected TextBox outPane;
-
-protected LineNumberArea lNumArea;
-//        protected Highlighter hlighter;
 
         //QString m_appPath;
         protected string file;
@@ -1068,7 +1029,7 @@ protected LineNumberArea lNumArea;
 
         protected bool isCompiled;
         protected bool debugging;
-        //bool running;
+        protected bool running;
 
         protected bool stepOver;
                 
