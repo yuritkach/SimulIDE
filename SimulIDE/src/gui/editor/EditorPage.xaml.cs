@@ -79,8 +79,8 @@ namespace SimulIDE.src.gui.editor
             fileList.Add("New");
             EnableFileActs(true);
             EnableDebugActs(true);
-            TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
-            doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
+      //      TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
+   //         doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
         }
 
         
@@ -121,8 +121,8 @@ namespace SimulIDE.src.gui.editor
             if(ce.HasDebugger())
                 EnableDebugActs(true);
 
-            TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
-            doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
+            //TextRange doc = new TextRange(ce.Document.ContentStart, ce.Document.ContentEnd);
+           // doc.ApplyPropertyValue(Paragraph.MarginProperty, new Thickness(0));
             //Cursor.Current = Cursors.DefaULT;
         }
 

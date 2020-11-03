@@ -1,4 +1,5 @@
-﻿using SimulIDE.src.gui.circuitwidget.components.mcu;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+using SimulIDE.src.gui.circuitwidget.components.mcu;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -64,7 +65,7 @@ namespace SimulIDE.src.gui.editor
     /// <summary>
     /// Interaction logic for CodeEditor.xaml
     /// </summary>
-    public partial class CodeEditor : RichTextBox
+    public partial class CodeEditor : ICSharpCode.AvalonEdit.TextEditor
     {
         public CodeEditor()
         {
@@ -100,11 +101,7 @@ namespace SimulIDE.src.gui.editor
 
         public CodeEditor(ref DockPanel parent, TextBox outPane): base()
         {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Document.PageWidth = 10000;
 
-            ////Q_UNUSED(CodeEditor_properties);
             parent.Children.Add(this);
             Name = "Editor";
             this.outPane = outPane;
@@ -121,23 +118,25 @@ namespace SimulIDE.src.gui.editor
             debugging = false;
             stepOver = false;
             driveCirc = false;
+            ShowLineNumbers = true;
+            this.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance.GetDefinition("C++");
 
-//            font.setFamily("Monospace");
-//            m_font.setFixedPitch(true);
-//            m_font.setPixelSize(m_fontSize);
-//            setFont(m_font);
+            //            font.setFamily("Monospace");
+            //            m_font.setFixedPitch(true);
+            //            m_font.setPixelSize(m_fontSize);
+            //            setFont(m_font);
 
-//            QSettings* settings = MainWindow::self()->settings();
+            //            QSettings* settings = MainWindow::self()->settings();
 
-//            if (settings->contains("Editor_show_spaces"))
-//                setShowSpaces(settings->value("Editor_show_spaces").toBool());
+            //            if (settings->contains("Editor_show_spaces"))
+            //                setShowSpaces(settings->value("Editor_show_spaces").toBool());
 
-//            if (settings->contains("Editor_tab_size"))
-//                setTabSize(settings->value("Editor_tab_size").toInt());
-//            else setTabSize(4);
+            //            if (settings->contains("Editor_tab_size"))
+            //                setTabSize(settings->value("Editor_tab_size").toInt());
+            //            else setTabSize(4);
 
-//            if (settings->contains("Editor_font_size"))
-//                setFontSize(settings->value("Editor_font_size").toInt());
+            //            if (settings->contains("Editor_font_size"))
+            //                setFontSize(settings->value("Editor_font_size").toInt());
 
             bool spacesTab = false;
 //            if (settings->contains("Editor_spaces_tabs"))
@@ -159,7 +158,7 @@ namespace SimulIDE.src.gui.editor
 
 //            setLineWrapMode(QPlainTextEdit::NoWrap);
 //            UpdateLineNumberAreaWidth(0);
-//            HighlightCurrentLine();
+            HighlightCurrentLine();
         }
         ~CodeEditor()
         {
@@ -172,16 +171,16 @@ namespace SimulIDE.src.gui.editor
         public event MyEventHandler OnDocumentChanged;
         public string GetPlainText()
         {
-            TextRange textRange = new TextRange(Document.ContentStart,Document.ContentEnd);
-            return textRange.Text;
+
+            return Document.Text;
+            
         }
 
-        protected override void OnTextChanged(TextChangedEventArgs e)
+        protected override void OnTextChanged(EventArgs e)
         {
             base.OnTextChanged(e);
             IsModified = true;
             OnDocumentChanged?.Invoke(this);
-            
         }
 
         public void SetFile( string filePath )
@@ -700,8 +699,8 @@ namespace SimulIDE.src.gui.editor
         //    m_lNumArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
         //}
 
-        //void CodeEditor::highlightCurrentLine()
-        //{
+        protected void HighlightCurrentLine()
+        {
         //    QList<QTextEdit::ExtraSelection> extraSelections;
 
         //    if (!isReadOnly())
@@ -716,7 +715,7 @@ namespace SimulIDE.src.gui.editor
         //        extraSelections.append(selection);
         //    }
         //    setExtraSelections(extraSelections);
-        //}
+        }
 
         //void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent*event )
         //{

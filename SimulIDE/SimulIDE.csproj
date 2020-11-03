@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.0.314, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.1.0-preview1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="SharpGL, Version=3.1.1.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpGL.3.1.1\lib\net45\SharpGL.dll</HintPath>
     </Reference>
@@ -86,6 +89,7 @@
     <Compile Include="src\gui\editor\EditorPage.xaml.cs">
       <DependentUpon>EditorPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="src\gui\editor\Highlighter.cs" />
     <Compile Include="src\gui\editor\InoDebugger.cs" />
     <Compile Include="src\gui\graphics\Drawable.cs" />
     <Compile Include="src\gui\RamTable.xaml.cs">

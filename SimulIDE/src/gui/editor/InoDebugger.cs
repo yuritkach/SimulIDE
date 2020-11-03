@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace SimulIDE.src.gui.editor
@@ -68,7 +69,7 @@ namespace SimulIDE.src.gui.editor
 
         public override int Compile()
         {
-            // QApplication::setOverrideCursor(Qt::WaitCursor);
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
             compilerPath = "C:\\Program Files (x86)\\Arduino";  //Временно!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (!Directory.Exists(compilerPath))
             {
@@ -133,7 +134,7 @@ namespace SimulIDE.src.gui.editor
             /// , then debugger will hang!
             string cBuildPath = buildPath;
             //string preferencesPath = SIMUAPI_AppPath::self()->availableDataFilePath("codeeditor/preferences.txt");
-            string cmd = compilerPath + "\\"+"arduino_debug";
+            string cmd = compilerPath + "\\"+"arduino";
 
 
 //            # ifndef Q_OS_UNIX
@@ -173,7 +174,9 @@ namespace SimulIDE.src.gui.editor
             compProc.BeginErrorReadLine();
             while (!compProc.StandardOutput.EndOfStream)
             {
-                outPane.AppendText(compProc.StandardOutput.ReadLine()+"\n");
+                string lin = Encoding.UTF8.GetString(Encoding.Default.GetBytes(compProc.StandardOutput.ReadLine()));
+                outPane.AppendText(lin+"\n");
+                outPane.ScrollToEnd();
                 DoEvents();
             }
 
@@ -213,9 +216,9 @@ namespace SimulIDE.src.gui.editor
                  firmware = buildPath + "/" + fileName + ".ino.hex";
                  error = 0;
             }
-            //QApplication::restoreOverrideCursor();
+            outPane.ScrollToEnd();
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
             return error;
-            
         }
 
         private void CompProc_ErrorDataReceived(object sender, DataReceivedEventArgs e)
