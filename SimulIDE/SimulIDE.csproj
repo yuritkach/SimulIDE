@@ -97,6 +97,7 @@
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\INamedObject.cs" />
+    <Compile Include="src\simavr\Sim_Avr.cs" />
     <Compile Include="src\simulator\CircMatrix.cs" />
     <Compile Include="src\simulator\eElement.cs" />
     <Compile Include="src\simulator\elements\processors\AvrProcessor.cs" />

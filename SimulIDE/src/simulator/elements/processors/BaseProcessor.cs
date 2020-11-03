@@ -34,7 +34,7 @@ namespace SimulIDE.src.simulator.elements.processors
             //MainWindow::self()->m_ramTabWidgetLayout->addWidget(m_ramTable);
         }
 
-        protected virtual void Terminate()
+        public virtual void Terminate()
         {
             //qDebug() <<"\nBaseProcessor::terminate "<<m_device<<m_symbolFile<<"\n";
 
