@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=6.1.0.314, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.6.1.0-preview1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.1.278, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.0.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
     <Reference Include="SharpGL, Version=3.1.1.0, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpGL.3.1.1\lib\net45\SharpGL.dll</HintPath>
@@ -75,6 +75,7 @@
       <DependentUpon>CircuitWidget.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\gui\circuitwidget\components\Component.cs" />
+    <Compile Include="src\gui\circuitwidget\components\mcu\AvrCompBase.cs" />
     <Compile Include="src\gui\circuitwidget\components\mcu\McuComponent.cs" />
     <Compile Include="src\gui\circuitwidget\components\CircLabel.cs" />
     <Compile Include="src\gui\circuitwidget\Connector.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simulator\CircMatrix.cs" />
     <Compile Include="src\simulator\eElement.cs" />
+    <Compile Include="src\simulator\elements\processors\AvrProcessor.cs" />
     <Compile Include="src\simulator\elements\processors\BaseProcessor.cs" />
     <Compile Include="src\simulator\eNode.cs" />
     <Compile Include="src\simulator\ePin.cs" />

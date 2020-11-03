@@ -46,14 +46,13 @@ namespace SimulIDE.src.gui.editor
         {
             string circDir = Circuit.Self().GetFileName();
             string firmPath = firmware;
-
             if (circDir != "")
             {
                 string circuitDir = System.IO.Path.GetDirectoryName(circDir);
-                firmware = circuitDir+ "\\" + fileName + ".hex";
-                if (File.Exists(firmware))
-                    File.Delete(firmware);
-                File.Copy(firmPath, firmware);
+              //TYV  firmware = circuitDir+ "\\" + fileName + ".hex";
+              //  if (File.Exists(firmPath+"\\"+firmware))
+              //      File.Delete(firmPath + "\\" + firmware);
+              //  File.Copy(firmPath, firmware);
             }
             base.Upload();
             firmware = firmPath;
@@ -213,7 +212,7 @@ namespace SimulIDE.src.gui.editor
             }
             else
             {
-                 firmware = buildPath + "/" + fileName + ".ino.hex";
+                 firmware = buildPath + "\\" + fileName + ".ino.hex";
                  error = 0;
             }
             outPane.ScrollToEnd();
