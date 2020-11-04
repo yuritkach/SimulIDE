@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator
 {
-    class Simulator
+    public class Simulator
     {
 
         public Simulator()
@@ -524,7 +524,7 @@ namespace SimulIDE.src.simulator
             if (elementList.Contains(el)) elementList.Remove(el);
         }
 
-        protected void AddToUpdateList(eElement el)
+        public void AddToUpdateList(eElement el)
         {
             if (!updateList.Contains(el)) updateList.Add(el);
         }
@@ -607,18 +607,18 @@ namespace SimulIDE.src.simulator
 
         private CircMatrix matrix;
 
-        private List<eNode> eNodeList;
-        private List<eNode> eChangedNodeList;
-        private List<eNode> eNodeBusList;
+        private List<eNode> eNodeList = new List<eNode>();
+        private List<eNode> eChangedNodeList = new List<eNode>();
+        private List<eNode> eNodeBusList = new List<eNode>();
 
-        private List<eElement> elementList;
-        private List<eElement> updateList;
+        private List<eElement> elementList = new List<eElement>();
+        private List<eElement> updateList = new List<eElement>();
 
-        private List<eElement> changedFast;
-        private List<eElement> reactive;
-        private List<eElement> nonLinear;
-        private List<eElement> simuClock;
-        private List<BaseProcessor> mcuList;
+        private List<eElement> changedFast = new List<eElement>();
+        private List<eElement> reactive = new List<eElement>();
+        private List<eElement> nonLinear = new List<eElement>();
+        private List<eElement> simuClock = new List<eElement>();
+        private List<BaseProcessor> mcuList = new List<BaseProcessor>();
 
         private bool isrunning;
         private bool debugging;

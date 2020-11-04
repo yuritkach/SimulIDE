@@ -97,6 +97,7 @@ namespace SimulIDE.src.gui.editor
             outPane.AppendText(firmware);
             outPane.AppendText("\n\n");
 
+
             if (McuComponent.Self()!=null)
             {
 //                McuComponent.Self().Load(firmware);

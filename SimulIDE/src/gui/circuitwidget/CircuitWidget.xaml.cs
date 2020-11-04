@@ -74,10 +74,13 @@ namespace SimulIDE.src.gui.circuitwidget
         //    }
               Clear();
         //    Circuit::self()->setAutoBck(MainWindow::self()->autoBck());
-        //    m_curCirc = "";
+            curCirc = "";
 
         //    MainWindow::self()->setTitle(tr("New Circuit"));
         //    MainWindow::self()->settings()->setValue("lastCircDir", m_lastCircDir);
+
+
+
 
             return true;
         }
@@ -216,7 +219,7 @@ namespace SimulIDE.src.gui.circuitwidget
         //        QToolBar m_circToolBar;
                 CircLabel rateLabel;
         //        QMenu m_infoMenu;
-        //        QString m_curCirc;
+        protected string curCirc;
         private string lastCircDir;
         protected OpenGLControl control;
 

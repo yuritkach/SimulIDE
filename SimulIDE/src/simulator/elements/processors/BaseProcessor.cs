@@ -315,7 +315,7 @@ namespace SimulIDE.src.simulator.elements.processors
         protected Dictionary<string, float> floatTable = new Dictionary<string, float>();  // float 32 bits
         protected Dictionary<string, string> typeTable = new Dictionary<string, string>();
 
-        protected List<int> eeprom = new List<int>();
+        protected int[] eeprom;
 
         protected bool resetStatus;
         protected bool loadStatus;

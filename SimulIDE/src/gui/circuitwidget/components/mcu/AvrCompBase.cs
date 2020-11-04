@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SimulIDE.src.simavr;
+using SimulIDE.src.simulator.elements.processors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.gui.circuitwidget.components.mcu
 {
-    class AvrCompBase:McuComponent
+    public class AvrCompBase:McuComponent
     {
 
         public AvrCompBase(object parent, string type, string id):base(type,id)// , m_avrI2C("avrI2C")
@@ -22,14 +24,14 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
         protected void AttachPins()
         {
             AvrProcessor ap = (AvrProcessor) processor;
-            avr_t cpu = ap.GetCpu();
+            Avr cpu = ap.GetCpu();
             for (int i = 0; i < numpins; i++)
             {
-                AVRComponentPin pin = (AVRComponentPin) pinList[i];
-                pin.attach(cpu);
+ //               AVRComponentPin pin = (AVRComponentPin) pinList[i];
+ //               pin.attach(cpu);
             }
-            cpu.vcc = 5000;
-            cpu.avcc = 5000;
+   //         cpu.vcc = 5000;
+//            cpu.avcc = 5000;
 
             // ADC irq
 //            avr_irq adcIrq = avr_io_getirq(cpu, AVR_IOCTL_ADC_GETIRQ, ADC_IRQ_OUT_TRIGGER);
@@ -56,7 +58,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
             //        m_i2cInIrq = avr_io_getirq(cpu, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_INPUT);
             //    }
             //}
-            attached = true;
+   //         attached = true;
         }
 
         protected void AddPin(string id, string type, string label, int pos, int xpos, int ypos, int angle)
@@ -68,17 +70,17 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
             else
             {
                 //qDebug()<<pos<<id<<label;
-                AVRComponentPin newPin = new AVRComponentPin(this, id, type, label, pos, xpos, ypos, angle);
-                pinList.Add(newPin);
+//                AVRComponentPin newPin = new AVRComponentPin(this, id, type, label, pos, xpos, ypos, angle);
+//                pinList.Add(newPin);
 
                 string ty = GetType(type, "adc");
                 //if (ty!="") ADCpinList[ty.remove("adc").toInt()] = newPin;
 
                 ty = GetType(type, "sda");
-                if (ty!="") sda = newPin;
+//                if (ty!="") sda = newPin;
 
                 ty = GetType(type, "scl");
-                if (ty!="") scl = newPin;
+//                if (ty!="") scl = newPin;
             }
         }
 
@@ -98,8 +100,8 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
         public void Adcread(int channel)
         {
             //qDebug() << "ADC Read channel:" << channel;
-            AVRComponentPin pin = ADCpinList.Value(channel);
-            if (pin!=null) pin.Adcread();
+//            AVRComponentPin pin = ADCpinList.Value(channel);
+  //          if (pin!=null) pin.Adcread();
         }
 
         //void I2cOut(uint32_t value)
@@ -243,12 +245,12 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //        }
 
 
-        protected Dictionary<int, AVRComponentPin> ADCpinList;
-        protected eI2C avrI2C;
-        protected AVRComponentPin sda;
-        protected AVRComponentPin scl;
+//        protected Dictionary<int, AVRComponentPin> ADCpinList;
+//        protected eI2C avrI2C;
+//        protected AVRComponentPin sda;
+//        protected AVRComponentPin scl;
         protected byte slvAddr;
-        protected avr_irq_t i2cInIrq;
+//        protected avr_irq_t i2cInIrq;
         protected AvrProcessor avr;
 
     }

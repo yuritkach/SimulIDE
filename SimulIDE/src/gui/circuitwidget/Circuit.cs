@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace SimulIDE.src.gui.circuitwidget
 {
-    class Circuit
+    public class Circuit
     {
 
         private static Circuit self = null;
@@ -541,26 +541,26 @@ namespace SimulIDE.src.gui.circuitwidget
 //            m_pasting = false;
         }
 
-        protected Component CreateItem(string type, string id)
+        public Component CreateItem(string type, string id)
         {
 //            //qDebug() << "Circuit::createItem" << type << id;
-//            for (LibraryItem* libItem : ItemLibrary::self()->items())
-//            {
-//                if (libItem->type() == type)
-//                {
-//                    Component* comp = libItem->createItemFnPtr()(this, type, id);
+            //for (LibraryItem libItem int ItemLibrary.Self().Items())
+            //{
+            //    if (libItem.Type() == type)
+            //    {
+            //        Component comp = libItem.CreateItemFnPtr()(this, type, id);
 
-//                    if (comp)
-//                    {
-//                        QString category = libItem->category();
-//                        if ((category != "Meters")
-//                        && (category != "Sources")
-//                        && (category != "Other"))
-//                            comp->setPrintable(true);
-//                    }
-//                    return comp;
-//                }
-//            }
+            //        if (comp!=null)
+            //        {
+            //            string category = libItem.Category();
+            //            if ((category != "Meters")
+            //            && (category != "Sources")
+            //            && (category != "Other"))
+            //                comp.SetPrintable(true);
+            //        }
+            //        return comp;
+            //    }
+            //}
             return null;
         }
 
@@ -1683,6 +1683,8 @@ namespace SimulIDE.src.gui.circuitwidget
 
     protected string filePath;
     protected string backupPath;
+
+        public List<Component> CompList() { return compList; }
 
     protected Rect scenerect;
     //    QGraphicsView* m_graphicView;

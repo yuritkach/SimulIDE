@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SimulIDE.src.simulator;
+using SimulIDE.src.simulator.elements.processors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,36 +18,29 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 ////    QT_TRANSLATE_NOOP("App::Property","Init gdb")
 ////};
 
-        private static McuComponent self = null;
+        public static McuComponent self = null;
         public static McuComponent Self() { return self; }
-        public bool canCreate = true;
+        public static bool canCreate = true;
 
         public McuComponent(string type, string id):base(type, id )
 //??????            , MemData()
         {
-            //    Q_UNUSED(McuComponent_properties);
-
-            //            qDebug() << "        Initializing" << m_id << "...";
             self = this;
             canCreate = false;
 //            attached = false;
 //            autoLoad = false;
-
 //            processor = null;
 //            symbolFile = "";
 //            device = "";
 //            error = 0;
-
             // Id Label Pos set in Chip::initChip
 //            m_color = QColor(50, 50, 70);
-
 //            QSettings* settings = MainWindow::self()->settings();
 //            m_lastFirmDir = settings->value("lastFirmDir").toString();
 
 //            if (m_lastFirmDir.isEmpty())
 //                m_lastFirmDir = QCoreApplication::applicationDirPath();
-
-//            Simulator::self()->addToUpdateList(this);
+           // Simulator.Self().AddToUpdateList(this);
         }
 
 //        void McuComponent::runAutoLoad()
@@ -197,13 +192,13 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //            return m_freq;
 //        }
 
-//        void McuComponent::setFreq(double freq)
-//        {
-//            if (freq < 0) freq = 0;
-//            else if (freq > 100) freq = 100;
+        public void SetFreq(double freq)
+        {
+            if (freq < 0) freq = 0;
+            else if (freq > 100) freq = 100;
 
-//            m_freq = freq;
-//        }
+            this.freq = freq;
+        }
 
 //        void McuComponent::reset()
 //        {
@@ -494,9 +489,9 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 
 //    virtual void attachPins()=0;
 
-//        BaseProcessor* m_processor;
+      protected BaseProcessor processor;
 
-//    double m_freq;           // Clock Frequency Mhz
+      protected double freq;           // Clock Frequency Mhz
 
 //    bool m_attached;
 //    bool m_autoLoad;

@@ -1,7 +1,9 @@
 ﻿using SharpGL;
 using SharpGL.WPF;
 using SimulIDE.src.gui.circuitwidget.components;
+using SimulIDE.src.gui.circuitwidget.components.mcu;
 using SimulIDE.src.gui.graphics;
+using SimulIDE.src.simulator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,9 +102,21 @@ namespace SimulIDE.src.gui.circuitwidget
 
                     enterItem = null;
                     circuit = new Circuit();
-//                  SetScene(circuit);
-//                    centerOn(900, 600);
-        //            //setCircTime( 0 );
+
+
+            //!!! Временно!!!
+            Simulator simul = new Simulator();
+            var item = Arduino.Construct(this, "Arduino", "ard1");
+            circuit.CompList().Add(item);
+            //!!! Временно!!!
+
+
+
+
+
+            //                  SetScene(circuit);
+            //                    centerOn(900, 600);
+            //            //setCircTime( 0 );
         }
 
         //        void CircuitView::wheelEvent(QWheelEvent*event ) 
@@ -110,6 +124,8 @@ namespace SimulIDE.src.gui.circuitwidget
         //            qreal scaleFactor = pow(2.0, event->delta() / 700.0);
         //    scale(scaleFactor, scaleFactor );
         //    }
+
+
 
         //    void CircuitView::dragEnterEvent(QDragEnterEvent*event)
         //    {

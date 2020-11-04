@@ -322,22 +322,22 @@ namespace SimulIDE.src.simulator
 
         public string ItemId() { return id; }
 
-        private List<ePin> ePinList;
+        private List<ePin> ePinList= new List<ePin>();
         //QList<ePin*>     m_ePinSubList;  // Used by Connector to find connected dpins
 
-        private List<List<ePin>> eBusPinList;
-        private List<eNode> eNodeList;
+        private List<List<ePin>> eBusPinList = new List<List<ePin>>();
+        private List<eNode> eNodeList = new List<eNode>();
 
-        private List<eElement> changedFast;
-        private List<eElement> reactiveList;
-        private List<eElement> nonLinear;
+        private List<eElement> changedFast = new List<eElement>();
+        private List<eElement> reactiveList = new List<eElement>();
+        private List<eElement> nonLinear = new List<eElement>();
 
-        private Dictionary<ePin, double> admitList;
-        private Dictionary<ePin, double> currList;
-        private Dictionary<ePin, int> nodeList;
+        private Dictionary<ePin, double> admitList = new Dictionary<ePin, double>();
+        private Dictionary<ePin, double> currList = new Dictionary<ePin, double>();
+        private Dictionary<ePin, int> nodeList = new Dictionary<ePin, int>();
 
-        private Dictionary<int, double> admit;
-        private Dictionary<int, double> admitPrev;
+        private Dictionary<int, double> admit = new Dictionary<int, double>();
+        private Dictionary<int, double> admitPrev = new Dictionary<int, double>();
 
         private double totalCurr;
         private double totalAdmit;

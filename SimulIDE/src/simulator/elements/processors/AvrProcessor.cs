@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simulator.elements.processors
 {
-    class AvrProcessor:BaseProcessor
+    public class AvrProcessor:BaseProcessor
     {
 
 
@@ -216,9 +216,9 @@ namespace SimulIDE.src.simulator.elements.processors
             //}
         }
 
-        public int pc()
+        public UInt64 PC()
         {
-            return avrProcessor.pc;
+            return avrProcessor.PC;
         }
 
         public int GetRamValue(int address)

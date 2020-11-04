@@ -7,10 +7,40 @@ using System.Threading.Tasks;
 namespace SimulIDE.src.simavr
 {
 
+    public struct avr_regbit
+    {
+        UInt32 Flags;
+        //UInt32 reg : 9, 
+        //    bit : 3, 
+        //    mask : 8;
+    }
+
+    public struct ResetFlags
+    {
+        avr_regbit porf;
+        avr_regbit extrf;
+        avr_regbit borf;
+        avr_regbit wdrf;
+    }
+
+    public class Custom
+    {
+        // called at init time (for special purposes like using a
+        // memory mapped file as flash see: simduino)
+        public void Init(Avr avr, byte[] data) { }
+        // called at termination time ( to clean special initializations)
+        public void Deinit(Avr avr, byte[] data) { }
+        // value passed to init() and deinit()
+        byte[] data;
+    }
+
+
+    public delegate void Avr_run(Avr avr);
+
     public class Avr
     {
         string mmcu;   // name of the AVR
-                       // these are filled by sim_core_declare from constants in /usr/lib/avr/include/avr/io*.h
+                            // these are filled by sim_core_declare from constants in /usr/lib/avr/include/avr/io*.h
         UInt16 ioend;
         UInt16 ramend;
         UInt32 flashend;
@@ -19,14 +49,180 @@ namespace SimulIDE.src.simavr
         byte[] signature;
         byte[] fuse;
         byte lockbits;
-        UInt32 rampz;    // optional, only for ELPM/SPM on >64Kb cores
-        UInt32 eind; // optional, only for EIJMP/EICALL on >64Kb cores
+        UInt16 rampz;    // optional, only for ELPM/SPM on >64Kb cores
+        UInt16 eind; // optional, only for EIJMP/EICALL on >64Kb cores
         byte address_size;   // 2, or 3 for cores >128KB in flash
+        ResetFlags reset_flags;
+
+    	// filled by the ELF data, this allow tracking of invalid jumps
+    	UInt32 codeend;
+
+        int state;      // stopped, running, sleeping
+        UInt32 frequency; // frequency we are running at
+                        // mostly used by the ADC for now
+        UInt32 vcc, avcc, aref; // (optional) voltages in millivolts
+
+        // cycles gets incremented when sleeping and when running; it corresponds
+        // not only to "cycles that runs" but also "cycles that might have run"
+        // like, sleeping.
+        public UInt64 cycle;		// current cycle
+        UInt64 cyclesDone;
+
+        // these next two allow the core to freely run between cycle timers and also allows
+        // for a maximum run cycle limit... run_cycle_count is set during cycle timer processing.
+        UInt64 run_cycle_count;  // cycles to run before next timer
+        UInt64 run_cycle_limit;  // maximum run cycle interval limit
+
+        /**
+	    * Sleep requests are accumulated in sleep_usec until the minimum sleep value
+	    * is reached, at which point sleep_usec is cleared and the sleep request
+	    * is passed on to the operating system.
+	    */
+        UInt32 sleep_usec;
+
+        // called at init time
+        public void Init(Avr avr) { }
+        // called at reset time
+        public void Reset(Avr avr) { }
         
-        //avr_regbit_t porf;
-        //avr_regbit_t extrf;
-        //avr_regbit_t borf;
-        //avr_regbit_t wdrf;
+        public Custom custom;
+
+    	/*!
+	    * Default AVR core run function.
+	    * Two modes are available, a "raw" run that goes as fast as
+	    * it can, and a "gdb" mode that also watchouts for gdb events
+	    * and is a little bit slower.
+	    */
+	    public Avr_run Run;
+
+        /*!
+        * Sleep default behaviour.
+        * In "raw" mode, it calls usleep, in gdb mode, it waits
+        * for howLong for gdb command on it's sockets.
+        */
+        public virtual void Sleep(Avr avr, UInt64 howLong) { }
+
+	    /*!
+	    * Every IRQs will be stored in this pool. It is not
+	    * mandatory (yet) but will allow listing IRQs and their connections
+	    */
+//	    avr_irq_pool_t irq_pool;
+
+        // Mirror of the SREG register, to facilitate the access to bits
+        // in the opcode decoder.
+        // This array is re-synthesized back/forth when SREG changes
+        byte[] sreg;
+
+        /* Interrupt state:
+            00: idle (no wait, no pending interrupts) or disabled
+            <0: wait till zero
+            >0: interrupt pending */
+        byte interrupt_state; // interrupt state
+
+        /*
+        * ** current PC **
+        * Note that the PC is representing /bytes/ while the AVR value is
+        * assumed to be "words". This is in line with what GDB does...
+        * this is why you will see >>1 and <<1 in the decoder to handle jumps.
+        * It CAN be a little confusing, so concentrate, young grasshopper.
+        */
+        public UInt32 PC;
+        /*
+        * Reset PC, this is the value used to jump to at reset time, this
+        * allow support for bootloaders
+        */
+        UInt32 reset_pc;
+
+        /*
+        * callback when specific IO registers are read/written.
+        * There is one drawback here, there is in way of knowing what is the
+        * "beginning of useful sram" on a core, so there is no way to deduce
+        * what is the maximum IO register for a core, and thus, we can't
+        * allocate this table dynamically.
+        * If you wanted to emulate the BIG AVRs, and XMegas, this would need
+        * work.
+        */
+//struct {
+
+//        struct avr_irq_t * irq; // optional, used only if asked for with avr_iomem_getirq()
+//        struct {
+
+//            void* param;
+//            avr_io_read_t c;
+//		        } r;
+//		struct {
+
+//            void* param;
+//            avr_io_write_t c;
+//		        } w;
+//	} io[MAX_IOs];
+
+	/*
+	 * This block allows sharing of the IO write/read on addresses between
+	 * multiple callbacks. In 99% of case it's not needed, however on the tiny*
+	 * (tiny85 at last) some registers have bits that are used by different
+	 * IO modules.
+	 * If this case is detected, a special "dispatch" callback is installed that
+	 * will handle this particular case, without impacting the performance of the
+	 * other, normal cases...
+	 */
+	int io_shared_io_count;
+//struct {
+
+//        int used;
+//struct {
+
+//            void* param;
+//void* c;
+//		} io[4];
+//	} io_shared_io[4];
+
+	// flash memory (initialized to 0xff, and code loaded into it)
+	public byte flash;
+// this is the general purpose registers, IO registers, and SRAM
+    public byte[] data;
+
+    // queue of io modules
+//    struct avr_io_t io_port;
+
+// Builtin and user-defined commands
+//avr_cmd_table_t commands;
+// cycle timers tracking & delivery
+//avr_cycle_timer_pool_t cycle_timers;
+// interrupt vectors and delivery fifo
+//avr_int_table_t interrupts;
+
+// DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
+        byte trace = 1,
+			log = 4; // log level, default to 1
+
+	// Only used if CONFIG_SIMAVR_TRACE is defined
+//	struct avr_trace_data_t * trace_data;
+
+// VALUE CHANGE DUMP file (waveforms)
+// this is the VCD file that gets allocated if the
+// firmware that is loaded explicitly asks for a trace
+// to be generated, and allocates it's own symbols
+// using AVR_MMCU_TAG_VCD_TRACE (see avr_mcu_section.h)
+//struct avr_vcd_t * vcd;
+
+// gdb hooking structure. Only present when gdb server is active
+//struct avr_gdb_t * gdb;
+
+// if non-zero, the gdb server will be started when the core
+// crashed even if not activated at startup
+// if zero, the simulator will just exit() in case of a crash
+int gdb_port;
+
+// buffer for console debugging output from register
+//struct {
+
+//        char* buf;
+//uint32_t size;
+//uint32_t len;
+//	} io_console_buffer;
+//} avr_t;
+ 
     }
 
         class Sim_Avr
