@@ -100,12 +100,12 @@ namespace SimulIDE.src.gui.editor
 
             if (McuComponent.Self()!=null)
             {
-//                McuComponent.Self().Load(firmware);
-//                outPane.AppendText("\nFirmWare Uploaded to " + McuComponent.Self().Device() + "\n");
-//                outPane.AppendText("\n\n");
+                McuComponent.Self().Load(firmware);
+                outPane.AppendText("\nFirmWare Uploaded to " + McuComponent.Self().Device() + "\n");
+                outPane.AppendText("\n\n");
 
-//                BaseProcessor.Self().GetRamTable().SetDebugger(this);
-//                MapFlashToSource();
+                BaseProcessor.Self().GetRamTable().SetDebugger(this);
+                MapFlashToSource();
             }
             else outPane.AppendText("\nError: No Mcu in Simulator... \n");
         }
@@ -191,7 +191,7 @@ namespace SimulIDE.src.gui.editor
 
 
 
-
+        public virtual void MapFlashToSource() { }
         public bool DriveCircuit { get; set; }
 
         protected System.Windows.Controls.TextBox outPane;

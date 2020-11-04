@@ -1,16 +1,16 @@
 ﻿using SimulIDE.src.simavr;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SimulIDE.src.simulator.elements.processors
 {
     public class AvrProcessor:BaseProcessor
     {
-
-
             //int elf_read_firmware_ext(const char* file, elf_firmware_t * firmware);
 
         public AvrProcessor(object parent ):base()
@@ -33,19 +33,18 @@ namespace SimulIDE.src.simulator.elements.processors
         //    avrProcessor = null;
         }
 
-        public bool LoadFirmware(string fileN)
+        public override bool LoadFirmware(string fileN)
         {
-            //if (fileN == "") return false;
+            if (fileN == "") return false;
             //QFileInfo fileInfo(fileN);
 
             //if (fileInfo.completeSuffix().isEmpty()) fileN.append(".hex");
 
-            //if (!QFile::exists(fileN))     // File not found
-            //{
-            //    QMessageBox::warning(0, tr("File Not Found"),
-            //                             tr("The file \"%1\" was not found.").arg(fileN));
-            //    return false;
-            //}
+            if (!File.Exists(fileN))     // File not found
+            {
+                MessageBox.Show("The file " + fileN + " was not found.");
+                return false;
+            }
 
             //char name[20] = "";
             //strncpy(name, m_device.toLatin1(), sizeof(name) - 1);
@@ -57,23 +56,24 @@ namespace SimulIDE.src.simulator.elements.processors
 
             //elf_firmware_t f = { { 0 } };
 
-            //if (fileN.endsWith("hex"))
-            //{
-            //    ihex_chunk_p chunk = NULL;
-            //    int cnt = read_ihex_chunks(filename, &chunk);
+            string filename = fileN;
+            if (fileN.EndsWith("hex"))
+            {
+                Ihex_chunk[] chunk = null;
+                int cnt = Sim_Hex.Read_ihex_chunks(filename, ref chunk);
 
-            //    if (cnt <= 0)
-            //    {
-            //        QMessageBox::warning(0, tr("Error:"), tr(" Unable to load IHEX file %1\n").arg(fileN));
-            //        return false;
-            //    }
+                if (cnt <= 0)
+                {
+                    MessageBox.Show(" Unable to load IHEX file "+fileN);
+                    return false;
+                }
 
-            //    int lastFChunk = 0;
+                int lastFChunk = 0;
 
-            //    for (int ci = 0; ci < cnt; ci++)
-            //    {
-            //        if (chunk[ci].baseaddr < (1 * 1024 * 1024)) lastFChunk = ci;
-            //    }
+                for (int ci = 0; ci < cnt; ci++)
+                {
+                    if (chunk[ci].baseaddr < (1 * 1024 * 1024)) lastFChunk = ci;
+                }
             //    f.flashbase = chunk[0].baseaddr;
             //    f.flashsize = chunk[lastFChunk].baseaddr + chunk[lastFChunk].size;
             //    f.flash = (uint8_t*)malloc(f.flashsize + 1);
@@ -92,25 +92,12 @@ namespace SimulIDE.src.simulator.elements.processors
             //            f.eesize = chunk[ci].size;
             //        }
             //    }
-            //}
-            ////#ifndef _WIN32
-            //else if (fileN.endsWith(".elf"))
-            //{
-            //    f.flashsize = 0;
-            //    elf_read_firmware_ext(filename, &f);
-
-            //    if (!f.flashsize)
-            //    {
-            //        QMessageBox::warning(0, tr("Failed to load firmware: "), tr("File %1 is not in valid ELF format\n").arg(fileN));
-            //        return false;
-            //    }
-            //}
-            ////#endif
-            //else                                    // File extension not valid
-            //{
-            //    QMessageBox::warning(0, tr("Error:"), tr("%1 should be .hex or .elf\n").arg(fileN));
-            //    return false;
-            //}
+            }
+            else                                    // File extension not valid
+            {
+                MessageBox.Show(fileN+" should be .hex \n");
+                return false;
+            }
 
             //QString mmcu(f.mmcu );
             //if (!mmcu.isEmpty())

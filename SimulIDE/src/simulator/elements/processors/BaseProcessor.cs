@@ -1,4 +1,5 @@
 ﻿using SimulIDE.src.gui;
+using SimulIDE.src.gui.circuitwidget.components.mcu;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,7 +107,7 @@ namespace SimulIDE.src.simulator.elements.processors
         public virtual void HardReset(bool rst)
         {
             resetStatus = rst;
-//TYV            if (rst) McuComponent.Self().Reset();
+            if (rst) McuComponent.Self().Reset();
         }
 
         protected virtual int GetRegAddress(string name)
@@ -293,7 +294,7 @@ namespace SimulIDE.src.simulator.elements.processors
 
         protected virtual List<string> GetRegList() { return regList; }
 
-        protected virtual RamTable GetRamTable() { return ramTable; }
+        public virtual RamTable GetRamTable() { return ramTable; }
 
         protected virtual List<int> Eeprom() { return null; }
         protected virtual void SetEeprom(List<int> eep) { }

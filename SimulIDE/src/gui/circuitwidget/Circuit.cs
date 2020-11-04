@@ -1684,9 +1684,10 @@ namespace SimulIDE.src.gui.circuitwidget
     protected string filePath;
     protected string backupPath;
 
-        public List<Component> CompList() { return compList; }
+    public List<Component> CompList() { return compList; }
+    public List<Component> ConList() { return conList; }
 
-    protected Rect scenerect;
+        protected Rect scenerect;
     //    QGraphicsView* m_graphicView;
     protected Connector new_connector;
 

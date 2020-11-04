@@ -282,7 +282,7 @@ namespace SimulIDE.src.gui.editor
 //            }
         }
 
-        public void MapFlashToSource()
+        public override void MapFlashToSource()
         {
             //getVariables();
 

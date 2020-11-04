@@ -528,21 +528,21 @@ namespace SimulIDE.src.gui.editor
 
             bool error = false;
 
-            //if (McuComponent.Self()==null)             // Must be an Mcu in Circuit
-            //{
-            //    outPane.AppendText("\n   Error: No Mcu in Simulator... \n");
-            //    error = true;
-            //}
-            //else if (debugger==null)             // No debugger for this file type
-            //{
-            //    outPane.AppendText("\n    Error: No Debugger Suited for this File... \n");
-            //    error = true;
-            //}
-            //else if (file == "")                                   // No File
-            //{
-            //    outPane.AppendText("\n    Error: No File... \n");
-            //    error = true;
-            //}
+            if (McuComponent.Self()==null)             // Must be an Mcu in Circuit
+            {
+                outPane.AppendText("\n   Error: No Mcu in Simulator... \n");
+                error = true;
+            }
+            else if (debugger==null)             // No debugger for this file type
+            {
+                outPane.AppendText("\n    Error: No Debugger Suited for this File... \n");
+                error = true;
+            }
+            else if (file == "")                                   // No File
+            {
+                outPane.AppendText("\n    Error: No File... \n");
+                error = true;
+            }
             //////////else if( !m_isCompiled ) 
             {
                 Compile();

@@ -29,9 +29,9 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
             canCreate = false;
 //            attached = false;
 //            autoLoad = false;
-//            processor = null;
+            processor = null;
 //            symbolFile = "";
-//            device = "";
+            device = "";
 //            error = 0;
             // Id Label Pos set in Chip::initChip
 //            m_color = QColor(50, 50, 70);
@@ -58,8 +58,8 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //            m_processor->getRamTable()->updateValues();
 //        }
 
-//        void McuComponent::initChip()
-//        {
+        public override void InitChip()
+        {
 //            QString compName = m_id.split("-").first(); // for example: "atmega328-1" to: "atmega328"
 
 //            QString dataFile = ComponentSelector::self()->getXmlFile(compName);
@@ -129,7 +129,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //                m_error = 1;
 //                qDebug() << compName << "ERROR!! McuComponent::initChip Chip not Found: " << package;
 //            }
-//        }
+        }
 
 //        void McuComponent::updatePin(QString id, QString type, QString label, int pos, int xpos, int ypos, int angle)
 //        {
@@ -200,13 +200,13 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
             this.freq = freq;
         }
 
-//        void McuComponent::reset()
-//        {
-//            for (int i = 0; i < m_pinList.size(); i++) // Reset pins states
-//                m_pinList[i]->resetState();
+        public virtual void Reset()
+        {
+            //for (int i = 0; i < pinList.Count(); i++) // Reset pins states
+            //    pinList[i].ResetState();
 
-//            m_processor->reset();
-//        }
+            processor.Reset();
+        }
 
 //        void McuComponent::terminate()
 //        {
@@ -314,32 +314,34 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //    else QMessageBox::warning(0, tr("No File:"), tr("No File to reload "));
 //}
 
-//void McuComponent::load(QString fileName)
-//{
-//    QDir circuitDir = QFileInfo(Circuit::self()->getFileName()).absoluteDir();
-//    QString fileNameAbs = circuitDir.absoluteFilePath(fileName);
-//    QString cleanPathAbs = circuitDir.cleanPath(fileNameAbs);
+        public virtual void Load(string fileName)
+        {
+            //    QDir circuitDir = QFileInfo(Circuit::self()->getFileName()).absoluteDir();
+            //    QString fileNameAbs = circuitDir.absoluteFilePath(fileName);
+            //     string cleanPathAbs = circuitDir.cleanPath(fileNameAbs);
+            string cleanPathAbs = fileName;
 
-//    bool pauseSim = Simulator::self()->isRunning();
-//    if (pauseSim) Simulator::self()->pauseSim();
+                bool pauseSim = Simulator.Self().IsRunning();
+            if (pauseSim) Simulator.Self().PauseSim();
 
-//    if (m_processor->loadFirmware(cleanPathAbs))
-//    {
-//        if (!m_attached) attachPins();
-//        reset();
+            if (processor.LoadFirmware(cleanPathAbs))
+      //          if (BaseProcessor.Self().LoadFirmware(cleanPathAbs))
+                {
+        //        if (!attached) AttachPins();
+                Reset();
 
-//        m_symbolFile = circuitDir.relativeFilePath(fileName);
-//        m_lastFirmDir = cleanPathAbs;
+      //          symbolFile = circuitDir.relativeFilePath(fileName);
+                lastFirmDir = cleanPathAbs;
 
-//        QSettings* settings = MainWindow::self()->settings();
-//        settings->setValue("lastFirmDir", m_symbolFile);
+        //        QSettings* settings = MainWindow::self()->settings();
+        //        settings->setValue("lastFirmDir", m_symbolFile);
 
-//        //checkPcLink();
-//    }
-//    //else QMessageBox::warning( 0, tr("Error:"), tr("Could not load: \n")+ fileName );
+                //checkPcLink();
+            }
+            //else QMessageBox::warning( 0, tr("Error:"), tr("Could not load: \n")+ fileName );
 
-//    if (pauseSim) Simulator::self()->runContinuous();
-//}
+            if (pauseSim) Simulator.Self().RunContinuous();
+        }
 
 //void McuComponent::setProgram(QString pro)
 //{
@@ -443,7 +445,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 //    bool autoLoad() { return m_autoLoad; }
 //    void setAutoLoad(bool al) { m_autoLoad = al; }
 
-//    QString device() { return m_device; }
+    public string Device() { return device; }
 
 //    virtual void initChip();
 
@@ -452,7 +454,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 
 //    virtual void setLogicSymbol(bool ls);
 
-//    QList<McuComponentPin*> getPinList() { return m_pinList; }
+    //public List<McuComponentPin> GetPinList() { return pinList; }
 
 //    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
@@ -493,12 +495,12 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 
       protected double freq;           // Clock Frequency Mhz
 
-//    bool m_attached;
+      bool attached;
 //    bool m_autoLoad;
 
-//    QString m_device;       // Name of device
+      protected string device;       // Name of device
 //    QString m_symbolFile;   // firmware file loaded
-//    QString m_lastFirmDir;  // Last firmware folder used
+      protected string lastFirmDir;  // Last firmware folder used
 
 //    QList<McuComponentPin*> m_pinList;
 

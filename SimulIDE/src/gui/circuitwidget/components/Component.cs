@@ -79,10 +79,10 @@ namespace SimulIDE.src.gui.circuitwidget.components
 
             //setTransformOriginPoint( boundingRect().center() );
 
-//            if (type == "Connector") Circuit::self()->conList()->append(this);
-//            else if (type == "SerialPort") Circuit::self()->compList()->append(this);
-//            else if (type == "SerialTerm") Circuit::self()->compList()->append(this);
-//            else Circuit::self()->compList()->prepend(this);
+            if (type == "Connector") Circuit.Self().ConList().Add(this);
+            else if (type == "SerialPort") Circuit.Self().CompList().Add(this);
+            else if (type == "SerialTerm") Circuit.Self().CompList().Add(this);
+            else Circuit.Self().CompList().Add(this);
 
         }
 

@@ -4,6 +4,7 @@ using SimulIDE.src.gui.circuitwidget.components;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
 using SimulIDE.src.gui.graphics;
 using SimulIDE.src.simulator;
+using SimulIDE.src.simulator.elements.processors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,16 @@ namespace SimulIDE.src.gui.circuitwidget
             circuit = null;
             enterItem = null;
             Clear();
+
+            //!!! Временно!!!
+            Simulator simul = new Simulator();
+            AvrProcessor avrProcessor = new AvrProcessor(this);
+            var item = Arduino.Construct(this, "Arduino", "ard1");
+            circuit.CompList().Add(item);
+
+            
+            
+            //!!! Временно!!!
 
             //viewport()->setFixedSize(3200, 2400);
             //setViewportUpdateMode( QGraphicsView::FullViewportUpdate );
@@ -102,17 +113,6 @@ namespace SimulIDE.src.gui.circuitwidget
 
                     enterItem = null;
                     circuit = new Circuit();
-
-
-            //!!! Временно!!!
-            Simulator simul = new Simulator();
-            var item = Arduino.Construct(this, "Arduino", "ard1");
-            circuit.CompList().Add(item);
-            //!!! Временно!!!
-
-
-
-
 
             //                  SetScene(circuit);
             //                    centerOn(900, 600);

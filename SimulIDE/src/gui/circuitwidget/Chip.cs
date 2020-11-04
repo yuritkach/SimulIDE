@@ -29,11 +29,11 @@ namespace SimulIDE.src.gui.circuitwidget
         }
 
 
-        protected virtual void InitChip()
+        public virtual void InitChip()
         {
 //            //qDebug() << "Chip::initChip m_pkgeFile"<<m_pkgeFile;
 
-//            m_error = 0;
+            error = 0;
 
 //            QDir circuitDir = QFileInfo(Circuit::self()->getFileName()).absoluteDir();
 //            QString fileNameAbs = circuitDir.absoluteFilePath(m_pkgeFile);
