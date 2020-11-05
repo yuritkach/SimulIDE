@@ -44,5 +44,10 @@ namespace SimulIDE.src
             return converted;
         }
 
+        public static void MemSet(ref byte[] flash, byte value, int count)
+        {
+            for (int i = 0; i < count; i++) flash[i] = value;
+        }
+
     }
 }

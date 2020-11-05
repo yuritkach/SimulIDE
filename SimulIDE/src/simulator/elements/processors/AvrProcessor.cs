@@ -1,4 +1,5 @@
 ﻿using SimulIDE.src.simavr;
+using SimulIDE.src.simavr.sim;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,15 +47,14 @@ namespace SimulIDE.src.simulator.elements.processors
                 return false;
             }
 
-            //char name[20] = "";
-            //strncpy(name, m_device.toLatin1(), sizeof(name) - 1);
-            //*(name + sizeof(name) - 1) = 0;
-
+            string name = "";
+            name = device;
+            
             //char filename[1000] = "";
             //strncpy(filename, fileN.toLatin1(), sizeof(filename) - 1);
             //*(filename + sizeof(filename) - 1) = 0;
 
-            //elf_firmware_t f = { { 0 } };
+            Elf_firmware f = new Elf_firmware();
 
             string filename = fileN;
             if (fileN.EndsWith("hex"))
@@ -74,24 +74,25 @@ namespace SimulIDE.src.simulator.elements.processors
                 {
                     if (chunk[ci].baseaddr < (1 * 1024 * 1024)) lastFChunk = ci;
                 }
-            //    f.flashbase = chunk[0].baseaddr;
-            //    f.flashsize = chunk[lastFChunk].baseaddr + chunk[lastFChunk].size;
-            //    f.flash = (uint8_t*)malloc(f.flashsize + 1);
+                f.flashbase = chunk[0].baseaddr;
+                f.flashsize = chunk[lastFChunk].baseaddr + chunk[lastFChunk].size;
+                f.flash = new byte[f.flashsize + 1];
 
-            //    for (int ci = 0; ci < cnt; ci++)
-            //    {
-            //        if (chunk[ci].baseaddr < (1 * 1024 * 1024))
-            //        {
-            //            memcpy(f.flash + chunk[ci].baseaddr,
-            //                    chunk[ci].data,
-            //                    chunk[ci].size);
-            //        }
-            //        if (chunk[ci].baseaddr >= AVR_SEGMENT_OFFSET_EEPROM)
-            //        {
-            //            f.eeprom = chunk[ci].data;
-            //            f.eesize = chunk[ci].size;
-            //        }
-            //    }
+                for (int ci = 0; ci < cnt; ci++)
+                {
+                    if (chunk[ci].baseaddr < (1 * 1024 * 1024))
+                    {
+                        for (int i = 0; i < chunk[ci].size; i++)
+                        {
+                            f.flash[chunk[ci].baseaddr + i] = chunk[ci].data[i];
+                        }
+                    }
+                    if (chunk[ci].baseaddr >= Sim_elf.AVR_SEGMENT_OFFSET_EEPROM)
+                    {
+                        f.eeprom = chunk[ci].data;
+                        f.eesize = chunk[ci].size;
+                    }
+                }
             }
             else                                    // File extension not valid
             {
@@ -99,35 +100,35 @@ namespace SimulIDE.src.simulator.elements.processors
                 return false;
             }
 
-            //QString mmcu(f.mmcu );
-            //if (!mmcu.isEmpty())
-            //{
-            //    if (mmcu != m_device)
-            //    {
-            //        QMessageBox::warning(0, tr("Warning on load firmware: "), tr("Incompatible firmware: compiled for %1 and your processor is %2\n").arg(mmcu).arg(m_device));
-            //        return false;
-            //    }
-            //}
-            //else
-            //{
-            //    if (!strlen(name))
-            //    {
-            //        QMessageBox::warning(0, tr("Failed to load firmware: "), tr("The processor model is not specified.\n"));
-            //        return false;
-            //    }
-            //    strcpy(f.mmcu, name);
-            //}
-            //if (!m_avrProcessor)
-            //{
-            //    m_avrProcessor = avr_make_mcu_by_name(f.mmcu);
+            string mmcu = f.mmcu;
+            if (mmcu!="")
+            {
+                if (mmcu != device)
+                {
+                    MessageBox.Show("Warning on load firmware: \n Incompatible firmware: compiled for "+mmcu+
+                        " and your processor is "+device);
+                    return false;
+                }
+            }
+            else
+            {
+                if (name.Length==0)
+                {
+                    MessageBox.Show("Failed to load firmware: \n The processor model is not specified.\n");
+                    return false;
+                }
+                f.mmcu=name;
+            }
+            if (avrProcessor==null)
+            {
+                avrProcessor = Sim_Avr.Avr_make_mcu_by_name(f.mmcu);
 
-            //    if (!m_avrProcessor)
-            //    {
-            //        QMessageBox::warning(0, tr("Unkown Error:")
-            //                               , tr("Could not Create AVR Processor: \"%1\"").arg(f.mmcu));
-            //        return false;
-            //    }
-            //    int started = avr_init(m_avrProcessor);
+                if (avrProcessor==null)
+                {
+                    MessageBox.Show("Could not Create AVR Processor: "+f.mmcu);
+                    return false;
+                }
+                int started = Sim_Avr.Avr_init(avrProcessor);
 
             //    m_uartInIrq.resize(6);
             //    m_uartInIrq.fill(0);
@@ -145,7 +146,7 @@ namespace SimulIDE.src.simulator.elements.processors
             //        }
             //    }
             //    qDebug() << "\nAvrProcessor::loadFirmware Avr Init: " << name << (started == 0);
-            //}
+            }
 
             ///// TODO: Catch possible abort signal here, otherwise application will crash on the invalid firmware load
             ///// Done: Modified simavr to not call abort(), instead it returns error code.
