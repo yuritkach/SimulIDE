@@ -98,13 +98,18 @@
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\INamedObject.cs" />
+    <Compile Include="src\simavr\cores\MegaX8Const.cs" />
+    <Compile Include="src\simavr\cores\Sim_core_declare.cs" />
     <Compile Include="src\simavr\cores\Sim_mega328.cs" />
+    <Compile Include="src\simavr\cores\Sim_megax8.cs" />
+    <Compile Include="src\simavr\cores\McuBaseConst.cs" />
     <Compile Include="src\simavr\sim\avr\Avr_mcu_section.cs" />
     <Compile Include="src\simavr\sim\Avr_timer.cs" />
     <Compile Include="src\simavr\sim\Avr_vcd.cs" />
     <Compile Include="src\simavr\sim\Sim_Cmds.cs" />
     <Compile Include="src\simavr\sim\Sim_cycle_timers.cs" />
     <Compile Include="src\simavr\sim\Sim_elf.cs" />
+    <Compile Include="src\simavr\sim\Sim_regbit.cs" />
     <Compile Include="src\simavr\sim\Sim_utils.cs" />
     <Compile Include="src\simavr\Sim_Avr.cs" />
     <Compile Include="src\simavr\Sim_core_decl.cs" />

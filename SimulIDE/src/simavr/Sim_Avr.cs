@@ -11,20 +11,19 @@ using static SimulIDE.src.simavr.sim.Avr_vcd_file;
 namespace SimulIDE.src.simavr
 {
 
-    public struct avr_regbit
+    public struct Avr_regbit
     {
-        UInt32 Flags;
-        //UInt32 reg : 9, 
-        //    bit : 3, 
-        //    mask : 8;
+        public int reg;
+        public byte bit;
+        public byte mask;
     }
 
     public struct ResetFlags
     {
-        avr_regbit porf;
-        avr_regbit extrf;
-        avr_regbit borf;
-        avr_regbit wdrf;
+        public Avr_regbit porf;
+        public Avr_regbit extrf;
+        public Avr_regbit borf;
+        public Avr_regbit wdrf;
     }
 
     public class Custom
