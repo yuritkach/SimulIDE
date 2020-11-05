@@ -51,9 +51,10 @@ namespace SimulIDE.src.simavr
         // parses a hex text string 'src' of at max 'maxlen' characters, decodes it into 'buffer'
         public static int Read_hex_string(string src, ref byte[] buffer, int maxlen)
         {
-            buffer = Enumerable.Range(0, src.Length)
+            string s = src.Substring(1);
+            buffer = Enumerable.Range(0, s.Length)
                      .Where(x => x % 2 == 0)
-                     .Select(x => Convert.ToByte(src.Substring(x, 2), 16))
+                     .Select(x => Convert.ToByte(s.Substring(x, 2), 16))
                      .ToArray();
             return buffer.Length;
         }
@@ -82,10 +83,11 @@ namespace SimulIDE.src.simavr
             UInt32 segment = 0;   // segment address
             int chunk = 0, max_chunks = 0;
             chunks = null;
+            string line;
             TextReader tr = new StreamReader(fileStream);
-            while (fileStream.CanRead)
+            while ((line = tr.ReadLine()) != null)
             {
-                string line = tr.ReadLine();
+                
                 if (line[0] != ':')
                 {
                     MessageBox.Show("AVR: "+ fname + " invalid ihex format ("+line+")\n");
@@ -94,14 +96,13 @@ namespace SimulIDE.src.simavr
             
                 byte[] bline = new byte[64];
 
-                int len = Read_hex_string(line + 1, ref bline,64);
+                int len = Read_hex_string(line, ref bline,64);
                 if (len <= 0)
                     continue;
 
                 byte chk = 0;
                // calculate checksum
-                int tlen = len - 1;
-                for (int i=0; i<tlen;i++)
+                for (int i=0; i<len-1;i++)
                     chk += bline[i];
                 chk =(byte) (0x100 - chk);
             
@@ -139,13 +140,15 @@ namespace SimulIDE.src.simavr
                 if (chunk >= max_chunks)
                 {
                     max_chunks++;
-                    Array.Resize<Ihex_chunk>(ref chunks, 1 + max_chunks);
+                    Array.Resize<Ihex_chunk>(ref chunks, max_chunks);
+                    chunks[chunk] = new Ihex_chunk();
                     chunks[chunk].baseaddr = addr;
                 }
 
                 Array.Resize<byte>(ref chunks[chunk].data, (int)(chunks[chunk].size + bline[0]));
+                chunks[chunk].size = bline[0];
                 Array.Copy(bline,4,chunks[chunk].data,0,chunks[chunk].size);
-                chunks[chunk].size += bline[0];
+             
             }
             fileStream.Close();
             return max_chunks;

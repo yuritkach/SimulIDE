@@ -59,7 +59,7 @@ namespace SimulIDE.src.simulator.elements.processors
             string filename = fileN;
             if (fileN.EndsWith("hex"))
             {
-                Ihex_chunk[] chunk = null;
+                Ihex_chunk[] chunk = new Ihex_chunk[0];
                 int cnt = Sim_Hex.Read_ihex_chunks(filename, ref chunk);
 
                 if (cnt <= 0)
@@ -101,7 +101,7 @@ namespace SimulIDE.src.simulator.elements.processors
             }
 
             string mmcu = f.mmcu;
-            if (mmcu!="")
+            if (mmcu!=null)
             {
                 if (mmcu != device)
                 {
