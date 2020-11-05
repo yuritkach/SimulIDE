@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simavr\sim\avr\Avr_mcu_section.cs" />
+    <Compile Include="src\simavr\sim\Avr_timer.cs" />
     <Compile Include="src\simavr\sim\Avr_vcd.cs" />
     <Compile Include="src\simavr\sim\Sim_Cmds.cs" />
     <Compile Include="src\simavr\sim\Sim_cycle_timers.cs" />

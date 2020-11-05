@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static SimulIDE.src.simavr.Sim_Avr;
+using static SimulIDE.src.simavr.sim.Avr_vcd_file;
 
 namespace SimulIDE.src.simavr
 {

@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace SimulIDE.src.simavr.sim
 {
-    class Avr_vcd_file
+    public class Avr_vcd_file
     {
 
 
@@ -552,10 +552,10 @@ namespace SimulIDE.src.simavr.sim
 
         public static int Avr_vcd_stop(ref Avr_vcd vcd)
         {
-            avr_cycle_timer_cancel(vcd->avr, _avr_vcd_timer, vcd);
-            avr_cycle_timer_cancel(vcd->avr, _avr_vcd_input_timer, vcd);
+            //tyv avr_cycle_timer_cancel(vcd->avr, _avr_vcd_timer, vcd);
+            //tyv avr_cycle_timer_cancel(vcd->avr, _avr_vcd_input_timer, vcd);
 
-            //avr_vcd_flush_log(vcd);
+            //tyv avr_vcd_flush_log(vcd);
             vcd.input_line = null;
             if (vcd.input != null)
                 vcd.input.Close();

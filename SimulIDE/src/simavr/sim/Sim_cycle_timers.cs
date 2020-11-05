@@ -12,27 +12,27 @@ namespace SimulIDE.src.simavr.sim
 
 
 
-//#define QUEUE(__q, __e) { \
-//        (__e)->next = (__q); \
-//		(__q) = __e; \
-//	}
-//#define DETACH(__q, __l, __e) { \
-//		if (__l) \
-//			(__l)->next = (__e)->next; \
-//		else \
-//			(__q) = (__e)->next; \
-//	}
-//#define INSERT(__q, __l, __e) { \
-//		if (__l) { \
-//			(__e)->next = (__l)->next; \
-//			(__l)->next = (__e); \
-//		} else { \
-//			(__e)->next = (__q); \
-//			(__q) = (__e); \
-//		} \
-//	}
+        //#define QUEUE(__q, __e) { \
+        //        (__e)->next = (__q); \
+        //		(__q) = __e; \
+        //	}
+        //#define DETACH(__q, __l, __e) { \
+        //		if (__l) \
+        //			(__l)->next = (__e)->next; \
+        //		else \
+        //			(__q) = (__e)->next; \
+        //	}
+        //#define INSERT(__q, __l, __e) { \
+        //		if (__l) { \
+        //			(__e)->next = (__l)->next; \
+        //			(__l)->next = (__e); \
+        //		} else { \
+        //			(__e)->next = (__q); \
+        //			(__q) = (__e); \
+        //		} \
+        //	}
 
-//#define DEFAULT_SLEEP_CYCLES 1000
+        public const int DEFAULT_SLEEP_CYCLES = 1000;
 
 //void
 //avr_cycle_timer_reset(
@@ -151,12 +151,8 @@ namespace SimulIDE.src.simavr.sim
 //    avr_cycle_timer_register(avr, avr_usec_to_cycles(avr, when), timer, param);
 //}
 
-//void
-//avr_cycle_timer_cancel(
-//        avr_t* avr,
-//        avr_cycle_timer_t timer,
-//        void* param)
-//{
+        //public static void  Avr_cycle_timer_cancel(ref Avr avr,Avr_cycle_timer timer,object[] param)
+        //{
 //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
 
 //    // find its place in the list
@@ -173,7 +169,7 @@ namespace SimulIDE.src.simavr.sim
 //        t = t->next;
 //    }
 //    avr_cycle_timer_reset_sleep_run_cycles_limited(avr);
-//}
+        //}
 
 ///*
 // * Check to see if a timer is present, if so, return the number (+1) of
