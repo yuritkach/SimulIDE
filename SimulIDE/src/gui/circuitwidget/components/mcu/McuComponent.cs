@@ -60,7 +60,7 @@ namespace SimulIDE.src.gui.circuitwidget.components.mcu
 
         public override void InitChip()
         {
-//            QString compName = m_id.split("-").first(); // for example: "atmega328-1" to: "atmega328"
+       //     string compName = id.Split('-').First(); // for example: "atmega328-1" to: "atmega328"
 
 //            QString dataFile = ComponentSelector::self()->getXmlFile(compName);
 

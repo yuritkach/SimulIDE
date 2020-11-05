@@ -32,10 +32,10 @@ namespace SimulIDE.src.gui.circuitwidget
             //!!! Временно!!!
             Simulator simul = new Simulator();
             AvrProcessor avrProcessor = new AvrProcessor(this);
-            var item = Arduino.Construct(this, "Arduino", "ard1");
-            circuit.CompList().Add(item);
 
-            
+            var item = Arduino.Construct(this, "Arduino", "ard1");
+            avrProcessor.SetDevice("atmega328");
+            circuit.CompList().Add(item);
             
             //!!! Временно!!!
 

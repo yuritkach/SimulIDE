@@ -98,6 +98,7 @@
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\INamedObject.cs" />
+    <Compile Include="src\simavr\cores\Sim_mega328.cs" />
     <Compile Include="src\simavr\sim\avr\Avr_mcu_section.cs" />
     <Compile Include="src\simavr\sim\Avr_timer.cs" />
     <Compile Include="src\simavr\sim\Avr_vcd.cs" />

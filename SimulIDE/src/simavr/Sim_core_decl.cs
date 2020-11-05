@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.simavr.cores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace SimulIDE.src.simavr
         //extern avr_kind_t mega2560;
         //extern avr_kind_t mega16;
         //extern avr_kind_t mega64;
-        protected static Avr_kind mega328;
+        protected static Avr_kind mega328 = new Avr_kind();
         //extern avr_kind_t tiny2313;
         //extern avr_kind_t tiny13;
         //extern avr_kind_t mega16m1;
@@ -67,7 +68,7 @@ namespace SimulIDE.src.simavr
             //&mega2560,
             //&mega16,
             //&mega64,
-             mega328,
+             Sim_mega328.Self()
             //&tiny2313,
             //&tiny13,
             //&mega16m1,
@@ -78,8 +79,7 @@ namespace SimulIDE.src.simavr
             //&tiny44,
             //&mega128,
             //&mega48,
-            //&mega32,
-             null
+            //&mega32
         };
 
 

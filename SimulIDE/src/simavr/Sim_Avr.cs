@@ -517,26 +517,29 @@ int gdb_port;
         //            return avr->state;
         //        }
 
-        //        avr_t* avr_core_allocate( const avr_t* core, uint32_t coreLen)
-        //        {
-        //            uint8_t* b = malloc(coreLen);
-        //            memcpy(b, core, coreLen);
-        //            return (avr_t*)b;
-        //        }
+        public static Avr Avr_core_allocate(Avr core)
+        {
+            //            uint8_t* b = malloc(coreLen);
+            //            memcpy(b, core, coreLen);
+            Avr avr = new Avr();
+
+            return avr;
+        }
 
         public static Avr Avr_make_mcu_by_name(string name)
         {
             Avr_kind maker = null;
-            for (int i = 0; Sim_core_decl.avr_kind[i]!=null && maker!=null; i++)
+            for (int i = 0; i<Sim_core_decl.avr_kind.Length; i++)
             {
-                for (int j = 0; j<Sim_core_decl.avr_kind[i].Names[j].Length; j++)
+                for (int j = 0; j<Sim_core_decl.avr_kind[i].Names.Length; j++)
                     if (Sim_core_decl.avr_kind[i].Names[j]==name)
                     {
                         maker = Sim_core_decl.avr_kind[i];
                         break;
                     }
+                if (maker != null) break;
             }
-            if (maker!=null)
+            if (maker==null)
             {
                 MessageBox.Show(" AVR "+name+" not known\n");
                 return null;
