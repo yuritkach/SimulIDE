@@ -11,6 +11,8 @@ using static SimulIDE.src.simavr.sim.Avr_vcd_file;
 namespace SimulIDE.src.simavr
 {
 
+    public delegate void InitDelegate(Avr avr);
+
     public struct Avr_regbit
     {
         public int reg;
@@ -84,9 +86,9 @@ namespace SimulIDE.src.simavr
         public UInt32 sleep_usec;
 
         // called at init time
-        public void Init(Avr avr) { }
+        public InitDelegate Init;
         // called at reset time
-        public void Reset(Avr avr) { }
+        public InitDelegate Reset;
         
         public Custom custom;
 

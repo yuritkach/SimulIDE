@@ -58,20 +58,15 @@ namespace SimulIDE.src.simavr.cores
             return new MegaX8Const();
         }
 
-        protected virtual void InitCore(Avr core)
+        protected virtual void Avr_core_init(Avr core)
         {
             Sim_core_declare cd = new Sim_core_declare();
             var cn = new MegaX8Const();
 
             core.mmcu = Get_SIM_MMCU();
             cd.DefaultCore(ref core, cn.Get_SIM_VECTOR_SIZE());
-
-            DEFAULT_CORE(SIM_VECTOR_SIZE),
-
-		.init = mx8_init,
-		.reset = mx8_reset,
-	
-
+            core.Init = Mx8_init;
+            core.Reset = Mx8_reset;
         }
 
         protected virtual string Get_SIM_MMCU()
@@ -79,14 +74,10 @@ namespace SimulIDE.src.simavr.cores
             throw new Exception("MMCU not overriden!");
         }
 
-       
-
-
-
-        protected void mx8_init(Mcu avr)
+        protected void Mx8_init(Avr avr)
         {
-	        avr_core_init(avr.core
-	        avr_eeprom_init(avr, &mcu->eeprom);
+            Avr_core_init(avr.core);
+	        Avr_eeprom_init(avr, mcu.eeprom);
             avr_flash_init(avr, &mcu->selfprog);
             avr_watchdog_init(avr, &mcu->watchdog);
             avr_extint_init(avr, &mcu->extint);
@@ -103,10 +94,10 @@ namespace SimulIDE.src.simavr.cores
             avr_twi_init(avr, &mcu->twi);
         }
 
-    void mx8_reset(struct avr_t * avr)
-{
-//	struct mcu_t * mcu = (struct mcu_t*)avr;
-}
+        protected void Mx8_reset(Avr avr)
+        {
+            Mx8_init(avr);
+        }
 
 
 
@@ -122,14 +113,16 @@ namespace SimulIDE.src.simavr.cores
 #endif
 
 const struct mcu_t SIM_CORENAME = {
-	.core = {
-		.mmcu = SIM_MMCU,
-		DEFAULT_CORE(SIM_VECTOR_SIZE),
+//	.core = {
+//		.mmcu = SIM_MMCU,
+//		DEFAULT_CORE(SIM_VECTOR_SIZE),
 
-		.init = mx8_init,
-		.reset = mx8_reset,
-	},
+//		.init = mx8_init,
+//		.reset = mx8_reset,
+//	},
 	AVR_EEPROM_DECLARE(EE_READY_vect),
+
+
 #ifdef RWWSRE
 	AVR_SELFPROG_DECLARE(SPMCSR, SELFPRGEN, SPM_READY_vect),
 #else

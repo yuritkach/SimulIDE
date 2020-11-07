@@ -16,6 +16,18 @@ namespace SimulIDE.src.simavr.cores
     {
         public virtual ushort GetRamStart() { throw new AbstractException(); }
         public virtual ushort GetRamEnd() { throw new AbstractException(); }
+        public virtual ushort GetE2END() { throw new AbstractException(); }
+        public virtual byte GetEEARH() { throw new AbstractException(); }
+        public virtual byte GetEEARL() { throw new AbstractException(); }
+        public virtual byte GetEEDR() { throw new AbstractException(); }
+        public virtual byte GetEECR() { throw new AbstractException(); }
+        public virtual byte GetEEPM0() { throw new AbstractException(); }
+        public virtual byte GetEEPM1() { throw new AbstractException(); }
+        public virtual byte GetEEMPE() { throw new AbstractException(); }
+        public virtual byte GetEEPE() { throw new AbstractException(); }
+        public virtual byte GetEERE() { throw new AbstractException(); }
+        public virtual byte GetEERIE() { throw new AbstractException(); }
+
         public virtual uint GetFlashEnd() { throw new AbstractException(); }
         public virtual uint GetE2End() { throw new AbstractException(); }
         public virtual byte GetFuseMemorySize() { throw new AbstractException(); }
@@ -41,7 +53,7 @@ namespace SimulIDE.src.simavr.cores
         {
             return new byte[3] { GetSignature_0(), GetSignature_1(), GetSignature_2() };
         }
-        public virtual byte[] GetVectorSize() { throw new AbstractException(); }
+        public virtual byte Get_SIM_VECTOR_SIZE() { throw new AbstractException(); }
         public virtual byte GetLockBits() { return 0xFF; }
 
         public virtual int GetMCU_STATUS_REG()

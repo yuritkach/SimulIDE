@@ -16,7 +16,10 @@ namespace SimulIDE.src.simavr.cores
         public override byte[] GetSignature() { }
         public override byte GetLockBits() { }
         public override ResetFlags GetResetFlags() { }
-        public override GetVectorSize() {  }
+        public override byte Get_SIM_VECTOR_SIZE()
+        {
+
+        }
 
     }
 }
