@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static SimulIDE.src.simavr.Sim_Avr;
 using static SimulIDE.src.simavr.sim.Avr_vcd_file;
+using SimulIDE.src.simavr.cores;
 
 namespace SimulIDE.src.simavr
 {
@@ -545,7 +546,7 @@ int gdb_port;
                 MessageBox.Show(" AVR "+name+" not known\n");
                 return null;
             }
-            Avr avr = maker.Make();
+            Avr avr = maker.Make().core;
             return avr;
         }
 
@@ -982,7 +983,7 @@ public enum CoreStates {
 
     }
 
-    public delegate Avr Make_delegate();
+    public delegate Mcu Make_delegate();
 
     public class Avr_kind
     {

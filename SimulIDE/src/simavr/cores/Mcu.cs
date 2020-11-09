@@ -9,11 +9,18 @@ namespace SimulIDE.src.simavr.cores
 {
     public class AbstractException : ApplicationException
     {
-        public override string Message => "Not overriden method! "+base.Message;
+        public override string Message => "Not overriden method! " + base.Message;
     }
 
-    public class McuBaseConst
+
+    public class Mcu
     {
+        public Avr core;
+        public Avr_eeprom eeprom;
+
+
+
+
         public virtual ushort GetRamStart() { throw new AbstractException(); }
         public virtual ushort GetRamEnd() { throw new AbstractException(); }
         public virtual ushort GetE2END() { throw new AbstractException(); }
@@ -42,7 +49,7 @@ namespace SimulIDE.src.simavr.cores
                 case 6: return new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
                 case 3: return new byte[] { GetLFUSE_DEFAULT(), GetHFUSE_DEFAULT(), GetEFUSE_DEFAULT() };
                 case 2: return new byte[] { GetLFUSE_DEFAULT(), GetHFUSE_DEFAULT() };
-                case 1: return new byte[] { GetFUSE_DEFAULT()};
+                case 1: return new byte[] { GetFUSE_DEFAULT() };
                 default: return new byte[] { 0 };
             }
         }
@@ -58,7 +65,7 @@ namespace SimulIDE.src.simavr.cores
 
         public virtual int GetMCU_STATUS_REG()
         {
-            if (GetMCUSR()!=-1)
+            if (GetMCUSR() != -1)
                 return GetMCUSR();
             else return GetMCUCSR();
         }
@@ -85,6 +92,8 @@ namespace SimulIDE.src.simavr.cores
          * toolchain and avr-libc. This affects a lot of names, like MCUSR etc
         */
         public virtual bool Get__AVR_LIBC_DEPRECATED_ENABLE__() { return true; }
+        public virtual byte GetEE_READY_vect() { throw new AbstractException(); }
+
 
         //not implemented
         //#define _SFR_IO8(v) ((v)+32)
@@ -92,6 +101,7 @@ namespace SimulIDE.src.simavr.cores
         //#define _SFR_MEM8(v) (v)
         //#define _BV(v) (v)
         //#define _VECTOR(v) (v)
+
 
 
     }

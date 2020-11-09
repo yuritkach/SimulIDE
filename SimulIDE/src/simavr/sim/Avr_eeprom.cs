@@ -7,6 +7,55 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
+
+    public class Avr_eeprom
+    {
+        //            avr_io_t io;
+        public byte[] eeprom;    // actual bytes
+        public UInt16 size;  // size for this MCU
+
+        public byte r_eearh;
+        public byte r_eearl;
+        public byte r_eedr;
+        //            eepm -- eeprom write mode
+        public byte r_eecr; // shortcut, assumes these bits fit in that register
+        public Avr_regbit[] eepm; //[4];
+        public Avr_regbit eempe; // eeprom master program enable
+        public Avr_regbit eepe;  // eeprom program enable
+        public Avr_regbit eere;  // eeprom read enable
+        public Avr_int_vector ready; // EERIE vector
+
+        public static void Avr_eeprom_declare(Mcu mcu, byte _vector)
+        {
+
+            mcu.eeprom.size = (ushort)(mcu.GetE2END() + 1);
+            mcu.eeprom.r_eearh = mcu.GetEEARH();
+            mcu.eeprom.r_eearl = mcu.GetEEARL();
+            mcu.eeprom.r_eedr = mcu.GetEEDR();
+            mcu.eeprom.r_eedr = mcu.GetEECR();
+            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEEPM0()), Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEEPM1()) };
+            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEEMPE());
+            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEEPE());
+            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEERE());
+            Avr_int_vector vec = new Avr_int_vector();
+            vec.enable = Sim_regbit.AVR_IO_REGBIT(mcu.GetEECR(), mcu.GetEERIE());
+            vec.vector = _vector;
+            mcu.eeprom.ready = vec;
+        }
+
+    }
+
+
+
+    public class Avr_eeprom_desc
+    {
+        byte[] ee;
+        UInt16 offset;
+        UInt32 size;
+    }
+
+
+
     class Avr_eeprom_ns
     {
 
@@ -142,33 +191,6 @@ namespace SimulIDE.src.simavr.sim
 //# ifndef __AVR_EEPROM_H__
 //#define __AVR_EEPROM_H__
 
-        public class Avr_eeprom
-        {
-//            avr_io_t io;
-            public byte[] eeprom;    // actual bytes
-            public UInt16 size;  // size for this MCU
-
-            public byte r_eearh;
-            public byte r_eearl;
-            public byte r_eedr;
-            //            eepm -- eeprom write mode
-            public byte r_eecr; // shortcut, assumes these bits fit in that register
-            public Avr_regbit[] eepm; //[4];
-            public Avr_regbit eempe; // eeprom master program enable
-            public Avr_regbit eepe;  // eeprom program enable
-            public Avr_regbit eere;  // eeprom read enable
-            public Avr_int_vector ready; // EERIE vector
-        }
-
-        
-
-         public class Avr_eeprom_desc
-         {
-            byte[] ee;
-            UInt16 offset;
-            UInt32 size;
-         }
-
         //#define AVR_IOCTL_EEPROM_GET	AVR_IOCTL_DEF('e','e','g','p')
         //#define AVR_IOCTL_EEPROM_SET	AVR_IOCTL_DEF('e','e','s','p')
 
@@ -178,22 +200,7 @@ namespace SimulIDE.src.simavr.sim
         // * so here is a macro to declare a "typical" one in a core.
         // */
 
-        public static void AVR_EEPROM_DECLARE(ref Avr_eeprom eeprom, byte _vector, McuBaseConst con)
-        {
-            eeprom.size = (ushort)(con.GetE2END() + 1);
-            eeprom.r_eearh = con.GetEEARH();
-            eeprom.r_eearl = con.GetEEARL();
-            eeprom.r_eedr = con.GetEEDR();
-            eeprom.r_eedr = con.GetEECR();
-            eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEEPM0()), Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEEPM1()) };
-            eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEEMPE());
-            eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEEPE());
-            eeprom.eere = Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEERE());
-            Avr_int_vector vec = new Avr_int_vector();
-            vec.enable = Sim_regbit.AVR_IO_REGBIT(con.GetEECR(), con.GetEERIE());
-            vec.vector = _vector;
-            eeprom.ready = vec;
-        }
+        
 
         //	}
 

@@ -68,7 +68,7 @@ namespace SimulIDE.src.simavr
             //&mega2560,
             //&mega16,
             //&mega64,
-             Sim_mega328.Self()
+             Mega328.Self()
             //&tiny2313,
             //&tiny13,
             //&mega16m1,

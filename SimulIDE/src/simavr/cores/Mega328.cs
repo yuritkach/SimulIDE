@@ -6,20 +6,22 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.cores
 {
-    class Sim_mega328
+    class Mega328:Megax8
     {
 
         public const string SIM_MMCU = "atmega328";
         public const string SIM_CORENAME = "mcu_mega328";
 
-        public static Avr Make()
+        public static Mcu Make()
         {
-            return avr_core_allocate(mcu_mega328.core);
+            var mega328 = new Mega328();
+            return (Mcu) mega328;
+            //return avr_core_allocate(mcu_mega328.core);
         }
 
         protected static Avr_kind self = new Avr_kind();
         public static Avr_kind Self() { return self; }
-        static Sim_mega328()
+        static Mega328()
         {
             self.Names = new string[2];
             self.Names[0] = "atmega328";

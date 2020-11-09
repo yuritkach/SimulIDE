@@ -9,30 +9,25 @@ namespace SimulIDE.src.simavr.cores
     public class Sim_core_declare
     {
 
-        public virtual void DefaultCore(ref Avr core, byte vectorSize)
+        public virtual void DefaultCore(Mcu mcu, byte vectorSize)
         {
-            var con = GetConstants();
-            if (con.Get__SIM_CORE_DECLARE_H__())
+          
+            if (mcu.Get__SIM_CORE_DECLARE_H__())
             {
-                core.ioend = (ushort)(con.GetRamStart() - 1);
-                core.ramend = con.GetRamEnd();
-                core.flashend = con.GetFlashEnd();
-                core.e2end = con.GetE2End();
-                core.vector_size = vectorSize;
+                mcu.core.ioend = (ushort)(mcu.GetRamStart() - 1);
+                mcu.core.ramend = mcu.GetRamEnd();
+                mcu.core.flashend = mcu.GetFlashEnd();
+                mcu.core.e2end = mcu.GetE2End();
+                mcu.core.vector_size = vectorSize;
 
-                if (con.GetSignature_0() != 0)
+                if (mcu.GetSignature_0() != 0)
                 {
-                    core.fuse = con.GetFuse();
-                    core.signature = con.GetSignature();
-                    core.lockbits = con.GetLockBits();
-                    core.reset_flags = con.GetResetFlags();
+                    mcu.core.fuse = mcu.GetFuse();
+                    mcu.core.signature = mcu.GetSignature();
+                    mcu.core.lockbits = mcu.GetLockBits();
+                    mcu.core.reset_flags = mcu.GetResetFlags();
                 }
             }
-        }
-
-        public virtual McuBaseConst GetConstants()
-        {
-            return new McuBaseConst();
         }
 
     }
