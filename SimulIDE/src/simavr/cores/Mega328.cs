@@ -152,23 +152,23 @@ namespace SimulIDE.src.simavr.cores
             constants["PCIF2"] = 2;
 
 
-            //#define EIFR _SFR_IO8(0x1C)
-            //#define INTF0 0
-            //#define INTF1 1
+            constants["EIFR"] = new DefFunc(_SFR_IO8, new object[1] { 0x1C });
+            constants["INTF0"] = 0;
+            constants["INTF1"] = 1;
 
-            //#define EIMSK _SFR_IO8(0x1D)
-            //#define INT0 0
-            //#define INT1 1
+            constants["EIMSK"] = new DefFunc(_SFR_IO8, new object[1] { 0x1D });
+            constants["INT0"] = 0;
+            constants["INT1"] = 1;
 
-            //#define GPIOR0 _SFR_IO8(0x1E)
-            //#define GPIOR00 0
-            //#define GPIOR01 1
-            //#define GPIOR02 2
-            //#define GPIOR03 3
-            //#define GPIOR04 4
-            //#define GPIOR05 5
-            //#define GPIOR06 6
-            //#define GPIOR07 7
+            constants["GPIOR0"] = new DefFunc(_SFR_IO8, new object[1] { 0x0E });
+            constants["GPIOR00"] = 0;
+            constants["GPIOR01"] = 1;
+            constants["GPIOR02"] = 2;
+            constants["GPIOR03"] = 3;
+            constants["GPIOR04"] = 4;
+            constants["GPIOR05"] = 5;
+            constants["GPIOR06"] = 6;
+            constants["GPIOR07"] = 7;
 
             //#define EECR _SFR_IO8(0x1F)
             //#define EERE 0
