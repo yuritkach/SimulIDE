@@ -52,23 +52,26 @@ namespace SimulIDE.src.simavr.cores
 
         public virtual dynamic GetValue(string name)
         {
-
-            var v = constants[name];
-            if (v.GetType() == typeof(DefFunc))
+            if (constants.ContainsKey(name))
             {
-                DefFunc defin = (DefFunc)v;
-                var func = defin.Func;
-                MethodInfo methodInfo = func.GetMethodInfo();
-                dynamic result = null;
-                if (methodInfo != null)
+                var v = constants[name];
+                if (v.GetType() == typeof(DefFunc))
                 {
-                    ParameterInfo[] parameters = methodInfo.GetParameters();
-                    result = methodInfo.Invoke(this, parameters.Length == 0 ? null : defin.Param);
-                    return result;
+                    DefFunc defin = (DefFunc)v;
+                    var func = defin.Func;
+                    MethodInfo methodInfo = func.GetMethodInfo();
+                    dynamic result = null;
+                    if (methodInfo != null)
+                    {
+                        ParameterInfo[] parameters = methodInfo.GetParameters();
+                        result = methodInfo.Invoke(this, parameters.Length == 0 ? null : defin.Param);
+                        return result;
+                    }
+                    else throw new Exception("Can't get value for method " + func.ToString());
                 }
-                else throw new Exception("Can't get value for method "+func.ToString()); 
+                else return v;
             }
-            else return v;
+            else return null;
         }
 
         public virtual byte[] GetFuse(object[] param=null)
@@ -113,7 +116,28 @@ namespace SimulIDE.src.simavr.cores
         {
             return (UInt16)(v+32);
         }
-        
+
+        public virtual void DefaultCore(byte vectorSize)
+        {
+
+            if (GetValue("__SIM_CORE_DECLARE_H__")!=null)
+            {
+                core.ioend = (ushort)(GetValue("RAMSTART") - 1);
+                core.ramend = GetValue("RAMEND");
+                core.flashend = GetValue("FLASHEND");
+                core.e2end = GetValue("E2END");
+                core.vector_size = vectorSize;
+
+                if (GetValue("Signature_0") != 0)
+                {
+                    core.fuse = GetValue("FUSE");
+                    core.signature = GetValue("SIGNATURE");
+                    core.lockbits = GetValue("LOCKBITS");
+                    core.reset_flags = GetValue("RESETFLAGS");
+                }
+            }
+        }
+
         public virtual bool Get__SIM_CORE_DECLARE_H__() { return true; }
         /* we have to declare this, as none of the distro but debian has a modern
          * toolchain and avr-libc. This affects a lot of names, like MCUSR etc

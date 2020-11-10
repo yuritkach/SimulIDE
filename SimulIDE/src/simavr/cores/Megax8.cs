@@ -26,17 +26,16 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void Avr_core_init(Avr core)
         {
-            Sim_core_declare cd = new Sim_core_declare();
-            
             core.mmcu = GetValue("SIM_MMCU");
-            cd.DefaultCore(this, GetValue("SIM_VECTOR_SIZE"));
+            DefaultCore((byte)GetValue("SIM_VECTOR_SIZE"));
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
         }
 
         protected virtual void Avr_eeprom_init(Avr core)
         {
-            Avr_eeprom.Avr_eeprom_declare(this,GetValue("EE_READY_vect"));
+            eeprom = new Avr_eeprom();
+            Avr_eeprom.Avr_eeprom_declare((Mcu)this,(byte) GetValue("EE_READY_vect"));
         }
 
         protected void Mx8_init(Avr avr)

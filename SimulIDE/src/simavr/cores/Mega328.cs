@@ -52,103 +52,105 @@ namespace SimulIDE.src.simavr.cores
             constants["PINB6"] = 6;
             constants["PINB7"] = 7;
 
-            //#define DDRB _SFR_IO8(0x04)
-            //#define DDB0 0
-            //#define DDB1 1
-            //#define DDB2 2
-            //#define DDB3 3
-            //#define DDB4 4
-            //#define DDB5 5
-            //#define DDB6 6
-            //#define DDB7 7
+            constants["DDRB"] = new DefFunc(_SFR_IO8, new object[1] { 0x04 });
+            constants["DDB0"] = 0;
+            constants["DDB1"] = 1;
+            constants["DDB2"] = 2;
+            constants["DDB3"] = 3;
+            constants["DDB4"] = 4;
+            constants["DDB5"] = 5;
+            constants["DDB6"] = 6;
+            constants["DDB7"] = 7;
 
-            //#define PORTB _SFR_IO8(0x05)
-            //#define PORTB0 0
-            //#define PORTB1 1
-            //#define PORTB2 2
-            //#define PORTB3 3
-            //#define PORTB4 4
-            //#define PORTB5 5
-            //#define PORTB6 6
-            //#define PORTB7 7
+            constants["PORTB"] = new DefFunc(_SFR_IO8, new object[1] { 0x05 });
+            constants["PORTB0"] = 0;
+            constants["PORTB1"] = 1;
+            constants["PORTB2"] = 2;
+            constants["PORTB3"] = 3;
+            constants["PORTB4"] = 4;
+            constants["PORTB5"] = 5;
+            constants["PORTB6"] = 6;
+            constants["PORTB7"] = 7;
 
-            //#define PINC _SFR_IO8(0x06)
-            //#define PINC0 0
-            //#define PINC1 1
-            //#define PINC2 2
-            //#define PINC3 3
-            //#define PINC4 4
-            //#define PINC5 5
-            //#define PINC6 6
+            constants["PINC"] = new DefFunc(_SFR_IO8, new object[1] { 0x06 });
+            constants["PINC0"] = 0;
+            constants["PINC1"] = 1;
+            constants["PINC2"] = 2;
+            constants["PINC3"] = 3;
+            constants["PINC4"] = 4;
+            constants["PINC5"] = 5;
+            constants["PINC6"] = 6;
 
-            //#define DDRC _SFR_IO8(0x07)
-            //#define DDC0 0
-            //#define DDC1 1
-            //#define DDC2 2
-            //#define DDC3 3
-            //#define DDC4 4
-            //#define DDC5 5
-            //#define DDC6 6
+            constants["DDRC"] = new DefFunc(_SFR_IO8, new object[1] { 0x07 });
+            constants["DDC0"] = 0;
+            constants["DDC1"] = 1;
+            constants["DDC2"] = 2;
+            constants["DDC3"] = 3;
+            constants["DDC4"] = 4;
+            constants["DDC5"] = 5;
+            constants["DDC6"] = 6;
 
-            //#define PORTC _SFR_IO8(0x08)
-            //#define PORTC0 0
-            //#define PORTC1 1
-            //#define PORTC2 2
-            //#define PORTC3 3
-            //#define PORTC4 4
-            //#define PORTC5 5
-            //#define PORTC6 6
+            constants["PORTC"] = new DefFunc(_SFR_IO8, new object[1] { 0x08 });
+            constants["PORTC0"] = 0;
+            constants["PORTC1"] = 1;
+            constants["PORTC2"] = 2;
+            constants["PORTC3"] = 3;
+            constants["PORTC4"] = 4;
+            constants["PORTC5"] = 5;
+            constants["PORTC6"] = 6;
 
-            //#define PIND _SFR_IO8(0x09)
-            //#define PIND0 0
-            //#define PIND1 1
-            //#define PIND2 2
-            //#define PIND3 3
-            //#define PIND4 4
-            //#define PIND5 5
-            //#define PIND6 6
-            //#define PIND7 7
+            constants["PIND"] = new DefFunc(_SFR_IO8, new object[1] { 0x09 });
+            constants["PIND0"] = 0;
+            constants["PIND1"] = 1;
+            constants["PIND2"] = 2;
+            constants["PIND3"] = 3;
+            constants["PIND4"] = 4;
+            constants["PIND5"] = 5;
+            constants["PIND6"] = 6;
+            constants["PIND7"] = 7;
 
-            //#define DDRD _SFR_IO8(0x0A)
-            //#define DDD0 0
-            //#define DDD1 1
-            //#define DDD2 2
-            //#define DDD3 3
-            //#define DDD4 4
-            //#define DDD5 5
-            //#define DDD6 6
-            //#define DDD7 7
+            constants["DDRD"] = new DefFunc(_SFR_IO8, new object[1] { 0x0A });
+            constants["DDD0"] = 0;
+            constants["DDD1"] = 1;
+            constants["DDD2"] = 2;
+            constants["DDD3"] = 3;
+            constants["DDD4"] = 4;
+            constants["DDD5"] = 5;
+            constants["DDD6"] = 6;
+            constants["DDD7"] = 7;
 
-            //#define PORTD _SFR_IO8(0x0B)
-            //#define PORTD0 0
-            //#define PORTD1 1
-            //#define PORTD2 2
-            //#define PORTD3 3
-            //#define PORTD4 4
-            //#define PORTD5 5
-            //#define PORTD6 6
-            //#define PORTD7 7
+            constants["PORTD"] = new DefFunc(_SFR_IO8, new object[1] { 0x0B });
+            constants["PORTD0"] = 0;
+            constants["PORTD1"] = 1;
+            constants["PORTD2"] = 2;
+            constants["PORTD3"] = 3;
+            constants["PORTD4"] = 4;
+            constants["PORTD5"] = 5;
+            constants["PORTD6"] = 6;
+            constants["PORTD7"] = 7;
 
-            //#define TIFR0 _SFR_IO8(0x15)
-            //#define TOV0 0
-            //#define OCF0A 1
-            //#define OCF0B 2
+            constants["TIFR0"] = new DefFunc(_SFR_IO8, new object[1] { 0x15 });
+            constants["TOV0"] = 0;
+            constants["OCF0A"] = 1;
+            constants["OCF0B"] = 2;
 
-            //#define TIFR1 _SFR_IO8(0x16)
-            //#define TOV1 0
-            //#define OCF1A 1
-            //#define OCF1B 2
-            //#define ICF1 5
 
-            //#define TIFR2 _SFR_IO8(0x17)
-            //#define TOV2 0
-            //#define OCF2A 1
-            //#define OCF2B 2
+            constants["TIFR1"] = new DefFunc(_SFR_IO8, new object[1] { 0x16 });
+            constants["TOV1"] = 0;
+            constants["OCF1A"] = 1;
+            constants["OCF1B"] = 2;
+            constants["ICF1"] = 5;
 
-            //#define PCIFR _SFR_IO8(0x1B)
-            //#define PCIF0 0
-            //#define PCIF1 1
-            //#define PCIF2 2
+            constants["TIFR2"] = new DefFunc(_SFR_IO8, new object[1] { 0x17 });
+            constants["TOV2"] = 0;
+            constants["OCF2A"] = 1;
+            constants["OCF2B"] = 2;
+
+            constants["PCIFR"] = new DefFunc(_SFR_IO8, new object[1] { 0x1B });
+            constants["PCIF0"] = 0;
+            constants["PCIF1"] = 1;
+            constants["PCIF2"] = 2;
+
 
             //#define EIFR _SFR_IO8(0x1C)
             //#define INTF0 0

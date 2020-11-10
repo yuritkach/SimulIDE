@@ -99,7 +99,6 @@
     </Compile>
     <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simavr\cores\Mcu.cs" />
-    <Compile Include="src\simavr\cores\Sim_core_declare.cs" />
     <Compile Include="src\simavr\cores\Mega328.cs" />
     <Compile Include="src\simavr\cores\Megax8.cs" />
     <Compile Include="src\simavr\sim\avr\Avr_mcu_section.cs" />
