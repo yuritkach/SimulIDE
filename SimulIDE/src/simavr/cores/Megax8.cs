@@ -14,52 +14,35 @@ namespace SimulIDE.src.simavr.cores
     {
         public Megax8()
         {
-            Mx8_init(this.core);
+            core = new Avr();
+            Mx8_init(core);
         }
 
-        public override ushort GetRamStart() { }
-        public override ushort GetRamEnd() { }
-        public override uint GetFlashEnd() { }
-        public override uint GetE2End() { }
-        public override byte[] GetFuse() { }
-        public override byte[] GetSignature() { }
-        public override byte GetLockBits() { }
-        public override ResetFlags GetResetFlags() { }
-        public override byte Get_SIM_VECTOR_SIZE()
+        protected override void InitConstants()
         {
-
+            base.InitConstants();
+            constants["EE_READY_vect"] = 22;
         }
 
-        public override byte GetEE_READY_vect() { return 22; }
-
-        protected virtual void Avr_core_init(Avr core, MegaX8Const cn)
+        protected virtual void Avr_core_init(Avr core)
         {
             Sim_core_declare cd = new Sim_core_declare();
             
-            core.mmcu = Get_SIM_MMCU();
-            cd.DefaultCore(this, Get_SIM_VECTOR_SIZE());
+            core.mmcu = GetValue("SIM_MMCU");
+            cd.DefaultCore(this, GetValue("SIM_VECTOR_SIZE"));
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
         }
 
-        protected virtual void Avr_eeprom_init(Avr core, MegaX8Const cn)
+        protected virtual void Avr_eeprom_init(Avr core)
         {
-
-            Avr_eeprom.Avr_eeprom_declare(this,GetEE_READY_vect());
-        }
-
-
-
-        protected virtual string Get_SIM_MMCU()
-        {
-            throw new Exception("MMCU not overriden!");
+            Avr_eeprom.Avr_eeprom_declare(this,GetValue("EE_READY_vect"));
         }
 
         protected void Mx8_init(Avr avr)
         {
-            var cn = new MegaX8Const();
-            Avr_core_init(avr, cn);
-	        Avr_eeprom_init(avr, cn);
+            Avr_core_init(avr);
+	        Avr_eeprom_init(avr);
 //            avr_flash_init(avr, &mcu->selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
