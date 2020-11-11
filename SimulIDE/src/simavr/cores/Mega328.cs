@@ -170,263 +170,272 @@ namespace SimulIDE.src.simavr.cores
             constants["GPIOR06"] = 6;
             constants["GPIOR07"] = 7;
 
-            //#define EECR _SFR_IO8(0x1F)
-            //#define EERE 0
-            //#define EEPE 1
-            //#define EEMPE 2
-            //#define EERIE 3
-            //#define EEPM0 4
-            //#define EEPM1 5
+            constants["EECR"] = new DefFunc(_SFR_IO8, new object[1] { 0x0F });
+            constants["EERE"] = 0;
+            constants["EEPE"] = 1;
+            constants["EEMPE"] = 2;
+            constants["EERIE"] = 3;
+            constants["EEPM0"] = 4;
+            constants["EEPM1"] = 5;
 
-            //#define EEDR _SFR_IO8(0x20)
-            //#define EEDR0 0
-            //#define EEDR1 1
-            //#define EEDR2 2
-            //#define EEDR3 3
-            //#define EEDR4 4
-            //#define EEDR5 5
-            //#define EEDR6 6
-            //#define EEDR7 7
 
-            //#define EEAR _SFR_IO16(0x21)
+            constants["EEDR"] = new DefFunc(_SFR_IO8, new object[1] { 0x20 });
+            constants["EEDR0"] = 0;
+            constants["EEDR1"] = 1;
+            constants["EEDR2"] = 2;
+            constants["EEDR3"] = 3;
+            constants["EEDR4"] = 4;
+            constants["EEDR5"] = 5;
+            constants["EEDR6"] = 6;
+            constants["EEDR7"] = 7;
 
-            //#define EEARL _SFR_IO8(0x21)
-            //#define EEAR0 0
-            //#define EEAR1 1
-            //#define EEAR2 2
-            //#define EEAR3 3
-            //#define EEAR4 4
-            //#define EEAR5 5
-            //#define EEAR6 6
-            //#define EEAR7 7
+            constants["EEAR"] = new DefFunc(_SFR_IO16, new object[1] { 0x21 });
 
-            //#define EEARH _SFR_IO8(0x22)
-            //#define EEAR8 0
-            //#define EEAR9 1
+            constants["EEARL"] = new DefFunc(_SFR_IO8, new object[1] { 0x21 });
+            constants["EEAR0"] = 0;
+            constants["EEAR1"] = 1;
+            constants["EEAR2"] = 2;
+            constants["EEAR3"] = 3;
+            constants["EEAR4"] = 4;
+            constants["EEAR5"] = 5;
+            constants["EEAR6"] = 6;
+            constants["EEAR7"] = 7;
 
-            //#define _EEPROM_REG_LOCATIONS_ 1F2021
+            constants["EEARH"] = new DefFunc(_SFR_IO8, new object[1] { 0x22 });
+            constants["EEAR8"] = 0;
+            constants["EEAR9"] = 1;
 
-            //#define GTCCR _SFR_IO8(0x23)
-            //#define PSRSYNC 0
-            //#define PSRASY 1
-            //#define TSM 7
 
-            //#define TCCR0A _SFR_IO8(0x24)
-            //#define WGM00 0
-            //#define WGM01 1
-            //#define COM0B0 4
-            //#define COM0B1 5
-            //#define COM0A0 6
-            //#define COM0A1 7
+            constants["_EEPROM_REG_LOCATIONS_"] = 0x1F2021;
 
-            //#define TCCR0B _SFR_IO8(0x25)
-            //#define CS00 0
-            //#define CS01 1
-            //#define CS02 2
-            //#define WGM02 3
-            //#define FOC0B 6
-            //#define FOC0A 7
+            constants["GTCCR"] = new DefFunc(_SFR_IO8, new object[1] { 0x23 });
+            constants["PSRSYNC"] = 0;
+            constants["PSRASY"] = 1;
+            constants["TSM"] = 7;
 
-            //#define TCNT0 _SFR_IO8(0x26)
-            //#define TCNT0_0 0
-            //#define TCNT0_1 1
-            //#define TCNT0_2 2
-            //#define TCNT0_3 3
-            //#define TCNT0_4 4
-            //#define TCNT0_5 5
-            //#define TCNT0_6 6
-            //#define TCNT0_7 7
+            constants["TCCR0A"] = new DefFunc(_SFR_IO8, new object[1] { 0x24 });
+            constants["WGM00"] = 0;
+            constants["WGM01"] = 1;
 
-            //#define OCR0A _SFR_IO8(0x27)
-            //#define OCR0A_0 0
-            //#define OCR0A_1 1
-            //#define OCR0A_2 2
-            //#define OCR0A_3 3
-            //#define OCR0A_4 4
-            //#define OCR0A_5 5
-            //#define OCR0A_6 6
-            //#define OCR0A_7 7
+            constants["COM0B0"] = 4;
+            constants["COM0B1"] = 5;
+            constants["COM0A0"] = 6;
+            constants["COM0A1"] = 7;
 
-            //#define OCR0B _SFR_IO8(0x28)
-            //#define OCR0B_0 0
-            //#define OCR0B_1 1
-            //#define OCR0B_2 2
-            //#define OCR0B_3 3
-            //#define OCR0B_4 4
-            //#define OCR0B_5 5
-            //#define OCR0B_6 6
-            //#define OCR0B_7 7
 
-            //#define GPIOR1 _SFR_IO8(0x2A)
-            //#define GPIOR10 0
-            //#define GPIOR11 1
-            //#define GPIOR12 2
-            //#define GPIOR13 3
-            //#define GPIOR14 4
-            //#define GPIOR15 5
-            //#define GPIOR16 6
-            //#define GPIOR17 7
+            constants["TCCR0B"] = new DefFunc(_SFR_IO8, new object[1] { 0x25 });
+            constants["CS00"] = 0;
+            constants["CS01"] = 1;
+            constants["CS02"] = 2;
+            constants["WGM02"] = 3;
+            constants["FOC0B"] = 6;
+            constants["FOC0A"] = 7;
 
-            //#define GPIOR2 _SFR_IO8(0x2B)
-            //#define GPIOR20 0
-            //#define GPIOR21 1
-            //#define GPIOR22 2
-            //#define GPIOR23 3
-            //#define GPIOR24 4
-            //#define GPIOR25 5
-            //#define GPIOR26 6
-            //#define GPIOR27 7
+            constants["TCNT0"] = new DefFunc(_SFR_IO8, new object[1] { 0x26 });
+            constants["TCNT0_0"] = 0;
+            constants["TCNT0_1"] = 1;
+            constants["TCNT0_2"] = 2;
+            constants["TCNT0_3"] = 3;
+            constants["TCNT0_4"] = 4;
+            constants["TCNT0_5"] = 5;
+            constants["TCNT0_6"] = 6;
+            constants["TCNT0_7"] = 7;
 
-            //#define SPCR _SFR_IO8(0x2C)
-            //#define SPR0 0
-            //#define SPR1 1
-            //#define CPHA 2
-            //#define CPOL 3
-            //#define MSTR 4
-            //#define DORD 5
-            //#define SPE 6
-            //#define SPIE 7
+            constants["OCR0A"] = new DefFunc(_SFR_IO8, new object[1] { 0x27 });
+            constants["OCR0A_0"] = 0;
+            constants["OCR0A_1"] = 1;
+            constants["OCR0A_2"] = 2;
+            constants["OCR0A_3"] = 3;
+            constants["OCR0A_4"] = 4;
+            constants["OCR0A_5"] = 5;
+            constants["OCR0A_6"] = 6;
+            constants["OCR0A_7"] = 7;
 
-            //#define SPSR _SFR_IO8(0x2D)
-            //#define SPI2X 0
-            //#define WCOL 6
-            //#define SPIF 7
+            constants["OCR0B"] = new DefFunc(_SFR_IO8, new object[1] { 0x28 });
+            constants["OCR0B_0"] = 0;
+            constants["OCR0B_1"] = 1;
+            constants["OCR0B_2"] = 2;
+            constants["OCR0B_3"] = 3;
+            constants["OCR0B_4"] = 4;
+            constants["OCR0B_5"] = 5;
+            constants["OCR0B_6"] = 6;
+            constants["OCR0B_7"] = 7;
 
-            //#define SPDR _SFR_IO8(0x2E)
-            //#define SPDR0 0
-            //#define SPDR1 1
-            //#define SPDR2 2
-            //#define SPDR3 3
-            //#define SPDR4 4
-            //#define SPDR5 5
-            //#define SPDR6 6
-            //#define SPDR7 7
+            constants["GPIOR1"] = new DefFunc(_SFR_IO8, new object[1] { 0x2A });
+            constants["GPIOR10"] = 0;
+            constants["GPIOR11"] = 1;
+            constants["GPIOR12"] = 2;
+            constants["GPIOR13"] = 3;
+            constants["GPIOR14"] = 4;
+            constants["GPIOR15"] = 5;
+            constants["GPIOR16"] = 6;
+            constants["GPIOR17"] = 7;
 
-            //#define ACSR _SFR_IO8(0x30)
-            //#define ACIS0 0
-            //#define ACIS1 1
-            //#define ACIC 2
-            //#define ACIE 3
-            //#define ACI 4
-            //#define ACO 5
-            //#define ACBG 6
-            //#define ACD 7
+            constants["GPIOR2"] = new DefFunc(_SFR_IO8, new object[1] { 0x2B });
+            constants["GPIOR20"] = 0;
+            constants["GPIOR21"] = 1;
+            constants["GPIOR22"] = 2;
+            constants["GPIOR23"] = 3;
+            constants["GPIOR24"] = 4;
+            constants["GPIOR25"] = 5;
+            constants["GPIOR26"] = 6;
+            constants["GPIOR27"] = 7;
 
-            //#define SMCR _SFR_IO8(0x33)
-            //#define SE 0
-            //#define SM0 1
-            //#define SM1 2
-            //#define SM2 3
+            constants["SPCR"] = new DefFunc(_SFR_IO8, new object[1] { 0x2C });
+            constants["SPR0"] = 0;
+            constants["SPR1"] = 1;
+            constants["CPHA"] = 2;
+            constants["CPOL"] = 3;
+            constants["MSTR"] = 4;
+            constants["DORD"] = 5;
+            constants["SPE"] = 6;
+            constants["SPIE"] = 7;
 
-            //#define MCUSR _SFR_IO8(0x34)
-            //#define PORF 0
-            //#define EXTRF 1
-            //#define BORF 2
-            //#define WDRF 3
+            constants["SPSR"] = new DefFunc(_SFR_IO8, new object[1] { 0x2D });
+            constants["SPI2X"] = 0;
+            constants["WCOL"] = 6;
+            constants["SPIF"] = 7;
 
-            //#define MCUCR _SFR_IO8(0x35)
-            //#define IVCE 0
-            //#define IVSEL 1
-            //#define PUD 4
-            //#define BODSE 5
-            //#define BODS 6
+            constants["SPDR"] = new DefFunc(_SFR_IO8, new object[1] { 0x2E });
+            constants["SPDR0"] = 0;
+            constants["SPDR1"] = 1;
+            constants["SPDR2"] = 2;
+            constants["SPDR3"] = 3;
+            constants["SPDR4"] = 4;
+            constants["SPDR5"] = 5;
+            constants["SPDR6"] = 6;
+            constants["SPDR7"] = 7;
 
-            //#define SPMCSR _SFR_IO8(0x37)
-            //#define SELFPRGEN 0 /* only for backwards compatibility with previous
-            //            *avr - libc versions; not an official name */
-            //#define SPMEN 0
-            //#define PGERS 1
-            //#define PGWRT 2
-            //#define BLBSET 3
-            //#define RWWSRE 4
-            //#define SIGRD 5
-            //#define RWWSB 6
-            //#define SPMIE 7
+            constants["ACSR"] = new DefFunc(_SFR_IO8, new object[1] { 0x30 });
+            constants["ACIS0"] = 0;
+            constants["ACIS1"] = 1;
+            constants["ACIC"] = 2;
+            constants["ACIE"] = 3;
+            constants["ACI"] = 4;
+            constants["ACO"] = 5;
+            constants["ACBG"] = 6;
+            constants["ACD"] = 7;
 
-            //#define WDTCSR _SFR_MEM8(0x60)
-            //#define WDP0 0
-            //#define WDP1 1
-            //#define WDP2 2
-            //#define WDE 3
-            //#define WDCE 4
-            //#define WDP3 5
-            //#define WDIE 6
-            //#define WDIF 7
 
-            //#define CLKPR _SFR_MEM8(0x61)
-            //#define CLKPS0 0
-            //#define CLKPS1 1
-            //#define CLKPS2 2
-            //#define CLKPS3 3
-            //#define CLKPCE 7
+            constants["SMCR"] = new DefFunc(_SFR_IO8, new object[1] { 0x33 });
+            constants["SE"] = 0;
+            constants["SM0"] = 1;
+            constants["SM1"] = 2;
+            constants["SM2"] = 3;
 
-            //#define PRR _SFR_MEM8(0x64)
-            //#define PRADC 0
-            //#define PRUSART0 1
-            //#define PRSPI 2
-            //#define PRTIM1 3
-            //#define PRTIM0 5
-            //#define PRTIM2 6
-            //#define PRTWI 7
+            constants["MCUSR"] = new DefFunc(_SFR_IO8, new object[1] { 0x34 });
+            constants["PORF"] = 0;
+            constants["EXTRF"] = 1;
+            constants["BORF"] = 2;
+            constants["WDRF"] = 3;
 
-            //#define __AVR_HAVE_PRR	((1<<PRADC)|(1<<PRUSART0)|(1<<PRSPI)|(1<<PRTIM1)|(1<<PRTIM0)|(1<<PRTIM2)|(1<<PRTWI))
-            //#define __AVR_HAVE_PRR_PRADC
-            //#define __AVR_HAVE_PRR_PRUSART0
-            //#define __AVR_HAVE_PRR_PRSPI
-            //#define __AVR_HAVE_PRR_PRTIM1
-            //#define __AVR_HAVE_PRR_PRTIM0
-            //#define __AVR_HAVE_PRR_PRTIM2
-            //#define __AVR_HAVE_PRR_PRTWI
+            constants["MCUCR"] = new DefFunc(_SFR_IO8, new object[1] { 0x35 });
+            constants["IVCE"] = 0;
+            constants["IVSEL"] = 1;
+            constants["PUD"] = 4;
+            constants["BODSE"] = 5;
+            constants["BODS"] = 6;
 
-            //#define OSCCAL _SFR_MEM8(0x66)
-            //#define CAL0 0
-            //#define CAL1 1
-            //#define CAL2 2
-            //#define CAL3 3
-            //#define CAL4 4
-            //#define CAL5 5
-            //#define CAL6 6
-            //#define CAL7 7
+            constants["SPMCSR"] = new DefFunc(_SFR_IO8, new object[1] { 0x37 });
+            constants["SELFPRGEN"] = 0; /* only for backwards compatibility with previous
+                                         *avr - libc versions; not an official name */
+            constants["SPMEN"] = 0;
+            constants["PGERS"] = 1;
+            constants["PGWRT"] = 2;
+            constants["BLBSET"] = 3;
+            constants["RWWSRE"] = 4;
+            constants["SIGRD"] = 5;
+            constants["RWWSB"] = 6;
+            constants["SPMIE"] = 7;
 
-            //#define PCICR _SFR_MEM8(0x68)
-            //#define PCIE0 0
-            //#define PCIE1 1
-            //#define PCIE2 2
+            constants["WDTCSR"] = new DefFunc(_SFR_MEM8, new object[1] { 0x60 });
+            constants["WDP0"] = 0;
+            constants["WDP1"] = 1;
+            constants["WDP2"] = 2;
+            constants["WDE"] = 3;
+            constants["WDCE"] = 4;
+            constants["WDP3"] = 5;
+            constants["WDIE"] = 6;
+            constants["WDIF"] = 7;
 
-            //#define EICRA _SFR_MEM8(0x69)
-            //#define ISC00 0
-            //#define ISC01 1
-            //#define ISC10 2
-            //#define ISC11 3
+            constants["CLKPR"] = new DefFunc(_SFR_MEM8, new object[1] { 0x61 });
+            constants["CLKPS0"] = 0;
+            constants["CLKPS1"] = 1;
+            constants["CLKPS2"] = 2;
+            constants["CLKPS3"] = 3;
+            constants["CLKPSE"] = 7;
 
-            //#define PCMSK0 _SFR_MEM8(0x6B)
-            //#define PCINT0 0
-            //#define PCINT1 1
-            //#define PCINT2 2
-            //#define PCINT3 3
-            //#define PCINT4 4
-            //#define PCINT5 5
-            //#define PCINT6 6
-            //#define PCINT7 7
 
-            //#define PCMSK1 _SFR_MEM8(0x6C)
-            //#define PCINT8 0
-            //#define PCINT9 1
-            //#define PCINT10 2
-            //#define PCINT11 3
-            //#define PCINT12 4
-            //#define PCINT13 5
-            //#define PCINT14 6
+            constants["PRR"] = new DefFunc(_SFR_MEM8, new object[1] { 0x64 });
+            constants["PRADC"] = 0;
+            constants["PRUSART0"] = 1;
+            constants["PRSPI"] = 2;
+            constants["PRTIM1"] = 3;
+            constants["PRTIM0"] = 5;
+            constants["PRTIM2"] = 6;
+            constants["PRTWI"] = 7;
 
-            //#define PCMSK2 _SFR_MEM8(0x6D)
-            //#define PCINT16 0
-            //#define PCINT17 1
-            //#define PCINT18 2
-            //#define PCINT19 3
-            //#define PCINT20 4
-            //#define PCINT21 5
-            //#define PCINT22 6
-            //#define PCINT23 7
+
+            constants["__AVR_HAVE_PRR"] = new DefFunc(Get__AVR_HAVE_PRR, null);
+            constants["__AVR_HAVE_PRR_PRADC"] = true;
+            constants["__AVR_HAVE_PRR_PRUSART0"] = true;
+            constants["__AVR_HAVE_PRR_PRSPI"] = true;
+            constants["__AVR_HAVE_PRR_PRTIM1"] = true;
+            constants["__AVR_HAVE_PRR_PRTIM0"] = true;
+            constants["__AVR_HAVE_PRR_PRTIM2"] = true;
+            constants["__AVR_HAVE_PRR_PRTWI"] = true;
+
+            constants["OSCCAL"] = new DefFunc(_SFR_MEM8, new object[1] { 0x66 });
+            constants["CAL0"] = 0;
+            constants["CAL1"] = 1;
+            constants["CAL2"] = 2;
+            constants["CAL3"] = 3;
+            constants["CAL4"] = 4;
+            constants["CAL5"] = 5;
+            constants["CAL6"] = 6;
+            constants["CAL7"] = 7;
+
+            constants["PCICR"] = new DefFunc(_SFR_MEM8, new object[1] { 0x68 });
+            constants["PCIE0"] = 0;
+            constants["PCIE1"] = 1;
+            constants["PCIE2"] = 2;
+
+            constants["EICRA"] = new DefFunc(_SFR_MEM8, new object[1] { 0x69 });
+            constants["ISC00"] = 0;
+            constants["ISC01"] = 1;
+            constants["ISC10"] = 2;
+            constants["ISC11"] = 3;
+
+            constants["PCMSK0"] = new DefFunc(_SFR_MEM8, new object[1] { 0x6B });
+            constants["PCINT0"] = 0;
+            constants["PCINT1"] = 1;
+            constants["PCINT2"] = 2;
+            constants["PCINT3"] = 3;
+            constants["PCINT4"] = 4;
+            constants["PCINT5"] = 5;
+            constants["PCINT6"] = 6;
+            constants["PCINT7"] = 7;
+
+
+            constants["PCMSK1"] = new DefFunc(_SFR_MEM8, new object[1] { 0x6C });
+            constants["PCINT8"] = 0;
+            constants["PCINT9"] = 1;
+            constants["PCINT10"] = 2;
+            constants["PCINT11"] = 3;
+            constants["PCINT12"] = 4;
+            constants["PCINT13"] = 5;
+            constants["PCINT14"] = 6;
+            constants["PCINT15"] = 7;
+
+            constants["PCMSK1"] = new DefFunc(_SFR_MEM8, new object[1] { 0x6D });
+            constants["PCINT16"] = 0;
+            constants["PCINT17"] = 1;
+            constants["PCINT18"] = 2;
+            constants["PCINT19"] = 3;
+            constants["PCINT20"] = 4;
+            constants["PCINT21"] = 5;
+            constants["PCINT22"] = 6;
+            constants["PCINT23"] = 7;
 
             //#define TIMSK0 _SFR_MEM8(0x6E)
             //#define TOIE0 0
@@ -949,16 +958,18 @@ namespace SimulIDE.src.simavr.cores
 
             //#endif  /* _AVR_IOM328P_H_ */ 
 
-
-
-
-
-
-
-
-
         }
 
+        public virtual object Get__AVR_HAVE_PRR(object[] param)
+        {
+            return (byte)((1 << GetValue("PRADC")) |
+                          (1 << GetValue("PRUSART0")) |
+                          (1 << GetValue("PRSPI")) |
+                          (1 << GetValue("PRTIM1")) |
+                          (1 << GetValue("PRTIM0")) |
+                          (1 << GetValue("PRTIM2")) |
+                          (1 << GetValue("PRTWI"))); 
+        }
 
     }
 }

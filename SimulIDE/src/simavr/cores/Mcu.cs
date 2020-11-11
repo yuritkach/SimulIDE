@@ -112,10 +112,16 @@ namespace SimulIDE.src.simavr.cores
             return (byte) ((byte)param[0] + 32);
         }
 
-        public virtual object _SFR_IO16(UInt16 v)
+        public virtual object _SFR_IO16(object[] param)
         {
-            return (UInt16)(v+32);
+            return (UInt16)((UInt16)param[0]+32);
         }
+
+        public virtual object _SFR_MEM8(object[] param)
+        {
+            return (byte)((byte)param[0]);
+        }
+
 
         public virtual void DefaultCore(byte vectorSize)
         {
