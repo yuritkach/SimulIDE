@@ -14,9 +14,7 @@ namespace SimulIDE.src.simavr.cores
 
         public static Mcu Make()
         {
-            var mega328 = new Mega328();
-            return (Mcu) mega328;
-            //return avr_core_allocate(mcu_mega328.core);
+            return new Mega328();
         }
                
 
@@ -825,83 +823,81 @@ namespace SimulIDE.src.simavr.cores
             constants["WDT_vect_num"] = 6;
             constants["WDT_vect"] = new DefFunc(_VECTOR, new object[1] { 6 }); /* Watchdog Time-out Interrupt */
 
-            //#define TIMER2_COMPA_vect_num 7
-            //#define TIMER2_COMPA_vect _VECTOR(7)   /* Timer/Counter2 Compare Match A */
+            constants["TIMER2_COMPA_vect_num"] = 7;
+            constants["TIMER2_COMPA_vect"] = new DefFunc(_VECTOR, new object[1] { 7 }); /* Timer/Counter2 Compare Match A */
 
-            //#define TIMER2_COMPB_vect_num 8
-            //#define TIMER2_COMPB_vect _VECTOR(8)   /* Timer/Counter2 Compare Match A */
+            constants["TIMER2_COMPB_vect_num"] = 8;
+            constants["TIMER2_COMPB_vect"] = new DefFunc(_VECTOR, new object[1] { 8 }); /* Timer/Counter2 Compare Match B */
 
-            //#define TIMER2_OVF_vect_num   9
-            //#define TIMER2_OVF_vect   _VECTOR(9)   /* Timer/Counter2 Overflow */
+            constants["TIMER2_OVF_vect_num"] = 9;
+            constants["TIMER2_OVF_vect"] = new DefFunc(_VECTOR, new object[1] { 9 }); /* Timer/Counter2 Overflow */
 
-            //#define TIMER1_CAPT_vect_num  10
-            //#define TIMER1_CAPT_vect  _VECTOR(10)  /* Timer/Counter1 Capture Event */
+            constants["TIMER2_CAPT_vect_num"] = 10;
+            constants["TIMER2_CAPT_vect"] = new DefFunc(_VECTOR, new object[1] { 10 }); /* Timer/Counter2 Capture event */
 
-            //#define TIMER1_COMPA_vect_num 11
-            //#define TIMER1_COMPA_vect _VECTOR(11)  /* Timer/Counter1 Compare Match A */
+            constants["TIMER1_COMPA_vect_num"] = 11;
+            constants["TIMER1_COMPA_vect"] = new DefFunc(_VECTOR, new object[1] { 11 }); /* Timer/Counter1 Compare Match A */
 
-            //#define TIMER1_COMPB_vect_num 12
-            //#define TIMER1_COMPB_vect _VECTOR(12)  /* Timer/Counter1 Compare Match B */ 
+            constants["TIMER1_COMPB_vect_num"] = 12;
+            constants["TIMER1_COMPB_vect"] = new DefFunc(_VECTOR, new object[1] { 12 }); /* Timer/Counter1 Compare Match B */
 
-            //#define TIMER1_OVF_vect_num   13
-            //#define TIMER1_OVF_vect   _VECTOR(13)  /* Timer/Counter1 Overflow */
+            constants["TIMER1_OVF_vect_num"] = 13;
+            constants["TIMER1_OVF_vect"] = new DefFunc(_VECTOR, new object[1] { 13 }); /* Timer/Counter1 Overflow */
 
-            //#define TIMER0_COMPA_vect_num 14
-            //#define TIMER0_COMPA_vect _VECTOR(14)  /* TimerCounter0 Compare Match A */
+            constants["TIMER0_COMPA_vect_num"] = 14;
+            constants["TIMER0_COMPA_vect"] = new DefFunc(_VECTOR, new object[1] { 14 }); /* Timer/Counter0 Compare Match A */
 
-            //#define TIMER0_COMPB_vect_num 15
-            //#define TIMER0_COMPB_vect _VECTOR(15)  /* TimerCounter0 Compare Match B */
+            constants["TIMER0_COMPB_vect_num"] = 15;
+            constants["TIMER0_COMPB_vect"] = new DefFunc(_VECTOR, new object[1] { 15 }); /* Timer/Counter0 Compare Match B */
 
-            //#define TIMER0_OVF_vect_num  16
-            //#define TIMER0_OVF_vect   _VECTOR(16)  /* Timer/Couner0 Overflow */
+            constants["TIMER0_OVF_vect_num"] = 16;
+            constants["TIMER0_OVF_vect"] = new DefFunc(_VECTOR, new object[1] { 16 }); /* Timer/Counter0 Overflow */
 
-            //#define SPI_STC_vect_num  17
-            //#define SPI_STC_vect      _VECTOR(17)  /* SPI Serial Transfer Complete */
+            constants["SPI_STC_vect_num"] = 17;
+            constants["SPI_STC_vect"] = new DefFunc(_VECTOR, new object[1] { 17 }); /* SPI Serial Transfer Complete */
 
-            //#define USART_RX_vect_num 18
-            //#define USART_RX_vect     _VECTOR(18)  /* USART Rx Complete */
+            constants["USART_RX_vect_num"] = 18;
+            constants["USART_RX_vect"] = new DefFunc(_VECTOR, new object[1] { 18 }); /* USART Rx Complete */
 
-            //#define USART_UDRE_vect_num   19
-            //#define USART_UDRE_vect   _VECTOR(19)  /* USART, Data Register Empty */
+            constants["USART_UDRE_vect_num"] = 19;
+            constants["USART_UDRE_vect"] = new DefFunc(_VECTOR, new object[1] { 19 }); /* USART, Data Register Empty */
 
-            //#define USART_TX_vect_num 20
-            //#define USART_TX_vect     _VECTOR(20)  /* USART Tx Complete */
+            constants["USART_TX_vect_num"] = 20;
+            constants["USART_TX_vect"] = new DefFunc(_VECTOR, new object[1] { 20 }); /* USART Tx Complete */
 
-            //#define ADC_vect_num      21
-            //#define ADC_vect          _VECTOR(21)  /* ADC Conversion Complete */
+            constants["ADC_vect_num"] = 21;
+            constants["ADC_vect"] = new DefFunc(_VECTOR, new object[1] { 21 }); /* ADC Conversion Complete */
 
-            //#define EE_READY_vect_num 22
-            //#define EE_READY_vect     _VECTOR(22)  /* EEPROM Ready */
+            constants["EE_READY_vect_num"] = 22;
+            constants["EE_READY_vect"] = new DefFunc(_VECTOR, new object[1] { 22 }); /* EEPROM Ready */
 
-            //#define ANALOG_COMP_vect_num  23
-            //#define ANALOG_COMP_vect  _VECTOR(23)  /* Analog Comparator */
+            constants["ANALOG_COMP_vect_num"] = 23;
+            constants["ANALOG_COMP_vect"] = new DefFunc(_VECTOR, new object[1] { 23 }); /* Analog Comparator */
 
-            //#define TWI_vect_num      24
-            //#define TWI_vect          _VECTOR(24)  /* Two-wire Serial Interface */
+            constants["TWI_vect_num"] = 24;
+            constants["TWI_vect"] = new DefFunc(_VECTOR, new object[1] { 24 }); /* Two-wire Serial Interface */
 
-            //#define SPM_READY_vect_num    25
-            //#define SPM_READY_vect    _VECTOR(25)  /* Store Program Memory Read */
+            constants["SPM_READY_vect_num"] = 25;
+            constants["SPM_READY_vect"] = new DefFunc(_VECTOR, new object[1] { 25 }); /* Store Program Memory Read */
 
-            //#define _VECTORS_SIZE (26 * 4)
-
-
-
-            //        /* Constants */
-            //#define SPM_PAGESIZE 128
-            //#define RAMSTART     (0x100)
-            //#define RAMEND       0x8FF     /* Last On-Chip SRAM Location */
-            //#define XRAMSIZE     0
-            //#define XRAMEND      RAMEND
-            //#define E2END        0x3FF
-            //#define E2PAGESIZE   4
-            //#define FLASHEND     0x7FFF
+            constants["_VECTORS_SIZE"] = 26*4;
 
 
+            /* Constants */
+            constants["SPM_PAGESIZE"] = 128;
+            constants["RAMSTART"] = 0x100;
+            constants["RAMEND"] = 0x8FF;     /* Last On-Chip SRAM Location */
+            constants["XRAMSIZE"] = 0;
+            constants["XRAMEND"] = GetValue("RAMEND");
+            constants["E2END"] = 0x3FF;
+            constants["E2PAGESIZE"] = 4;
+            constants["FLASHEND"] = 0x7FFF;
 
-            //        /* Fuses */
-            //#define FUSE_MEMORY_SIZE 3
+            /* Fuses */
+            constants["FUSE_MEMORY_SIZE"] = 3;
 
-            //        /* Low Fuse Byte */
+            /* Low Fuse Byte */
+
             //#define FUSE_CKSEL0 (unsigned char)~_BV(0)  /* Select Clock Source */
             //#define FUSE_CKSEL1 (unsigned char)~_BV(1)  /* Select Clock Source */
             //#define FUSE_CKSEL2 (unsigned char)~_BV(2)  /* Select Clock Source */
@@ -931,21 +927,15 @@ namespace SimulIDE.src.simavr.cores
 
 
 
-            //        /* Lock Bits */
-            //#define __LOCK_BITS_EXIST
-            //#define __BOOT_LOCK_BITS_0_EXIST
-            //#define __BOOT_LOCK_BITS_1_EXIST
+            /* Lock Bits */
+            constants["__LOCK_BITS_EXIST"] = true;
+            constants["__BOOT_LOCK_BITS_0_EXIST"] = true;
+            constants["__BOOT_LOCK_BITS_1_EXIST"] = true;
 
-
-            //        /* Signature */
-            //#define SIGNATURE_0 0x1E
-            //#define SIGNATURE_1 0x95
-            //#if defined(__AVR_ATmega328__)
-            //#define SIGNATURE_2 0x14
-            //#else /* ATmega328P */
-            //#define SIGNATURE_2 0x0F
-            //#endif
-
+            /* Signature */
+            constants["SIGNATURE_0"] = 0x1E;
+            constants["SIGNATURE_1"] = 0x95;
+            constants["SIGNATURE_2"] = 0x0F;
 
             //#define SLEEP_MODE_IDLE (0x00<<1)
             //#define SLEEP_MODE_ADC (0x01<<1)
@@ -953,9 +943,6 @@ namespace SimulIDE.src.simavr.cores
             //#define SLEEP_MODE_PWR_SAVE (0x03<<1)
             //#define SLEEP_MODE_STANDBY (0x06<<1)
             //#define SLEEP_MODE_EXT_STANDBY (0x07<<1)
-
-
-            //#endif  /* _AVR_IOM328P_H_ */ 
 
         }
 
