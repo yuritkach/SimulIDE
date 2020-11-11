@@ -437,192 +437,194 @@ namespace SimulIDE.src.simavr.cores
             constants["PCINT22"] = 6;
             constants["PCINT23"] = 7;
 
-            //#define TIMSK0 _SFR_MEM8(0x6E)
-            //#define TOIE0 0
-            //#define OCIE0A 1
-            //#define OCIE0B 2
 
-            //#define TIMSK1 _SFR_MEM8(0x6F)
-            //#define TOIE1 0
-            //#define OCIE1A 1
-            //#define OCIE1B 2
-            //#define ICIE1 5
+            constants["TIMSK0"] = new DefFunc(_SFR_MEM8, new object[1] { 0x6E });
+            constants["TOIE0"] = 0;
+            constants["OCIE0A"] = 1;
+            constants["OCIE0B"] = 2;
 
-            //#define TIMSK2 _SFR_MEM8(0x70)
-            //#define TOIE2 0
-            //#define OCIE2A 1
-            //#define OCIE2B 2
+            constants["TIMSK1"] = new DefFunc(_SFR_MEM8, new object[1] { 0x6F });
+            constants["TOIE1"] = 0;
+            constants["OCIE1A"] = 1;
+            constants["OCIE1B"] = 2;
+            constants["ICIE1"] = 5;
 
-            //# ifndef __ASSEMBLER__
-            //#define ADC     _SFR_MEM16(0x78)
-            //#endif
-            //#define ADCW    _SFR_MEM16(0x78)
+            constants["TIMSK2"] = new DefFunc(_SFR_MEM8, new object[1] { 0x70 });
+            constants["TOIE2"] = 0;
+            constants["OCIE2A"] = 1;
+            constants["OCIE2B"] = 2;
 
-            //#define ADCL _SFR_MEM8(0x78)
-            //#define ADCL0 0
-            //#define ADCL1 1
-            //#define ADCL2 2
-            //#define ADCL3 3
-            //#define ADCL4 4
-            //#define ADCL5 5
-            //#define ADCL6 6
-            //#define ADCL7 7
 
-            //#define ADCH _SFR_MEM8(0x79)
-            //#define ADCH0 0
-            //#define ADCH1 1
-            //#define ADCH2 2
-            //#define ADCH3 3
-            //#define ADCH4 4
-            //#define ADCH5 5
-            //#define ADCH6 6
-            //#define ADCH7 7
+            constants["ADC"] = new DefFunc(_SFR_MEM16, new object[1] { 0x78 });
+            constants["ADW"] = new DefFunc(_SFR_MEM16, new object[1] { 0x78 });
 
-            //#define ADCSRA _SFR_MEM8(0x7A)
-            //#define ADPS0 0
-            //#define ADPS1 1
-            //#define ADPS2 2
-            //#define ADIE 3
-            //#define ADIF 4
-            //#define ADATE 5
-            //#define ADSC 6
-            //#define ADEN 7
+            constants["ADCL"] = new DefFunc(_SFR_MEM8, new object[1] { 0x78 });
+            constants["ADCL0"] = 0;
+            constants["ADCL1"] = 1;
+            constants["ADCL2"] = 2;
+            constants["ADCL3"] = 3;
+            constants["ADCL4"] = 4;
+            constants["ADCL5"] = 5;
+            constants["ADCL6"] = 6;
+            constants["ADCL7"] = 7;
 
-            //#define ADCSRB _SFR_MEM8(0x7B)
-            //#define ADTS0 0
-            //#define ADTS1 1
-            //#define ADTS2 2
-            //#define ACME 6
+            constants["ADCH"] = new DefFunc(_SFR_MEM8, new object[1] { 0x79 });
+            constants["ADCH0"] = 0;
+            constants["ADCH1"] = 1;
+            constants["ADCH2"] = 2;
+            constants["ADCH3"] = 3;
+            constants["ADCH4"] = 4;
+            constants["ADCH5"] = 5;
+            constants["ADCH6"] = 6;
+            constants["ADCH7"] = 7;
 
-            //#define ADMUX _SFR_MEM8(0x7C)
-            //#define MUX0 0
-            //#define MUX1 1
-            //#define MUX2 2
-            //#define MUX3 3
-            //#define ADLAR 5
-            //#define REFS0 6
-            //#define REFS1 7
+            constants["ADCSRA"] = new DefFunc(_SFR_MEM8, new object[1] { 0x7A });
+            constants["ADPS0"] = 0;
+            constants["ADPS1"] = 1;
+            constants["ADPS2"] = 2;
+            constants["ADIE"] = 3;
+            constants["ADIF"] = 4;
+            constants["ADATE"] = 5;
+            constants["ADSC"] = 6;
+            constants["ADEN"] = 7;
 
-            //#define DIDR0 _SFR_MEM8(0x7E)
-            //#define ADC0D 0
-            //#define ADC1D 1
-            //#define ADC2D 2
-            //#define ADC3D 3
-            //#define ADC4D 4
-            //#define ADC5D 5
+            constants["ADCSRB"] = new DefFunc(_SFR_MEM8, new object[1] { 0x7B });
+            constants["ADTS0"] = 0;
+            constants["ADTS1"] = 1;
+            constants["ADTS2"] = 2;
+            constants["ACME"] = 6;
 
-            //#define DIDR1 _SFR_MEM8(0x7F)
-            //#define AIN0D 0
-            //#define AIN1D 1
+            constants["ADMUX"] = new DefFunc(_SFR_MEM8, new object[1] { 0x7C });
+            constants["MUX0"] = 0;
+            constants["MUX1"] = 1;
+            constants["MUX2"] = 2;
+            constants["MUX3"] = 3;
+            constants["ADLAR"] = 5;
+            constants["REFS0"] = 6;
+            constants["REFS1"] = 7;
 
-            //#define TCCR1A _SFR_MEM8(0x80)
-            //#define WGM10 0
-            //#define WGM11 1
-            //#define COM1B0 4
-            //#define COM1B1 5
-            //#define COM1A0 6
-            //#define COM1A1 7
+            constants["DIDR0"] = new DefFunc(_SFR_MEM8, new object[1] { 0x7E });
+            constants["ADC0D"] = 0;
+            constants["ADC1D"] = 1;
+            constants["ADC2D"] = 2;
+            constants["ADC3D"] = 3;
+            constants["ADC4D"] = 4;
+            constants["ADC5D"] = 5;
 
-            //#define TCCR1B _SFR_MEM8(0x81)
-            //#define CS10 0
-            //#define CS11 1
-            //#define CS12 2
-            //#define WGM12 3
-            //#define WGM13 4
-            //#define ICES1 6
-            //#define ICNC1 7
+            constants["DIDR1"] = new DefFunc(_SFR_MEM8, new object[1] { 0x7F });
+            constants["AIN0D"] = 0;
+            constants["AIN1D"] = 1;
 
-            //#define TCCR1C _SFR_MEM8(0x82)
-            //#define FOC1B 6
-            //#define FOC1A 7
 
-            //#define TCNT1 _SFR_MEM16(0x84)
+            constants["TCCR1A"] = new DefFunc(_SFR_MEM8, new object[1] { 0x80 });
+            constants["WGM10"] = 0;
+            constants["WGM11"] = 1;
+            constants["COM1B0"] = 4;
+            constants["COM1B1"] = 5;
+            constants["COM1A0"] = 6;
+            constants["COM1A1"] = 7;
 
-            //#define TCNT1L _SFR_MEM8(0x84)
-            //#define TCNT1L0 0
-            //#define TCNT1L1 1
-            //#define TCNT1L2 2
-            //#define TCNT1L3 3
-            //#define TCNT1L4 4
-            //#define TCNT1L5 5
-            //#define TCNT1L6 6
-            //#define TCNT1L7 7
 
-            //#define TCNT1H _SFR_MEM8(0x85)
-            //#define TCNT1H0 0
-            //#define TCNT1H1 1
-            //#define TCNT1H2 2
-            //#define TCNT1H3 3
-            //#define TCNT1H4 4
-            //#define TCNT1H5 5
-            //#define TCNT1H6 6
-            //#define TCNT1H7 7
+            constants["TCCR1B"] = new DefFunc(_SFR_MEM8, new object[1] { 0x81 });
+            constants["CS10"] = 0;
+            constants["CS11"] = 1;
+            constants["CS12"] = 2;
+            constants["WGM12"] = 3;
+            constants["WGM13"] = 4;
+            constants["ICES1"] = 6;
+            constants["ICNC1"] = 7;
 
-            //#define ICR1 _SFR_MEM16(0x86)
 
-            //#define ICR1L _SFR_MEM8(0x86)
-            //#define ICR1L0 0
-            //#define ICR1L1 1
-            //#define ICR1L2 2
-            //#define ICR1L3 3
-            //#define ICR1L4 4
-            //#define ICR1L5 5
-            //#define ICR1L6 6
-            //#define ICR1L7 7
+            constants["TCCR1C"] = new DefFunc(_SFR_MEM8, new object[1] { 0x82 });
+            constants["FOC1B"] = 6;
+            constants["FOC1A"] = 7;
 
-            //#define ICR1H _SFR_MEM8(0x87)
-            //#define ICR1H0 0
-            //#define ICR1H1 1
-            //#define ICR1H2 2
-            //#define ICR1H3 3
-            //#define ICR1H4 4
-            //#define ICR1H5 5
-            //#define ICR1H6 6
-            //#define ICR1H7 7
+            constants["TCNT1"] = new DefFunc(_SFR_MEM16, new object[1] { 0x84 });
+            constants["TCNT1L"] = new DefFunc(_SFR_MEM8, new object[1] { 0x84 });
+            constants["TCNT1L0"] = 0;
+            constants["TCNT1L1"] = 1;
+            constants["TCNT1L2"] = 2;
+            constants["TCNT1L3"] = 3;
+            constants["TCNT1L4"] = 4;
+            constants["TCNT1L5"] = 5;
+            constants["TCNT1L6"] = 6;
+            constants["TCNT1L7"] = 7;
 
-            //#define OCR1A _SFR_MEM16(0x88)
+            constants["TCNT1H"] = new DefFunc(_SFR_MEM8, new object[1] { 0x85 });
+            constants["TCNT1H0"] = 0;
+            constants["TCNT1H1"] = 1;
+            constants["TCNT1H2"] = 2;
+            constants["TCNT1H3"] = 3;
+            constants["TCNT1H4"] = 4;
+            constants["TCNT1H5"] = 5;
+            constants["TCNT1H6"] = 6;
+            constants["TCNT1H7"] = 7;
 
-            //#define OCR1AL _SFR_MEM8(0x88)
-            //#define OCR1AL0 0
-            //#define OCR1AL1 1
-            //#define OCR1AL2 2
-            //#define OCR1AL3 3
-            //#define OCR1AL4 4
-            //#define OCR1AL5 5
-            //#define OCR1AL6 6
-            //#define OCR1AL7 7
+            constants["ICR1"] = new DefFunc(_SFR_MEM16, new object[1] { 0x86 });
+            constants["ICR1L"] = new DefFunc(_SFR_MEM8, new object[1] { 0x86 });
+            constants["ICR1L0"] = 0;
+            constants["ICR1L1"] = 1;
+            constants["ICR1L2"] = 2;
+            constants["ICR1L3"] = 3;
+            constants["ICR1L4"] = 4;
+            constants["ICR1L5"] = 5;
+            constants["ICR1L6"] = 6;
+            constants["ICR1L7"] = 7;
 
-            //#define OCR1AH _SFR_MEM8(0x89)
-            //#define OCR1AH0 0
-            //#define OCR1AH1 1
-            //#define OCR1AH2 2
-            //#define OCR1AH3 3
-            //#define OCR1AH4 4
-            //#define OCR1AH5 5
-            //#define OCR1AH6 6
-            //#define OCR1AH7 7
+            constants["ICR1H"] = new DefFunc(_SFR_MEM8, new object[1] { 0x87 });
+            constants["ICR1H0"] = 0;
+            constants["ICR1H1"] = 1;
+            constants["ICR1H2"] = 2;
+            constants["ICR1H3"] = 3;
+            constants["ICR1H4"] = 4;
+            constants["ICR1H5"] = 5;
+            constants["ICR1H6"] = 6;
+            constants["ICR1H7"] = 7;
 
-            //#define OCR1B _SFR_MEM16(0x8A)
 
-            //#define OCR1BL _SFR_MEM8(0x8A)
-            //#define OCR1BL0 0
-            //#define OCR1BL1 1
-            //#define OCR1BL2 2
-            //#define OCR1BL3 3
-            //#define OCR1BL4 4
-            //#define OCR1BL5 5
-            //#define OCR1BL6 6
-            //#define OCR1BL7 7
 
-            //#define OCR1BH _SFR_MEM8(0x8B)
-            //#define OCR1BH0 0
-            //#define OCR1BH1 1
-            //#define OCR1BH2 2
-            //#define OCR1BH3 3
-            //#define OCR1BH4 4
-            //#define OCR1BH5 5
-            //#define OCR1BH6 6
-            //#define OCR1BH7 7
+
+            constants["OCR1A"] = new DefFunc(_SFR_MEM16, new object[1] { 0x88 });
+            constants["OCR1AL"] = new DefFunc(_SFR_MEM8, new object[1] { 0x88 });
+            constants["OCR1AL0"] = 0;
+            constants["OCR1AL1"] = 1;
+            constants["OCR1AL2"] = 2;
+            constants["OCR1AL3"] = 3;
+            constants["OCR1AL4"] = 4;
+            constants["OCR1AL5"] = 5;
+            constants["OCR1AL6"] = 6;
+            constants["OCR1AL7"] = 7;
+
+            constants["OCR1AH"] = new DefFunc(_SFR_MEM8, new object[1] { 0x89 });
+            constants["OCR1AH0"] = 0;
+            constants["OCR1AH1"] = 1;
+            constants["OCR1AH2"] = 2;
+            constants["OCR1AH3"] = 3;
+            constants["OCR1AH4"] = 4;
+            constants["OCR1AH5"] = 5;
+            constants["OCR1AH6"] = 6;
+            constants["OCR1AH7"] = 7;
+
+            constants["OCR1B"] = new DefFunc(_SFR_MEM16, new object[1] { 0x8A });
+            constants["OCR1BL"] = new DefFunc(_SFR_MEM8, new object[1] { 0x8A });
+            constants["OCR1BL0"] = 0;
+            constants["OCR1BL1"] = 1;
+            constants["OCR1BL2"] = 2;
+            constants["OCR1BL3"] = 3;
+            constants["OCR1BL4"] = 4;
+            constants["OCR1BL5"] = 5;
+            constants["OCR1BL6"] = 6;
+            constants["OCR1BL7"] = 7;
+
+            constants["OCR1BH"] = new DefFunc(_SFR_MEM8, new object[1] { 0x8B });
+            constants["OCR1BH0"] = 0;
+            constants["OCR1BH1"] = 1;
+            constants["OCR1BH2"] = 2;
+            constants["OCR1BH3"] = 3;
+            constants["OCR1BH4"] = 4;
+            constants["OCR1BH5"] = 5;
+            constants["OCR1BH6"] = 6;
+            constants["OCR1BH7"] = 7;
 
             //#define TCCR2A _SFR_MEM8(0xB0)
             //#define WGM20 0
