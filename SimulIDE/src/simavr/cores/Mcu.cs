@@ -127,6 +127,15 @@ namespace SimulIDE.src.simavr.cores
             return (byte)((byte)param[0]);
         }
 
+        public virtual object _VECTOR(object[] param)
+        {
+            return param[0];
+        }
+
+        public virtual object _BV(object[] param)
+        {
+            return param[0];
+        }
 
         public virtual void DefaultCore(byte vectorSize)
         {
@@ -155,11 +164,6 @@ namespace SimulIDE.src.simavr.cores
         */
         public virtual bool Get__AVR_LIBC_DEPRECATED_ENABLE__() { return true; }
         public virtual byte GetEE_READY_vect() { throw new AbstractException(); }
-
-        //#define _BV(v) (v)
-        //#define _VECTOR(v) (v)
-
-
 
     }
 }
