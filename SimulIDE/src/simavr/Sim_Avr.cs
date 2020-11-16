@@ -45,6 +45,12 @@ namespace SimulIDE.src.simavr
 
     public class Avr
     {
+        public Avr()
+        {
+            commands = new Avr_cmd_table();
+        }
+
+
         public string mmcu;   // name of the AVR
                             // these are filled by sim_core_declare from constants in /usr/lib/avr/include/avr/io*.h
         public UInt16 ioend;
@@ -112,7 +118,7 @@ namespace SimulIDE.src.simavr
 	    * Every IRQs will be stored in this pool. It is not
 	    * mandatory (yet) but will allow listing IRQs and their connections
 	    */
-//	    avr_irq_pool_t irq_pool;
+	    Avr_irq_pool irq_pool;
 
         // Mirror of the SREG register, to facilitate the access to bits
         // in the opcode decoder.
@@ -357,10 +363,10 @@ int gdb_port;
         //            if (!avr->gdb) avr->state = cpu_Crashed;
         //        }
 
-        //        void avr_set_command_register(avr_t* avr, avr_io_addr_t addr)
-        //        {
-        //            avr_cmd_set_register(avr, addr);
-        //        }
+        public void Avr_set_command_register(Avr avr, UInt16 addr)
+        {
+          //  Avr_cmd_set_register(avr, addr);
+        }
 
         //        static void _avr_io_console_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v,  void* param)
         //        {

@@ -27,15 +27,18 @@ namespace SimulIDE.src.simavr.cores
     
     public class Mcu
     {
-        protected Dictionary<string, object> constants ;
+        protected static Dictionary<string, object> constants ;
+        protected static Mcu self;
 
         public Avr core;
         public Avr_eeprom eeprom;
 
         public Mcu()
         {
+            self = this;
             constants = new Dictionary<string, object>();
             InitConstants();
+            
         }
 
         protected virtual void InitConstants()
@@ -50,7 +53,7 @@ namespace SimulIDE.src.simavr.cores
             constants["MCU_STATUS_REG"] = new DefFunc(GetResetFlags);
         }
 
-        public virtual dynamic GetValue(string name)
+        public static dynamic GetValue(string name)
         {
             if (constants.ContainsKey(name))
             {
@@ -60,13 +63,8 @@ namespace SimulIDE.src.simavr.cores
                     DefFunc defin = (DefFunc)v;
                     var func = defin.Func;
                     MethodInfo methodInfo = func.GetMethodInfo();
-                    dynamic result = null;
                     if (methodInfo != null)
-                    {
-                        ParameterInfo[] parameters = methodInfo.GetParameters();
-                        result = methodInfo.Invoke(this, parameters.Length == 0 ? null : defin.Param);
-                        return result;
-                    }
+                       return methodInfo.Invoke(self, new object[] { defin.Param });
                     else throw new Exception("Can't get value for method " + func.ToString());
                 }
                 else return v;
@@ -109,13 +107,25 @@ namespace SimulIDE.src.simavr.cores
 
         public virtual object _SFR_IO8(object[] param)
         {
-            return (byte) ((byte)param[0] + 32);
+            byte result =(byte)(Convert.ToByte(param[0])+0x20);
+            return result; 
         }
 
         public virtual object _SFR_IO16(object[] param)
         {
             return (UInt16)((UInt16)param[0]+32);
         }
+
+        public static object AVR_DATA_TO_IO(object[] param)
+        {
+            return (UInt16)((UInt16)param[0] - 32);
+        }
+
+        public virtual object AVR_IO_TO_DATA(object[] param)
+        {
+            return (UInt16)((UInt16)param[0] + 32);
+        }
+
 
         public virtual object _SFR_MEM8(object[] param)
         {

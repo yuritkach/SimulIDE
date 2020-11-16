@@ -28,17 +28,21 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_eeprom_declare(Mcu mcu, byte _vector)
         {
 
-            mcu.eeprom.size = (ushort)(mcu.GetValue("E2END") + 1);
-            mcu.eeprom.r_eearh = mcu.GetValue("EEARH");
-            mcu.eeprom.r_eearl = mcu.GetValue("EEARL");
-            mcu.eeprom.r_eedr = mcu.GetValue("EEDR");
-            mcu.eeprom.r_eedr = mcu.GetValue("EECR");
-            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EEPM0")), Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EEPM1")) };
-            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EEMPE"));
-            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EEPE"));
-            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EERE"));
+            mcu.eeprom.size = (ushort)(Mcu.GetValue("E2END") + 1);
+            mcu.eeprom.r_eearh = (byte)Mcu.GetValue("EEARH");
+            mcu.eeprom.r_eearl = (byte)Mcu.GetValue("EEARL");
+            mcu.eeprom.r_eedr = (byte)Mcu.GetValue("EEDR");
+            mcu.eeprom.r_eecr = (byte)Mcu.GetValue("EECR");
+            mcu.eeprom.eepm = new Avr_regbit[2] {
+                Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"), 
+                                         (byte)Mcu.GetValue("EEPM0")),
+                Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"), 
+                                         (byte)Mcu.GetValue("EEPM1")) };
+            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"),(byte) Mcu.GetValue("EEMPE"));
+            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"), (byte)Mcu.GetValue("EEPE"));
+            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"), (byte)Mcu.GetValue("EERE"));
             Avr_int_vector vec = new Avr_int_vector();
-            vec.enable = Sim_regbit.AVR_IO_REGBIT(mcu.GetValue("EECR"), mcu.GetValue("EERIE"));
+            vec.enable = Sim_regbit.AVR_IO_REGBIT((int)Mcu.GetValue("EECR"),(byte) Mcu.GetValue("EERIE"));
             vec.vector = _vector;
             mcu.eeprom.ready = vec;
         }
