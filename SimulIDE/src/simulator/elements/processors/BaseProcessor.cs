@@ -223,7 +223,7 @@ namespace SimulIDE.src.simulator.elements.processors
             return GetRamValue(address); 
         }
 
-        protected virtual void AddWatchVar(string name, int address, string type)
+        public virtual void AddWatchVar(string name, int address, string type)
         {
             name = name.ToUpper();
             if (!regsTable.ContainsKey(name)) regList.Add(name);
@@ -280,8 +280,6 @@ namespace SimulIDE.src.simulator.elements.processors
         {
   //tyv          UartDataIn?.Invoke(uart, value);
         }
-
-
 
         public virtual bool LoadFirmware(string file) { return false; }
         public virtual bool GetLoadStatus() { return loadStatus; }

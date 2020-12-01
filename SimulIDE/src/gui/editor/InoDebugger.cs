@@ -1,4 +1,5 @@
 ﻿using SimulIDE.src.gui.circuitwidget;
+using SimulIDE.src.simulator.elements.processors;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -227,81 +228,122 @@ namespace SimulIDE.src.gui.editor
 
         public void GetVariables()
         {                                                // Get dissassemble
-//            QString buildPath = SIMUAPI_AppPath::self()->RWDataFolder().absoluteFilePath("codeeditor/buildIno");
-
-//            QString objdump = m_compilerPath + "hardware/tools/avr/bin/avr-objdump";
-//            QString elfPath = buildPath + "/" + m_fileName + ".ino.elf";
+            string buildPath = AppDomain.CurrentDomain.BaseDirectory + "codeeditor\\buildIno";
+            string objdump = compilerPath + "\\hardware\\tools\\avr\\bin\\avr-objdump";
+            string elfPath = buildPath + "\\" + fileName + ".ino.elf";
 
 //# ifndef Q_OS_UNIX
 //            objdump = addQuotes(objdump);
 //            elfPath = addQuotes(elfPath);
 //#endif
 
-//            QString command = objdump + " -S -j .text " + elfPath;
-//            QProcess compIno( 0l );
-//            compIno.setStandardOutputFile(buildPath + "/" + m_fileName + ".ino.lst");
-//            compIno.start(command);
-//            compIno.waitForFinished(-1);
+            string command = objdump + " -S -j .text " + elfPath;
 
-//            QProcess getBss( 0l );      // Get var address from .bss section
-//            command = objdump + " -t -j.bss " + elfPath;
-//            getBss.start(command);
-//            getBss.waitForFinished(-1);
+            StringBuilder outfile = new StringBuilder();
+            Process compIno_ = new Process();
+            compIno_.StartInfo.WorkingDirectory = fileDir;
+            compIno_.StartInfo.FileName = objdump;
+            compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
+            compIno_.StartInfo.UseShellExecute = false;
+            compIno_.StartInfo.CreateNoWindow = true;
+            compIno_.StartInfo.RedirectStandardOutput = true;
+            compIno_.StartInfo.RedirectStandardError = true;
+            compIno_.ErrorDataReceived += CompProc_ErrorDataReceived;
 
-//            QString p_stdout = getBss.readAllStandardOutput();
-//            QStringList lines = p_stdout.split("\n");
+            compIno_.Start();
+            compIno_.BeginErrorReadLine();
+            int ofs = 0;
+            while (!compIno_.StandardOutput.EndOfStream)
+            {
+                string s = Encoding.UTF8.GetString(Encoding.Default.GetBytes(compIno_.StandardOutput.ReadLine()));
+                if (ofs < 2)  // пропускаем первые две строки
+                    ofs++;
+                else 
+                    outfile.AppendLine(s);
+            }
+            compIno_.WaitForExit();
+            compIno_.Close();
 
-//            for (QString line : lines)
-//            {
-//                //qDebug() << line;
+            System.IO.File.WriteAllText(buildPath + "\\" + fileName + ".ino.lst", outfile.ToString());
 
-//                QStringList words = line.split(" ");
-//                if (words.size() < 4) continue;
-//                QString addr = words.takeFirst();
-//                QString symbol = words.takeLast();
 
-//                QHashIterator<QString, QString> i(m_varList );
-//                while (i.hasNext())                        // Find Variable 
-//                {
-//                    i.next();
-//                    QString varName = i.key();
-//                    if (varName == symbol)          // Get variable address
-//                    {
-//                        bool ok = false;
-//                        int address = addr.toInt(&ok, 16);
-//                        if (ok)
-//                        {
-//                            address -= 0x800000;          // 0x800000 offset
-//                            BaseProcessor* proc = BaseProcessor::self();
-//                            if (proc) proc->addWatchVar(varName, address, i.value());
-//                            //qDebug() << "InoDebugger::compile  variable "<<addr<<varName<<address<<i.value();
-//                        }
-//                        break;
-//                    }
-//                }
-//            }
+            List<string> lines = new List<string>();
+            Process getBss = new Process();
+            getBss.StartInfo.WorkingDirectory = fileDir;
+            getBss.StartInfo.FileName = objdump;
+            getBss.StartInfo.Arguments = " -t -j.bss " + elfPath;
+            getBss.StartInfo.UseShellExecute = false;
+            getBss.StartInfo.CreateNoWindow = true;
+            getBss.StartInfo.RedirectStandardOutput = true;
+            getBss.StartInfo.RedirectStandardError = true;
+            getBss.ErrorDataReceived += CompProc_ErrorDataReceived;
+
+            getBss.Start();
+            getBss.BeginErrorReadLine();
+            ofs = 0;
+            while (!getBss.StandardOutput.EndOfStream)
+            {
+                string s = Encoding.UTF8.GetString(Encoding.Default.GetBytes(getBss.StandardOutput.ReadLine()));
+                if (ofs < 2) // пропускаем первые две строки
+                    ofs++;
+                else
+                    lines.Add(s);
+            }
+            getBss.WaitForExit();
+            getBss.Close();
+            
+
+            foreach (string line in lines)
+            {
+                //qDebug() << line;
+
+                var words = line.Split(' ');
+                if (words.Length < 4) continue;
+                string addr = words.First();
+                string symbol = words.Last();
+
+                foreach (var i in varList)
+                {
+                    string varName = i.Key;
+                    if (varName == symbol)          // Get variable address
+                    {
+                        bool ok = false;
+                        int address;
+                        ok = int.TryParse(addr, System.Globalization.NumberStyles.HexNumber, null, out address);
+                        if (ok)
+                        {
+                            address -= 0x800000;          // 0x800000 offset
+                            BaseProcessor proc = BaseProcessor.Self();
+                            if (proc!=null) proc.AddWatchVar(varName, address, i.Value);
+                            //qDebug() << "InoDebugger::compile  variable "<<addr<<varName<<address<<i.value();
+                        }
+                        break;
+                    }
+
+                }
+            }
         }
 
         public override void MapFlashToSource()
         {
-            //getVariables();
+            GetVariables();
 
             //m_flashToSource.clear();
             //m_sourceToFlash.clear();
             //QString buildPath = SIMUAPI_AppPath::self()->RWDataFolder().absoluteFilePath("codeeditor/buildIno");
 
-            ///*QString elfFileName = buildPath+"/"+ m_fileName + ".ino.elf";
-            //QProcess flashToLine( 0l );
-            //for( int i=0; i<10000; i++ )
-            //{
-            //    QString addr = val2hex( i );
-            //    QString command  = m_compilerPath+"hardware/tools/avr/bin/avr-addr2line -e "+ elfFileName+" "+addr;
-            //    flashToLine.start( command );
-            //    flashToLine.waitForFinished(-1);
+            /////*QString elfFileName = buildPath+"/"+ m_fileName + ".ino.elf";
+            ////QProcess flashToLine( 0l );
+            ////for( int i=0; i<10000; i++ )
+            ////{
+            ////    QString addr = val2hex( i );
+            ////    QString command  = m_compilerPath+"hardware/tools/avr/bin/avr-addr2line -e "+ elfFileName+" "+addr;
+            ////    flashToLine.start( command );
+            ////    flashToLine.waitForFinished(-1);
 
-            //    QString p_stdout = flashToLine.readAllStandardOutput();
-            //    if( p_stdout.contains(".ino") ) qDebug() << p_stdout;
-            //}*/
+            ////    QString p_stdout = flashToLine.readAllStandardOutput();
+            ////    if( p_stdout.contains(".ino") ) qDebug() << p_stdout;
+            ////}*/
 
             //QString lstFileName = buildPath + "/" + m_fileName + ".ino.lst";
             //QStringList lstLines = fileToStringList(lstFileName, "InoDebugger::mapInoToFlash");
