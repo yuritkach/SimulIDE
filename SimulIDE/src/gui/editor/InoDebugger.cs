@@ -328,82 +328,84 @@ namespace SimulIDE.src.gui.editor
         {
             GetVariables();
 
-            //m_flashToSource.clear();
-            //m_sourceToFlash.clear();
-            //QString buildPath = SIMUAPI_AppPath::self()->RWDataFolder().absoluteFilePath("codeeditor/buildIno");
+            flashToSource.Clear();
+            sourceToFlash.Clear();
+            string buildPath = AppDomain.CurrentDomain.BaseDirectory + "codeeditor\\buildIno";
 
-            /////*QString elfFileName = buildPath+"/"+ m_fileName + ".ino.elf";
-            ////QProcess flashToLine( 0l );
-            ////for( int i=0; i<10000; i++ )
-            ////{
-            ////    QString addr = val2hex( i );
-            ////    QString command  = m_compilerPath+"hardware/tools/avr/bin/avr-addr2line -e "+ elfFileName+" "+addr;
-            ////    flashToLine.start( command );
-            ////    flashToLine.waitForFinished(-1);
+            /*QString elfFileName = buildPath+"/"+ m_fileName + ".ino.elf";
+            QProcess flashToLine( 0l );
+            for( int i=0; i<10000; i++ )
+            {
+                QString addr = val2hex( i );
+                QString command  = m_compilerPath+"hardware/tools/avr/bin/avr-addr2line -e "+ elfFileName+" "+addr;
+                flashToLine.start( command );
+                flashToLine.waitForFinished(-1);
 
-            ////    QString p_stdout = flashToLine.readAllStandardOutput();
-            ////    if( p_stdout.contains(".ino") ) qDebug() << p_stdout;
-            ////}*/
+                QString p_stdout = flashToLine.readAllStandardOutput();
+                if( p_stdout.contains(".ino") ) qDebug() << p_stdout;
+            }*/
 
-            //QString lstFileName = buildPath + "/" + m_fileName + ".ino.lst";
-            //QStringList lstLines = fileToStringList(lstFileName, "InoDebugger::mapInoToFlash");
+            string lstFileName = buildPath + "\\" + fileName + ".ino.lst";
+            List<string> lstLines = File.ReadAllLines(lstFileName).ToList();
+            lastLine = 0;
 
-            //m_lastLine = 0;
+            bool readFlasAddr = false;
+            bool isInoLIne = false;
+            int inoLineNum = -1;
 
-            //bool readFlasAddr = false;
-            //bool isInoLIne = false;
-            //int inoLineNum = -1;
+            foreach (string line in lstLines)
+            {
+                if (readFlasAddr) // Last line contained source line
+                {
+                    bool ok = false;
 
-            //for (QString line : lstLines)
-            //{
-            //    if (readFlasAddr) // Last line contained source line
-            //    {
-            //        bool ok = false;
-            //        int flashAddr = line.split(":").first().toInt(&ok, 16);
-            //        if (ok)
-            //        {
-            //            m_flashToSource[flashAddr] = inoLineNum;
-            //            m_sourceToFlash[inoLineNum] = flashAddr;
-            //            if (inoLineNum > m_lastLine) m_lastLine = inoLineNum;
-            //            readFlasAddr = false;
-            //            //qDebug()<<"InoDebugger::mapInoToFlash ino-flash:" << inoLineNum << flashAddr ;
-            //        }
-            //        if (isInoLIne)
-            //        {
-            //            readFlasAddr = false;
-            //            isInoLIne = false;
-            //        }
-            //    }
-            //    if (line.contains("INOLINE"))
-            //    {
-            //        inoLineNum = line.split(" ").last().toInt() - 1;
-            //        readFlasAddr = true;
-            //        isInoLIne = true;
-            //    }
-            //    else if (line.contains("loop();"))
-            //    {
-            //        inoLineNum = m_loopInoLine;
-            //        readFlasAddr = true;
-            //    }
-            //    /*QHashIterator<QString, QString> i( m_varList );
-            //    while (i.hasNext())                             // Find Variable 
-            //    {
-            //        i.next();
-            //        QString varName = "<"+i.key()+">";
-            //        if( line.contains( varName ) )       // Get variable address
-            //        {
-            //            line = line.remove( " "+varName ).split( " " ).last().remove( "0x80" );
-            //            bool ok = false;
-            //            int address = line.toInt( &ok, 16 );
-            //            if( ok ) BaseProcessor::self()->addWatchVar( i.key(), address, i.value() );
+                    int flashAddr;
+                    string addr = line.Split(':').First();
+                    ok = int.TryParse(addr, System.Globalization.NumberStyles.HexNumber, null, out flashAddr);
+                    if (ok)
+                    {
+                        flashToSource[flashAddr] = inoLineNum;
+                        sourceToFlash[inoLineNum] = flashAddr;
+                        if (inoLineNum > lastLine) lastLine = inoLineNum;
+                        readFlasAddr = false;
+                        //qDebug()<<"InoDebugger::mapInoToFlash ino-flash:" << inoLineNum << flashAddr ;
+                    }
+                    if (isInoLIne)
+                    {
+                        readFlasAddr = false;
+                        isInoLIne = false;
+                    }
+                }
+                if (line.Contains("INOLINE"))
+                {
+                    inoLineNum = int.Parse(line.Split(' ').Last()) - 1;
+                    readFlasAddr = true;
+                    isInoLIne = true;
+                }
+                else if (line.Contains("loop();"))
+                {
+                    inoLineNum = loopInoLine;
+                    readFlasAddr = true;
+                }
+                /*QHashIterator<QString, QString> i( m_varList );
+                while (i.hasNext())                             // Find Variable 
+                {
+                    i.next();
+                    QString varName = "<"+i.key()+">";
+                    if( line.contains( varName ) )       // Get variable address
+                    {
+                        line = line.remove( " "+varName ).split( " " ).last().remove( "0x80" );
+                        bool ok = false;
+                        int address = line.toInt( &ok, 16 );
+                        if( ok ) BaseProcessor::self()->addWatchVar( i.key(), address, i.value() );
 
-            //            qDebug() << "InoDebugger::mapInoToFlash  variable "<<line<<i.key()<<address<<i.value();
+                        qDebug() << "InoDebugger::mapInoToFlash  variable "<<line<<i.key()<<address<<i.value();
 
-            //            break;
-            //        }
-            //    }*/
+                        break;
+                    }
+                }*/
 
-            //}
+            }
         }
 
 

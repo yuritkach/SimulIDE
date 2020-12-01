@@ -637,12 +637,10 @@ namespace SimulIDE.src.gui.editor
 
         public void Reset()
         {
-        //    if (m_state == DBG_RUNNING) pause();
-
-        //    McuComponent::self()->reset();
-        //    m_debugLine = 1; //m_debugger->getProgramStart();
-
-        //    updateScreen();
+            if (state == DBG_RUNNING) Pause();
+            McuComponent.Self().Reset();
+            debugLine = 1; //m_debugger->getProgramStart();
+            UpdateScreen();
         }
 
         //bool CodeEditor::driveCirc()
@@ -664,10 +662,12 @@ namespace SimulIDE.src.gui.editor
 
         public void UpdateScreen()
         {
-        //    setTextCursor(QTextCursor(document()->findBlockByLineNumber(m_debugLine - 1)));
-        //    ensureCursorVisible();
-        //    Update();
+            SetTextCursor(QTextCursor(document()->findBlockByLineNumber(m_debugLine - 1)));
+            EnsureCursorVisible();
+            Update();
         }
+
+        
 
         //int CodeEditor::lineNumberAreaWidth()
         //{
