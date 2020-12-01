@@ -150,6 +150,8 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_cmd_init(ref Avr avr)
         {
             avr.commands.table = new Avr_cmd[MAX_AVR_COMMANDS];
+            for (int i = 0; i < MAX_AVR_COMMANDS; i++)
+                avr.commands.table[i] = new Avr_cmd();
             avr.commands.pending = new Avr_cmd[0];
             // Register builtin commands
             Avr_cmd_register(ref avr, SIMAVR_CMDS.SIMAVR_CMD_VCD_START_TRACE,_simavr_cmd_vcd_start_trace, null);

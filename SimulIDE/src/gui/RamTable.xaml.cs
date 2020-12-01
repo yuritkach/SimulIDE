@@ -34,6 +34,7 @@ namespace SimulIDE.src.gui
         public RamTable()
         {
             InitializeComponent();
+            InitGrid(4, numRegs);
         }
 
         
@@ -52,7 +53,7 @@ namespace SimulIDE.src.gui
             numRegs = 60;
             loadingVars = false;
 
-            InitGrid(4, numRegs);
+            
 
              //   connect(this, SIGNAL(itemChanged(QTableWidgetItem *)),
              //            this, SLOT(addToWatch(QTableWidgetItem *)));

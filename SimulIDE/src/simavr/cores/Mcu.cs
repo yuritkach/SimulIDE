@@ -8,23 +8,6 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.cores
 {
-    public class AbstractException : ApplicationException
-    {
-        public override string Message => "Not overriden method! " + base.Message;
-    }
-
-    public class DefFunc
-    {
-        public Func<object[],object> Func { get; set; }
-        public object[] Param { get; set; }
-        public DefFunc(Func<object[], object>func, object[] param=null)
-        {
-            Func = func;
-            Param = param;
-        }
-
-    }
-    
     public class Mcu
     {
         protected Dictionary<string, object> constants ;
@@ -40,120 +23,102 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void InitConstants()
         {
-            constants["FUSE"] = new DefFunc(GetFuse);
-            constants["SIGNATURE_0"] = 0;
-            constants["SIGNATURE_1"] = 0;
-            constants["SIGNATURE_2"] = 0;
-            constants["LOCKBITS"] = 0xFF;
-            constants["SIGNATURE"] = new DefFunc(GetSignature);
-            constants["MCU_STATUS_REG"] = new DefFunc(GetMCU_STATUS_REG);
-            constants["MCU_STATUS_REG"] = new DefFunc(GetResetFlags);
+            SIGNATURE_0 = 0;
+            SIGNATURE_1 = 0;
+            SIGNATURE_2 = 0;
+            LOCKBITS = 0xFF;
         }
 
-        public virtual dynamic GetValue(string name)
+        public byte[] FUSE
         {
-            if (constants.ContainsKey(name))
+            get
             {
-                var v = constants[name];
-                if (v.GetType() == typeof(DefFunc))
+                switch (FUSE_MEMORY_SIZE)
                 {
-                    DefFunc defin = (DefFunc)v;
-                    var func = defin.Func;
-                    MethodInfo methodInfo = func.GetMethodInfo();
-                    dynamic result = null;
-                    if (methodInfo != null)
-                    {
-                        ParameterInfo[] parameters = methodInfo.GetParameters();
-                        result = methodInfo.Invoke(this, parameters.Length == 0 ? null : defin.Param);
-                        return result;
-                    }
-                    else throw new Exception("Can't get value for method " + func.ToString());
+                    case 6: return new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+                    case 3: return new byte[] { LFUSE_DEFAULT, HFUSE_DEFAULT, EFUSE_DEFAULT };
+                    case 2: return new byte[] { LFUSE_DEFAULT, HFUSE_DEFAULT };
+                    case 1: return new byte[] { FUSE_DEFAULT };
+                    default: return new byte[] { 0 };
                 }
-                else return v;
             }
-            else return null;
         }
-
-        public virtual byte[] GetFuse(object[] param=null)
+        public byte[] SIGNATURE
         {
-            switch (GetValue("FuseMemorySize"))
+            get
             {
-                case 6: return new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-                case 3: return new byte[] { GetValue("LFUSE_DEFAULT"), GetValue("HFUSE_DEFAULT"), GetValue("EFUSE_DEFAULT") };
-                case 2: return new byte[] { GetValue("LFUSE_DEFAULT"), GetValue("HFUSE_DEFAULT") };
-                case 1: return new byte[] { GetValue("FUSE_DEFAULT") };
-                default: return new byte[] { 0 };
+                return new byte[3] { SIGNATURE_0, SIGNATURE_1, SIGNATURE_2 };
             }
         }
-        protected virtual byte[] GetSignature(object[] param=null)
-        {
-            return new byte[3] { GetValue("SIGNATURE_0"), GetValue("SIGNATURE_1"), GetValue("SIGNATURE_2") };
-        }
         
-        protected virtual object GetMCU_STATUS_REG(object[] param=null)
+        public int MCU_STATUS_REG
         {
-            object result;
-            result = (int)(GetValue("MCUSR") != null ? GetValue("MCUSR") : GetValue("MCUCSR"));
-            return result;
-        }
+            get
+            {
+                return (int) (MCUSR != null ? MCUSR : MCUCSR);
+            }
+        } 
         
-        public virtual object GetResetFlags(object[] param=null)
+        public ResetFlags RESETFLAGS
         {
-            ResetFlags result = new ResetFlags();
-            result.porf = Sim_regbit.AVR_IO_REGBIT(GetValue("MCU_STATUS_REG"), GetValue("PORF"));
-            result.extrf = Sim_regbit.AVR_IO_REGBIT(GetValue("MCU_STATUS_REG"), GetValue("EXTRF"));
-            result.borf = Sim_regbit.AVR_IO_REGBIT(GetValue("MCU_STATUS_REG"), GetValue("BORF"));
-            result.wdrf = Sim_regbit.AVR_IO_REGBIT(GetValue("MCU_STATUS_REG"), GetValue("WDRF"));
-            return result;
+            get
+            {
+                ResetFlags result = new ResetFlags();
+                result.porf = Sim_regbit.AVR_IO_REGBIT(MCU_STATUS_REG, PORF);
+                result.extrf = Sim_regbit.AVR_IO_REGBIT(MCU_STATUS_REG, EXTRF);
+                result.borf = Sim_regbit.AVR_IO_REGBIT(MCU_STATUS_REG, BORF);
+                result.wdrf = Sim_regbit.AVR_IO_REGBIT(MCU_STATUS_REG, WDRF);
+                return result;
+            }
         }
 
-        public virtual object _SFR_IO8(object[] param)
+        public virtual byte _SFR_IO8(byte param)
         {
-            return (byte) ((byte)param[0] + 32);
+            return (byte) (param + 32);
         }
 
-        public virtual object _SFR_IO16(object[] param)
+        public virtual ushort _SFR_IO16(ushort param)
         {
-            return (UInt16)((UInt16)param[0]+32);
+            return (ushort)(param+32);
         }
 
-        public virtual object _SFR_MEM8(object[] param)
+        public virtual byte _SFR_MEM8(byte param)
         {
-            return (byte)((byte)param[0]);
+            return param;
         }
 
-        public virtual object _SFR_MEM16(object[] param)
+        public virtual ushort _SFR_MEM16(ushort param)
         {
-            return (byte)((byte)param[0]);
+            return param;
         }
 
-        public virtual object _VECTOR(object[] param)
+        public virtual byte _VECTOR(byte param)
         {
-            return param[0];
+            return param;
         }
 
-        public virtual object _BV(object[] param)
+        public virtual byte _BV(byte param)
         {
-            return param[0];
+            return param;
         }
 
         public virtual void DefaultCore(byte vectorSize)
         {
 
-            if (GetValue("__SIM_CORE_DECLARE_H__")!=null)
+            if (__SIM_CORE_DECLARE_H__!=null)
             {
-                core.ioend = (ushort)(GetValue("RAMSTART") - 1);
-                core.ramend = GetValue("RAMEND");
-                core.flashend = GetValue("FLASHEND");
-                core.e2end = GetValue("E2END");
+                core.ioend = (ushort)(RAMSTART - 1);
+                core.ramend = RAMEND;
+                core.flashend = FLASHEND;
+                core.e2end = E2END;
                 core.vector_size = vectorSize;
 
-                if (GetValue("Signature_0") != 0)
+                if (SIGNATURE_0 != 0)
                 {
-                    core.fuse = GetValue("FUSE");
-                    core.signature = GetValue("SIGNATURE");
-                    core.lockbits = GetValue("LOCKBITS");
-                    core.reset_flags = GetValue("RESETFLAGS");
+                    core.fuse = FUSE;
+                    core.signature = SIGNATURE;
+                    core.lockbits = LOCKBITS;
+                    core.reset_flags = RESETFLAGS;
                 }
             }
         }
@@ -163,7 +128,43 @@ namespace SimulIDE.src.simavr.cores
          * toolchain and avr-libc. This affects a lot of names, like MCUSR etc
         */
         public virtual bool Get__AVR_LIBC_DEPRECATED_ENABLE__() { return true; }
-        public virtual byte GetEE_READY_vect() { throw new AbstractException(); }
+        public byte EE_READY_vect;
+
+        public byte SIGNATURE_0;
+        public byte SIGNATURE_1;
+        public byte SIGNATURE_2;
+        public byte LOCKBITS;
+        public byte LFUSE_DEFAULT;
+        public byte HFUSE_DEFAULT;
+        public byte EFUSE_DEFAULT;
+        public byte FUSE_DEFAULT;
+        public int? MCUSR = null;
+        public int? MCUCSR = null;
+        public byte PORF;
+        public byte EXTRF;
+        public byte BORF;
+        public byte WDRF;
+        public bool? __SIM_CORE_DECLARE_H__ = null;
+        public ushort SPM_PAGESIZE;
+        public ushort RAMSTART;
+        public ushort RAMEND;     /* Last On-Chip SRAM Location */
+        public ushort XRAMSIZE;
+        public ushort XRAMEND;
+        public ushort E2END;
+        public ushort E2PAGESIZE;
+        public ushort FLASHEND;
+        public byte FUSE_MEMORY_SIZE;
+
+        public byte EEARH;
+        public byte EEARL;
+        public byte EEDR;
+        public byte EECR;
+        public byte EERE;
+        public byte EEPE;
+        public byte EEMPE;
+        public byte EERIE;
+        public byte EEPM0;
+        public byte EEPM1;
 
     }
 }

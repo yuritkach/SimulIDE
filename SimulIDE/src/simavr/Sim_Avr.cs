@@ -191,8 +191,9 @@ namespace SimulIDE.src.simavr
     // queue of io modules
 //    struct avr_io_t io_port;
 
-// Builtin and user-defined commands
-    public Avr_cmd_table commands;
+    // Builtin and user-defined commands
+    public Avr_cmd_table commands = new Avr_cmd_table();
+
 // cycle timers tracking & delivery
 //avr_cycle_timer_pool_t cycle_timers;
 // interrupt vectors and delivery fifo

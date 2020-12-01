@@ -31,7 +31,7 @@ namespace SimulIDE.src.simulator.elements.processors
             device = "";
             self = this;
 
-            //ramTable = new RamTable(this);
+            ramTable = new RamTable(this);
             //MainWindow::self()->m_ramTabWidgetLayout->addWidget(m_ramTable);
         }
 
