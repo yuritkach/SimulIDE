@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SimulIDE.src.simavr.cores;
 using SimulIDE.src.simavr.sim.avr;
 using static SimulIDE.src.simavr.sim.Avr_vcd_file;
 
@@ -24,49 +25,41 @@ namespace SimulIDE.src.simavr.sim
 
     class Sim_Cmds
     {
-        //static void _avr_cmd_io_write( avr_t* avr, avr_io_addr_t addr, uint8_t v, void* param)
-        //{
-        //    avr_cmd_table_t* commands = &avr->commands;
-        //    avr_cmd_t* command = commands->pending;
+        public static void _avr_cmd_io_write( Avr avr, UInt16 addr, byte v, object[] param)
+        {
+            Avr_cmd_table commands = avr.commands;
+            Avr_cmd command = commands.pending[0];
 
-        //    if (!command)
-        //    {
-        //        if (v > MAX_AVR_COMMANDS)
-        //        {
-        //            AVR_LOG(avr, LOG_ERROR, LOG_PREFIX
-        
-        //                "%s: code 0x%02x outside permissible range (>0x%02x)\n",
-        //                __FUNCTION__, v, MAX_AVR_COMMANDS - 1);
-        //            return;
-        //        }
-        //        command = &commands->table[v];
-        //    }
-        //    if (!command->handler)
-        //    {
-        //        AVR_LOG(avr, LOG_ERROR, LOG_PREFIX
-        
-        //            "%s: code 0x%02x has no handler (wrong MMCU config)\n",
-        //            __FUNCTION__, v);
-        //        return;
-        //    }
+            if (command!=null)
+            {
+                if (v > MAX_AVR_COMMANDS)
+                {
+                    //AVR_LOG(avr, LOG_ERROR, LOG_PREFIX "%s: code 0x%02x outside permissible range (>0x%02x)\n",__FUNCTION__, v, MAX_AVR_COMMANDS - 1);
+                    return;
+                }
+                command = commands.table[v];
+            }
+            if (command.handler!=null)
+            {
+                //AVR_LOG(avr, LOG_ERROR, LOG_PREFIX "%s: code 0x%02x has no handler (wrong MMCU config)\n",__FUNCTION__, v);
+                return;
+            }
 
-        //    if (command)
-        //    {
-        //        if (command->handler(avr, v, command->param))
-        //            commands->pending = command;
-        //        else
-        //            commands->pending = NULL;
-        //    }
-        //    else
-        //        AVR_LOG(avr, LOG_TRACE, LOG_PREFIX "%s: unknown command 0x%02x\n",
-        //            __FUNCTION__, v);
-        //}
+            if (command!=null)
+            {
+                if (command.handler(ref avr, v, command.param)!=0)
+                    commands.pending[0] = command;
+                else
+                    commands.pending = null;
+            }
+            //else AVR_LOG(avr, LOG_TRACE, LOG_PREFIX "%s: unknown command 0x%02x\n",__FUNCTION__, v);
+        }
 
 
-        //void avr_cmd_set_register( avr_t* avr, avr_io_addr_t addr)
-        //{
-        //    if (addr) avr_register_io_write(avr, addr, &_avr_cmd_io_write, NULL);
-        //}
+        public void Avr_cmd_set_register( Avr avr, UInt16 addr)
+        {
+           // if (addr!=0) Avr_register_io_write(avr, addr, _avr_cmd_io_write, null);
+        }
 
         public static void Avr_cmd_register( ref Avr avr, SIMAVR_CMDS code, avr_cmd_handler handler, object[] param)
         {
