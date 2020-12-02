@@ -117,7 +117,7 @@ namespace SimulIDE.src.gui.editor
 
         void GetProcName(){}
 
-        int Step()
+        public int Step()
         {
             int pc = BaseProcessor.Self().PC();
 

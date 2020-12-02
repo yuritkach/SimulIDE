@@ -366,7 +366,7 @@ namespace SimulIDE.src.gui.editor
             debuggerPauseButton.IsEnabled = true;
         }
 
-        protected void Pause()
+        public void Pause()
         {
             GetCodeEditor().Pause();
             debuggerRunToBKButton.IsEnabled = true;

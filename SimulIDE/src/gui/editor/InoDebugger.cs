@@ -93,6 +93,7 @@ namespace SimulIDE.src.gui.editor
                 File.Copy(fileDir +"\\"+ fn, buildPath + "\\" +fileName+"\\"+ fn );
             }
             string ProcInoFile = buildPath + "\\" + fileName + "\\" + fileName + fileExt;
+            List<string> inoText = new List<string>();
 
             var inoLines = File.ReadLines(filePath);
             String line;
@@ -125,10 +126,11 @@ namespace SimulIDE.src.gui.editor
                 }
                 if (inoLine.Contains("loop()")) loopInoLine = inoLineNumber;
                 inoLineNumber++;
-
-                Console.WriteLine(inoLine.ToString()+" // INOLINE "+inoLineNumber.ToString()+"\n");
+                inoText.Add(inoLine.ToString()+" // INOLINE "+inoLineNumber.ToString()+"\n");
             }
-            
+
+            System.IO.File.WriteAllLines(ProcInoFile, inoText);
+
 
             ///TODO: verify arduino version, older versions can compile, but no sorce code emited into .lst file
             /// , then debugger will hang!
@@ -243,7 +245,9 @@ namespace SimulIDE.src.gui.editor
             Process compIno_ = new Process();
             compIno_.StartInfo.WorkingDirectory = fileDir;
             compIno_.StartInfo.FileName = objdump;
-            compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
+          //  compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
+            compIno_.StartInfo.Arguments = " -S -x -m -d " + elfPath;
+
             compIno_.StartInfo.UseShellExecute = false;
             compIno_.StartInfo.CreateNoWindow = true;
             compIno_.StartInfo.RedirectStandardOutput = true;
@@ -291,7 +295,7 @@ namespace SimulIDE.src.gui.editor
             }
             getBss.WaitForExit();
             getBss.Close();
-            
+            System.IO.File.WriteAllLines(buildPath + "\\" + fileName + ".ino.lst.bss", lines);
 
             foreach (string line in lines)
             {
@@ -382,7 +386,7 @@ namespace SimulIDE.src.gui.editor
                     readFlasAddr = true;
                     isInoLIne = true;
                 }
-                else if (line.Contains("loop();"))
+                else if (line.Contains("loop()"))
                 {
                     inoLineNum = loopInoLine;
                     readFlasAddr = true;

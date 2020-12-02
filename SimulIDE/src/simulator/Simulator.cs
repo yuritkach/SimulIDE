@@ -1,6 +1,7 @@
 ﻿using SimulIDE.src.simulator.elements.processors;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -345,18 +346,18 @@ namespace SimulIDE.src.simulator
             //timerId = this->startTimer(m_timerTick, Qt::PreciseTimer);
         }
 
-        protected void StopTimer()
+        public void StopTimer()
         {
             if (timerId != 0)
             {
                 isrunning = false;
-                //TYV this->killTimer(m_timerId); 
+                //KillTimer(timerId); 
                 timerId = 0;
-//TYV                CircuitFuture.WaitForFinished();
+              //TYV  CircuitFuture.WaitForFinished();
             }
         }
 
-        protected void ResumeTimer()
+        public void ResumeTimer()
         {
             if (timerId == 0)
             {
@@ -595,7 +596,7 @@ namespace SimulIDE.src.simulator
         
         public UInt64 stepsPerSec;
 
-//TYV        public UInt64 mS() { return refTimer.Elapsed(); }
+        public UInt64 mS() { return (UInt64) Stopwatch.GetTimestamp(); /* refTimer.Elapsed();*/ }
 
         public event Action OnPauseDebug;
         public event Action OnResumeDebug;

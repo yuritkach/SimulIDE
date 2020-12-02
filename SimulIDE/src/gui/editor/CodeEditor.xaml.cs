@@ -3,6 +3,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
+using SimulIDE.src.simulator;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -420,23 +421,23 @@ namespace SimulIDE.src.gui.editor
 
         public void Step(bool over)
         {
-        //    if (m_state == DBG_RUNNING) return;
+            if (state == DBG_RUNNING) return;
 
-        //    m_stepOver = over;
+            stepOver = over;
 
-        //    if (over)
-        //    {
-        //        addBreakPoint(m_debugLine + 1);
-        //        EditorWindow::self()->run();
-        //    }
-        //    else
-        //    {
-        //        if (!m_driveCirc) Simulator::self()->stopTimer();
-        //        m_prevDebugLine = m_debugLine;
-        //        m_state = DBG_STEPING;
-        //        runClockTick();
-        //    }
-        //    //updateScreen();
+            if (over)
+            {
+                AddBreakPoint(debugLine + 1);
+                //EditorWindow::self()->run();
+            }
+            else
+            {
+                if (!driveCirc) Simulator.Self().StopTimer();
+                prevDebugLine = debugLine;
+                state = DBG_STEPING;
+                RunClockTick();
+            }
+            UpdateScreen();
         }
 
         public void StepOver()
@@ -448,37 +449,37 @@ namespace SimulIDE.src.gui.editor
         //    step(over);
         }
 
-        //void CodeEditor::runClockTick()
-        //{
-        //    if (!m_debugging) return;
-        //    if (m_state == DBG_PAUSED) return;
+        public void RunClockTick()
+        {
+            if (!debugging) return;
+            if (state == DBG_PAUSED) return;
 
-        //    uint64_t time0 = Simulator::self()->mS();
-        //    int i = 0;
-        //    for (i = 0; i < 200000; i++)
-        //    {
-        //        m_debugLine = debugger->step();
+            UInt64 time0 = Simulator.Self().mS();
+            int i = 0;
+            for (i = 0; i < 200000; i++)
+            {
+                debugLine = debugger.Step();
 
-        //        if (m_debugLine >= 0) break;                // New Line reached
+                if (debugLine >= 0) break;                // New Line reached
 
-        //        if (Simulator::self()->mS() - time0 > 100)
-        //            break; // Avoid blocking GUI
-        //    }
-        //    //qDebug() <<"m_prevDebugLine "<<m_prevDebugLine<< "  m_debugLine "<<m_debugLine;
+                if (Simulator.Self().mS() - time0 > 100)
+                    break; // Avoid blocking GUI
+            }
+            //qDebug() <<"m_prevDebugLine "<<m_prevDebugLine<< "  m_debugLine "<<m_debugLine;
 
-        //    if (m_debugLine < 0)                           // Step Not Finished
-        //    {
+            if (debugLine < 0)                           // Step Not Finished
+            {
         //        QTimer::singleShot(5, this, SLOT(runClockTick()));
-        //    }
-        //    else                                            // Step Finished
-        //    {
-        //        if (m_driveCirc) Simulator::self()->runGraphicStep1();
-        //        EditorWindow::self()->pause();
-        //        if (!m_driveCirc) Simulator::self()->resumeTimer();
-        //    }
-        //    if (m_debugLine > 0) m_prevDebugLine = m_debugLine;
-        //    else m_debugLine = m_prevDebugLine;
-        //}
+            }
+            else                                            // Step Finished
+            {
+                if (driveCirc) Simulator.Self().RunGraphicStep1();
+                EditorPage.Self().Pause();
+                if (!driveCirc) Simulator.Self().ResumeTimer();
+            }
+            if (debugLine > 0) prevDebugLine = debugLine;
+            else debugLine = prevDebugLine;
+        }
 
         //void CodeEditor::timerTick()
         //{
@@ -662,12 +663,8 @@ namespace SimulIDE.src.gui.editor
 
         public void UpdateScreen()
         {
-            SetTextCursor(QTextCursor(document()->findBlockByLineNumber(m_debugLine - 1)));
-            EnsureCursorVisible();
-            Update();
+            TextArea.Caret.Line = debugLine;
         }
-
-        
 
         //int CodeEditor::lineNumberAreaWidth()
         //{
