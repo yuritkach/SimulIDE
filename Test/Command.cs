@@ -6,22 +6,15 @@ using System.Threading.Tasks;
 
 namespace Avr
 {
-    public abstract class BaseCommand
+    public class BaseCommand
     {
-        private readonly ALU alu;
-        protected BaseCommand(ALU alu)
-        {
-            this.alu = alu;
-        }
-        public abstract bool ItsMe(ushort word);
-        public abstract void Execute();
-        public abstract string Disasemble();
+        public virtual bool ItsMe(ushort word) { return false; }
+        public virtual void Execute() { }
+        public virtual string Disasemble() { return null; }
     }
 
     public class ADCCommand : BaseCommand
     {
-        ADCCommand(ALU alu):base(alu){}
-
         public override string Disasemble()
         {
             return "ADC R1,R2"; // R1-R2 нужно привести к реальным названиями (по младшим битам команды)
