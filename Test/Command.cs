@@ -114,12 +114,12 @@ namespace Avr
                 //new SBRCommand(mcu),
                 //new SBRCCommand(mcu),
                 //new SBRSCommand(mcu),
-                //new SECCommand(mcu),
-                //new SEHCommand(mcu),
-                //new SEICommand(mcu),
-                //new SENCommand(mcu),
-                //new SERCommand(mcu),
-                //new SESCommand(mcu),
+                new SECCommand(mcu),
+                new SEHCommand(mcu),
+                new SEICommand(mcu),
+                new SENCommand(mcu),
+                new SERCommand(mcu),
+                new SESCommand(mcu),
                 //new SETCommand(mcu),
                 //new SEVCommand(mcu),
                 //new SEZCommand(mcu),
@@ -326,6 +326,142 @@ namespace Avr
         }
 
     }
+
+    public class SECCommand : BaseCommand
+    {
+        public SECCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SEC";
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.C = true;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return command== 0b1001010000001000;
+        }
+    }
+
+    public class SEHCommand : BaseCommand
+    {
+        public SEHCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SEH";
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.H = true;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return command == 0b1001010001011000;
+        }
+    }
+
+    public class SEICommand : BaseCommand
+    {
+        public SEICommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SEI";
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.I = true;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return command == 0b1001010001111000;
+        }
+    }
+
+    public class SENCommand : BaseCommand
+    {
+        public SENCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SEN";
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.N = true;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return command == 0b1001010000111000;
+        }
+    }
+
+    public class SERCommand : BaseCommand
+    {
+        public SERCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SER R"+rdindex.ToString("x2");
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rdindex = (byte)GetValueOnCommandMask(command, 0b0000000011110000);
+            mcu.DataMemory.SetByteByOffset((uint)(rdindex + 16), 0xFF);
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return (command & 0b1110111100001111) == 0b1110111100001111;
+        }
+
+        private byte rdindex;
+    }
+
+    public class SESCommand : BaseCommand
+    {
+        public SESCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "SES";
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.S = true;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return command == 0b1001010001001000;
+        }
+    }
+
 
 
     public class XCHCommand : BaseCommand
