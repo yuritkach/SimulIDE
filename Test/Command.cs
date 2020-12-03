@@ -45,7 +45,6 @@ namespace Avr
                 //new BRVSCommand(mcu),
                 //new BSETCommand(mcu),
                 //new BSTCommand(mcu),
-                
                 //new CALLCommand(mcu),
                 //new CBICommand(mcu),
                 //new CBRCommand(mcu),
@@ -94,7 +93,7 @@ namespace Avr
                 //new MULSCommand(mcu),
                 //new MULSUCommand(mcu),
                 //new NEGCommand(mcu),
-                new NOPCommand(mcu)
+                new NOPCommand(mcu),
                 //new ORCommand(mcu),
                 //new ORICommand(mcu),
                 //new OUTCommand(mcu),
@@ -137,7 +136,7 @@ namespace Avr
                 //new SWAPCommand(mcu),
                 //new TSTCommand(mcu),
                 //new WDRCommand(mcu),
-                //new XCHCommand(mcu),
+                new XCHCommand(mcu)
             };
         }
 
@@ -187,7 +186,7 @@ namespace Avr
             return res;
         }
 
-        protected byte GetByteOnRegistrIndex(byte index)
+        protected byte GetDataMemoryByteOnRegistrIndex(byte index)
         {
             return mcu.DataMemory.GetByteByOffset(index);
         }
@@ -209,8 +208,8 @@ namespace Avr
         {
             rrindex = (byte) GetValueOnCommandMask(command,0b0000001000001111);
             rdindex = (byte) GetValueOnCommandMask(command,0b0000000111110000);
-            byte rr = GetByteOnRegistrIndex(rrindex);
-            byte rd = GetByteOnRegistrIndex(rdindex);
+            byte rr = GetDataMemoryByteOnRegistrIndex(rrindex);
+            byte rd = GetDataMemoryByteOnRegistrIndex(rdindex);
             byte r = (byte)(rr + rd+(mcu.SREG.C?1:0));
 
             mcu.SREG.H = mcu.SREG.CalcH(rr, rd, r);
@@ -249,8 +248,8 @@ namespace Avr
         {
             rrindex = (byte)GetValueOnCommandMask(command, 0b0000001000001111);
             rdindex = (byte)GetValueOnCommandMask(command, 0b0000000111110000);
-            byte rr = GetByteOnRegistrIndex(rrindex);
-            byte rd = GetByteOnRegistrIndex(rdindex);
+            byte rr = GetDataMemoryByteOnRegistrIndex(rrindex);
+            byte rd = GetDataMemoryByteOnRegistrIndex(rdindex);
             byte r = (byte)(rr + rd);
 
             mcu.SREG.H = mcu.SREG.CalcH(rr, rd, r);
@@ -325,6 +324,38 @@ namespace Avr
         {
             return command == 0b0000000000000000;
         }
+
+    }
+
+
+    public class XCHCommand : BaseCommand
+    {
+        public XCHCommand(MCU mcu) : base(mcu) { }
+
+        public override string Disasemble()
+        {
+            return "XCH Z,R" + rdindex.ToString("x2");
+        }
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rdindex = (byte)GetValueOnCommandMask(command, 0b0000000111110000);
+            byte fromRD = GetDataMemoryByteOnRegistrIndex(rdindex);
+            uint address =(uint)(GetDataMemoryByteOnRegistrIndex(31) * 256 + GetDataMemoryByteOnRegistrIndex(30));
+            byte fromRAM = mcu.DataMemory.GetByteByOffset(address);
+            mcu.DataMemory.SetByteByOffset(rdindex, fromRAM);
+            mcu.DataMemory.SetByteByOffset(address, fromRD);
+
+            mcu.ClockCounter+=2; // Два цикла
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
+        public override bool ItsMe(ushort command)
+        {
+            return (command & 0b1001001000000100) == 0b1001001000000100;
+        }
+        
+        private byte rdindex;
 
     }
 

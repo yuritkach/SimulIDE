@@ -72,12 +72,12 @@ namespace Avr
         }
         protected byte[] data;
 
-        public byte GetByteByOffset(int offset)
+        public byte GetByteByOffset(uint offset)
         {
             return data[offset];
         }
 
-        public void SetByteByOffset(int offset,byte value)
+        public void SetByteByOffset(uint offset,byte value)
         {
             data[offset]= value;
         }
