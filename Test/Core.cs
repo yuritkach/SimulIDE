@@ -56,7 +56,7 @@ namespace Avr
             data = new byte[0x3FFF];
         }
 
-        public ushort GetData(int address)
+        public ushort GetData(uint address)
         {
             return (ushort) (data[address + 1] * 256 + data[address]); 
         }
@@ -75,6 +75,11 @@ namespace Avr
         public byte GetByteByOffset(int offset)
         {
             return data[offset];
+        }
+
+        public void SetByteByOffset(int offset,byte value)
+        {
+            data[offset]= value;
         }
 
     }
@@ -106,24 +111,25 @@ namespace Avr
             ClockCounter = 0;
             SREG = new StatusReg();
             core = new Core(this);
-            programMemory = new FlashProgrammMemory();
+            ProgramMemory = new FlashProgrammMemory();
             DataMemory = new DataMemory();
         }
 
         public void DoClock()
         {
             // Внимание! Конвеер. на одном такте идет выборка команды и исполнение предыдущей выбраной команды
-            var command = programMemory.GetData(PC);
+            var command = ProgramMemory.GetData(PC);
             core.ExecuteCommand(command);
         }
 
         protected Core core;
-        protected FlashProgrammMemory programMemory;
         
-        public UInt16 PC { get; set; }
+        
+        public uint PC { get; set; }
         public UInt64 ClockCounter { get; set; }
         public StatusReg SREG { get; set; }
         public DataMemory DataMemory { get; set; }
+        public FlashProgrammMemory ProgramMemory { get; set; }
 
     }
 
