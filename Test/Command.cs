@@ -198,11 +198,8 @@ namespace Avr
     public class ADCCommand : BaseCommand
     {
         public ADCCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "ADC R"+rdindex.ToString("x2")+", R"+rrindex.ToString("x2") ; 
-        }
+        public override string Disasemble() => "ADC R"+rdindex.ToString("x2")+", R"+rrindex.ToString("x2") ;
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b0001110000000000;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -225,10 +222,7 @@ namespace Avr
             mcu.PC += 2; // Комманды двухбайтовые
         }
 
-        public override bool ItsMe(ushort command)
-        {
-            return (command & 0b0001110000000000) == 0b0001110000000000;
-        }
+        
 
         private byte rrindex;
         private byte rdindex;
@@ -238,11 +232,8 @@ namespace Avr
     public class ADDCommand : BaseCommand
     {
         public ADDCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "ADD R" + rdindex.ToString("x2")+ ", R" + rrindex.ToString("x2");
-        }
+        public override string Disasemble() => "ADD R" + rdindex.ToString("x2")+ ", R" + rrindex.ToString("x2");
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b0000110000000000;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -264,28 +255,16 @@ namespace Avr
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
         }
-
-        public override bool ItsMe(ushort command)
-        {
-            return (command & 0b0000110000000000) == 0b0000110000000000;
-        }
-
         private byte rrindex;
         private byte rdindex;
 
     }
 
-
-
-
     public class JMPCommand : BaseCommand
     {
         public JMPCommand(MCU mcu) : base(mcu){ }
-
-        public override string Disasemble()
-        {
-            return "JMP " + address.ToString("X8");
-        }
+        public override string Disasemble() => "JMP " + address.ToString("X8");
+        public override bool ItsMe(ushort command) => (command & 0b1111111000001110) == 0b1001010000001100;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -295,12 +274,6 @@ namespace Avr
             mcu.ClockCounter= mcu.ClockCounter+3;
             mcu.PC = address; // Комманды двухбайтовые
         }
-
-        public override bool ItsMe(ushort command)
-        {
-            return (command & 0b1001010000001100) == 0b1001010000001100;
-        }
-
         protected uint address;
 
     }
@@ -308,21 +281,13 @@ namespace Avr
     public class NOPCommand : BaseCommand
     {
         public NOPCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "NOP";
-        }
+        public override string Disasemble() =>  "NOP";
+        public override bool ItsMe(ushort command) => command == 0b0000000000000000;
 
         public override void Execute(MCU mcu, ushort command)
         {
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
-        }
-
-        public override bool ItsMe(ushort command)
-        {
-            return command == 0b0000000000000000;
         }
 
     }
@@ -330,11 +295,8 @@ namespace Avr
     public class SECCommand : BaseCommand
     {
         public SECCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "SEC";
-        }
+        public override string Disasemble() => "SEC";
+        public override bool ItsMe(ushort command) => command == 0b1001010000001000;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -342,21 +304,13 @@ namespace Avr
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
         }
-
-        public override bool ItsMe(ushort command)
-        {
-            return command== 0b1001010000001000;
-        }
     }
 
     public class SEHCommand : BaseCommand
     {
         public SEHCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "SEH";
-        }
+        public override string Disasemble() => "SEH";
+        public override bool ItsMe(ushort command) => command == 0b1001010001011000;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -364,21 +318,13 @@ namespace Avr
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
         }
-
-        public override bool ItsMe(ushort command)
-        {
-            return command == 0b1001010001011000;
-        }
     }
 
     public class SEICommand : BaseCommand
     {
         public SEICommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "SEI";
-        }
+        public override string Disasemble() =>"SEI";
+        public override bool ItsMe(ushort command) => command == 0b1001010001111000;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -386,32 +332,19 @@ namespace Avr
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
         }
-
-        public override bool ItsMe(ushort command)
-        {
-            return command == 0b1001010001111000;
-        }
     }
 
     public class SENCommand : BaseCommand
     {
         public SENCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "SEN";
-        }
+        public override string Disasemble() => "SEN";
+        public override bool ItsMe(ushort command) => command == 0b1001010000111000;
 
         public override void Execute(MCU mcu, ushort command)
         {
             mcu.SREG.N = true;
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
-        }
-
-        public override bool ItsMe(ushort command)
-        {
-            return command == 0b1001010000111000;
         }
     }
 
@@ -432,10 +365,7 @@ namespace Avr
             mcu.PC += 2; // Комманды двухбайтовые
         }
 
-        public override bool ItsMe(ushort command)
-        {
-            return (command & 0b1110111100001111) == 0b1110111100001111;
-        }
+        public override bool ItsMe(ushort command) =>(command & 0b1111111100001111) == 0b1110111100001111;
 
         private byte rdindex;
     }
@@ -443,11 +373,9 @@ namespace Avr
     public class SESCommand : BaseCommand
     {
         public SESCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "SES";
+        public override bool ItsMe(ushort command) => command == 0b1001010001001000;
 
-        public override string Disasemble()
-        {
-            return "SES";
-        }
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -456,10 +384,7 @@ namespace Avr
             mcu.PC += 2; // Комманды двухбайтовые
         }
 
-        public override bool ItsMe(ushort command)
-        {
-            return command == 0b1001010001001000;
-        }
+        
     }
 
 
@@ -467,11 +392,8 @@ namespace Avr
     public class XCHCommand : BaseCommand
     {
         public XCHCommand(MCU mcu) : base(mcu) { }
-
-        public override string Disasemble()
-        {
-            return "XCH Z,R" + rdindex.ToString("x2");
-        }
+        public override string Disasemble() => "XCH Z,R" + rdindex.ToString("x2");
+        public override bool ItsMe(ushort command) => (command & 0b1111111000001111) == 0b1001001000000100;
 
         public override void Execute(MCU mcu, ushort command)
         {
@@ -486,11 +408,8 @@ namespace Avr
             mcu.PC += 2; // Комманды двухбайтовые
         }
 
-        public override bool ItsMe(ushort command)
-        {
-            return (command & 0b1001001000000100) == 0b1001001000000100;
-        }
-        
+
+                
         private byte rdindex;
 
     }
