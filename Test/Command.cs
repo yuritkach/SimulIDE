@@ -17,8 +17,8 @@ namespace Avr
                 new ADDCommand(mcu),
 
                 //new ADIWCommand(mcu),
-                //new ANDCommand(mcu),
-                //new ANDICommand(mcu),
+                new ANDCommand(mcu),
+                new ANDICommand(mcu),
                 //new ASRCommand(mcu),
                 //new BCLRCommand(mcu),
                 //new BLDCommand(mcu),
@@ -198,7 +198,7 @@ namespace Avr
     public class ADCCommand : BaseCommand
     {
         public ADCCommand(MCU mcu) : base(mcu) { }
-        public override string Disasemble() => "ADC R"+rdindex.ToString("x2")+", R"+rrindex.ToString("x2") ;
+        public override string Disasemble() => "ADC R"+rdindex.ToString()+", R"+rrindex.ToString() ;
         public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b0001110000000000;
 
         public override void Execute(MCU mcu, ushort command)
@@ -215,8 +215,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
             mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
-
-            mcu.DataMemory.SetByteByOffset(rdindex,rd);
+            mcu.DataMemory.SetByteByOffset(rdindex,r);
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -232,7 +231,7 @@ namespace Avr
     public class ADDCommand : BaseCommand
     {
         public ADDCommand(MCU mcu) : base(mcu) { }
-        public override string Disasemble() => "ADD R" + rdindex.ToString("x2")+ ", R" + rrindex.ToString("x2");
+        public override string Disasemble() => "ADD R" + rdindex.ToString()+ ", R" + rrindex.ToString();
         public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b0000110000000000;
 
         public override void Execute(MCU mcu, ushort command)
@@ -249,8 +248,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
             mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
-
-            mcu.DataMemory.SetByteByOffset(rdindex, rd);
+            mcu.DataMemory.SetByteByOffset(rdindex, r);
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -259,6 +257,65 @@ namespace Avr
         private byte rdindex;
 
     }
+
+    public class ANDCommand : BaseCommand
+    {
+        public ANDCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "AND R" + rdindex.ToString() + ", R" + rrindex.ToString();
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b0010000000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rrindex = (byte)GetValueOnCommandMask(command, 0b0000001000001111);
+            rdindex = (byte)GetValueOnCommandMask(command, 0b0000000111110000);
+            byte rr = GetDataMemoryByteOnRegistrIndex(rrindex);
+            byte rd = GetDataMemoryByteOnRegistrIndex(rdindex);
+            byte r = (byte)(rr & rd);
+            
+            mcu.SREG.V = false;
+            mcu.SREG.N = (r & 0b10000000) == 0b10000000;
+            mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
+            mcu.SREG.Z = r == 0;
+            mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
+            mcu.DataMemory.SetByteByOffset(rdindex, r);
+
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+        private byte rrindex;
+        private byte rdindex;
+
+    }
+
+    public class ANDICommand : BaseCommand
+    {
+        public ANDICommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "ANDI R" + rdindex.ToString() + ", " + rvalue.ToString("x2");
+        public override bool ItsMe(ushort command) => (command & 0b1111000000000000) == 0b0111000000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rvalue = (byte) GetValueOnCommandMask(command, 0b0000111100001111);
+            rdindex = (byte)(GetValueOnCommandMask(command, 0b0000000011110000) +16);
+            byte rd = GetDataMemoryByteOnRegistrIndex(rdindex);
+            byte r = (byte)(rvalue & rd);
+
+            mcu.SREG.V = false;
+            mcu.SREG.N = (r & 0b10000000) == 0b10000000;
+            mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
+            mcu.SREG.Z = r == 0;
+            mcu.DataMemory.SetByteByOffset(rdindex, r);
+
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+        private byte rdindex;
+        private byte rvalue;
+
+    }
+
+
+
 
     public class JMPCommand : BaseCommand
     {
