@@ -19,8 +19,8 @@ namespace Avr
                 //new ADIWCommand(mcu),
                 new ANDCommand(mcu),
                 new ANDICommand(mcu),
-                //new ASRCommand(mcu),
-                //new BCLRCommand(mcu),
+                new ASRCommand(mcu),
+                new BCLRCommand(mcu),
                 //new BLDCommand(mcu),
                 //new BRBCCommand(mcu),
                 //new BRBSCommand(mcu),
@@ -313,6 +313,83 @@ namespace Avr
         private byte rvalue;
 
     }
+
+    public class ASRCommand : BaseCommand
+    {
+        public ASRCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "ASR R" + rdindex.ToString();
+        public override bool ItsMe(ushort command) => (command & 0b1111111000001111) == 0b1001010000000101;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rdindex = (byte)GetValueOnCommandMask(command, 0b0000000111110000);
+            byte rd = GetDataMemoryByteOnRegistrIndex(rdindex);
+            byte sbit = (byte)(rd & 0b10000000);
+            byte cbit = (byte)(rd & 0b00000001);
+                       
+            byte r = (byte)((rd>>1)|sbit);
+
+            mcu.SREG.C = cbit==1;
+            mcu.SREG.N = (r & 0b10000000) == 0b10000000;
+            mcu.SREG.V = mcu.SREG.C ^ mcu.SREG.N; ;
+            mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
+            mcu.SREG.Z = r == 0;
+
+            mcu.DataMemory.SetByteByOffset(rdindex, r);
+
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+        private byte rdindex;
+
+    }
+
+    public class BCLRCommand : BaseCommand
+    {
+        public BCLRCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            string r;
+            switch (rvalue)
+            {
+                case 0: r = "Clear Carry Flag"; break;
+                case 1: r = "Clear Zero Flag"; break;
+                case 2: r = "Clear Negative Flag"; break;
+                case 3: r = "Clear Overflow Flag"; break;
+                case 4: r = "Clear Sign Flag"; break;
+                case 5: r = "Clear Half Carry Flag"; break;
+                case 6: r = "Clear Transfer bit"; break;
+                case 7: r = "Disable interrupts"; break;
+                default: throw new ApplicationException();
+            }
+            return "BCLR " + rvalue.ToString() + "; " + r;
+        }
+            
+        
+        public override bool ItsMe(ushort command) => (command & 0b1111111110001111) == 0b1001010010001000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rvalue = (byte)GetValueOnCommandMask(command, 0b0000000001110000);
+            switch (rvalue)
+            {
+                case 0: mcu.SREG.C = false;break;
+                case 1: mcu.SREG.Z = false; break;
+                case 2: mcu.SREG.N = false; break;
+                case 3: mcu.SREG.V = false; break;
+                case 4: mcu.SREG.S = false; break;
+                case 5: mcu.SREG.H = false; break;
+                case 6: mcu.SREG.T = false; break;
+                case 7: mcu.SREG.I = false; break;
+            }
+
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+        private byte rvalue;
+
+    }
+
 
 
 
