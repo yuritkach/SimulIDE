@@ -61,7 +61,22 @@ namespace Avr
             }
         }
 
-        
+        public string FlagNameByIndex(int index)
+        {
+            switch (index)
+            {
+                case 0: return "Carry";
+                case 1: return "Zerro";
+                case 2: return "Negative";
+                case 3: return "Overflow";
+                case 4: return "Sign";
+                case 5: return "Half Carry";
+                case 6: return "Transfer";
+                case 7: return "Interrupt";
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
 
     }
 

@@ -23,9 +23,9 @@ namespace Avr
                 new BCLRCommand(mcu),
                 new BLDCommand(mcu),
                 new BRBCCommand(mcu),
-                //new BRBSCommand(mcu),
-                //new BRCCCommand(mcu),
-                //new BRCSCommand(mcu),
+                new BRBSCommand(mcu),
+                new BRCCCommand(mcu),
+                new BRCSCommand(mcu),
                 //new BREAKCommand(mcu),
                 //new BREQCommand(mcu),
                 //new BRGECommand(mcu),
@@ -420,7 +420,7 @@ namespace Avr
         public BRBCCommand(MCU mcu) : base(mcu) { }
         public override string Disasemble()
         {
-            return "BRBC " + bitindex.ToString() + ", " + offset.ToString("x2") + " ; Branch if Zero Flag cleared";
+            return "BRBC " + bitindex.ToString() + ", " + offset.ToString("x2") + " ; Branch if "+mcu.SREG.FlagNameByIndex(bitindex)+" Flag cleared";
         }
         
         public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b1111010000000000;
@@ -429,11 +429,16 @@ namespace Avr
         {
             offset = GetValueOnCommandMask(command, 0b0000001111111000);
             bitindex = (byte) GetValueOnCommandMask(command, 0b0000000000000111);
-            if (mcu.SREG.GetByIndex(bitindex))
+            if (!mcu.SREG.GetByIndex(bitindex))
+            {
                 mcu.PC = mcu.PC + offset + 2;
-
-            mcu.PC += 2; 
-            mcu.ClockCounter = mcu.ClockCounter + 1;
+                mcu.ClockCounter++;  // два цикла если истина
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
             
         }
         protected uint offset;
@@ -441,7 +446,87 @@ namespace Avr
 
     }
 
+    public class BRBSCommand : BaseCommand
+    {
+        public BRBSCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRBS " + bitindex.ToString() + ", " + offset.ToString("x2") + " ; Branch if " + mcu.SREG.FlagNameByIndex(bitindex) + " Flag was set";
+        }
 
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000000) == 0b1111000000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            bitindex = (byte)GetValueOnCommandMask(command, 0b0000000000000111);
+            if (mcu.SREG.GetByIndex(bitindex))
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter+=2; 
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+            
+
+        }
+        protected uint offset;
+        protected byte bitindex;
+
+    }
+
+
+    public class BRCCCommand : BaseCommand
+    {
+        public BRCCCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRCC "  + offset.ToString("x2") + " ; Branch if Carry Flag cleared";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111010000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (!mcu.SREG.GetByIndex(0))
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter+=2;
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+        }
+        protected uint offset;
+    }
+
+    public class BRCSCommand : BaseCommand
+    {
+        public BRCSCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRCS " + offset.ToString("x2") + " ; Branch if Carry Flag cleared";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111000000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (mcu.SREG.GetByIndex(0))
+                mcu.PC = mcu.PC + offset + 2;
+
+            mcu.PC += 2;
+            mcu.ClockCounter = mcu.ClockCounter + 1;
+        }
+        protected uint offset;
+    }
 
 
 
