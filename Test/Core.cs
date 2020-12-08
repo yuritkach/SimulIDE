@@ -45,6 +45,22 @@ namespace Avr
             return (rd7 && rr7) || (rr7 && !r7) || (rd7 && !r7);
         }
 
+        public bool GetByIndex(int index)
+        {
+            switch (index)
+            {
+                case 0: return C;
+                case 1: return Z;
+                case 2: return N;
+                case 3: return V;
+                case 4: return S;
+                case 5: return H;
+                case 6: return T;
+                case 7: return I;
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
         
 
     }
