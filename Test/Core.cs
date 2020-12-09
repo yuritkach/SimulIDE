@@ -162,7 +162,9 @@ namespace Avr
         protected Core core;
         
         
-        public uint PC { get; set; }
+        public uint PC { get; set; } // Programm counter
+        public uint SP { get; set; } // Stack pointer
+
         public UInt64 ClockCounter { get; set; }
         public StatusReg SREG { get; set; }
         public DataMemory DataMemory { get; set; }

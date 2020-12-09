@@ -44,7 +44,7 @@ namespace Avr
                 //new BRVSCommand(mcu),
                 //new BSETCommand(mcu),
                 //new BSTCommand(mcu),
-                //new CALLCommand(mcu),
+                new CALLCommand(mcu),
                 //new CBICommand(mcu),
                 //new CBRCommand(mcu),
                 //new CLCCommand(mcu),
@@ -586,7 +586,26 @@ namespace Avr
 
     }
 
+    public class CALLCommand : BaseCommand
+    {
+        public CALLCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "CALL " + address.ToString("X8");
+        public override bool ItsMe(ushort command) => (command & 0b1111111000001110) == 0b1001010000001110;
 
+        public override void Execute(MCU mcu, ushort command)
+        {
+            uint bigcommand = (uint)((command << 16) + mcu.ProgramMemory.GetData(mcu.PC + 2)); //берем следующие 2 байта после PC
+            address = GetValueOnCommandMask(bigcommand, 0b00000001111100011111111111111111);
+            uint retAddress = mcu.PC + 4;
+            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
+            mcu.DataMemory.SetByteByOffset(mcu.SP+1, (byte)(retAddress & 0xFF));
+            mcu.SP -= 2;
+            mcu.ClockCounter = mcu.ClockCounter + 4;
+            mcu.PC = address; // Комманды двухбайтовые
+        }
+        protected uint address;
+
+    }
 
     public class JMPCommand : BaseCommand
     {
