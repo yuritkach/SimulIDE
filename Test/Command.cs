@@ -15,8 +15,7 @@ namespace Avr
             {
                 new ADCCommand(mcu),
                 new ADDCommand(mcu),
-
-                //new ADIWCommand(mcu),
+                new ADIWCommand(mcu),
                 new ANDCommand(mcu),
                 new ANDICommand(mcu),
                 new ASRCommand(mcu),
@@ -26,7 +25,7 @@ namespace Avr
                 new BRBSCommand(mcu),
                 new BRCCCommand(mcu),
                 new BRCSCommand(mcu),
-                //new BREAKCommand(mcu),
+                new BREAKCommand(mcu),
                 //new BREQCommand(mcu),
                 //new BRGECommand(mcu),
                 //new BRHCCommand(mcu),
@@ -258,6 +257,51 @@ namespace Avr
 
     }
 
+    public class ADIWCommand : BaseCommand
+    {
+        public ADIWCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            switch (ridx)
+            {
+                case 0: return "ADIW R25:R24, "+rvalue.ToString()+ " ; Add "+ rvalue.ToString() + " to R25:R24"; 
+                case 1: return "ADIW XH:XL, " + rvalue.ToString() + " ; Add " + rvalue.ToString() + " to X-Pointer(R27:R26)";
+                case 2: return "ADIW YH:YL, " + rvalue.ToString() + " ; Add " + rvalue.ToString() + " to Y-Pointer(R29:R28)";
+                case 3: return "ADIW ZH:ZL, " + rvalue.ToString() + " ; Add " + rvalue.ToString() + " to Z-Pointer(R31:R30)";
+                default:throw new ApplicationException("Invalid instruction!");
+            }
+        }
+        
+        public override bool ItsMe(ushort command) => (command & 0b1111111100000000) == 0b1001011000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            rvalue = (byte) GetValueOnCommandMask(command, 0b0000000011001111);
+            ridx = (byte) GetValueOnCommandMask(command, 0b0000000000110000);
+            byte laddr =(byte)(24 + (ridx << 1));
+            byte haddr = (byte)(24 + (ridx << 1)+1);
+
+            byte l = mcu.DataMemory.GetByteByOffset(laddr);
+            byte h = mcu.DataMemory.GetByteByOffset(haddr);
+            uint res = (uint) (h << 8) + l + rvalue;
+            byte rl = (byte)(res & 0xFF);
+            byte rh = (byte)((res >> 8) & 0xFF);
+            mcu.DataMemory.SetByteByOffset(laddr, rl);
+            mcu.DataMemory.SetByteByOffset(haddr, rh);
+
+            mcu.SREG.N = (rh & 0x80) == 0x80;
+            mcu.SREG.V = ((h & 0x80) == 0) && mcu.SREG.N;
+            mcu.SREG.S = mcu.SREG.N ^ mcu.SREG.V;
+            mcu.SREG.Z = res == 0;
+            mcu.SREG.C = ((h & 0x80) == 0x80) && ((rh & 0x80) == 0);
+
+            mcu.ClockCounter ++;
+            mcu.PC +=2; // Комманды двухбайтовые
+        }
+        protected byte rvalue;
+        protected byte ridx;
+    }
+
     public class ANDCommand : BaseCommand
     {
         public ANDCommand(MCU mcu) : base(mcu) { }
@@ -478,7 +522,6 @@ namespace Avr
 
     }
 
-
     public class BRCCCommand : BaseCommand
     {
         public BRCCCommand(MCU mcu) : base(mcu) { }
@@ -511,7 +554,7 @@ namespace Avr
         public BRCSCommand(MCU mcu) : base(mcu) { }
         public override string Disasemble()
         {
-            return "BRCS " + offset.ToString("x2") + " ; Branch if Carry Flag cleared";
+            return "BRCS " + offset.ToString("x2") + " ; Branch if Carry Flag was set";
         }
 
         public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111000000000000;
@@ -526,6 +569,21 @@ namespace Avr
             mcu.ClockCounter = mcu.ClockCounter + 1;
         }
         protected uint offset;
+    }
+
+    public class BREAKCommand : BaseCommand
+    {
+        public BREAKCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "BREAK ; Stop mode on cheap debugging";
+        public override bool ItsMe(ushort command) => command == 0b1001010110011000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SetStopMode();
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+
     }
 
 

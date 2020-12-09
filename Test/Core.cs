@@ -153,6 +153,12 @@ namespace Avr
             core.ExecuteCommand(command);
         }
 
+        public void SetStopMode()
+        {
+            throw new NotImplementedException();
+        }
+
+
         protected Core core;
         
         
