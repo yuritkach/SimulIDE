@@ -69,7 +69,7 @@ namespace Avr
                 //new FMULCommand(mcu),
                 //new FMULSCommand(mcu),
                 //new FMULSUCommand(mcu),
-                //new ICALLCommand(mcu),
+                new ICALLCommand(mcu),
                 //new IJMPCommand(mcu),
                 //new INCommand(mcu),
                 //new INCCommand(mcu),
@@ -98,7 +98,7 @@ namespace Avr
                 //new OUTCommand(mcu),
                 //new POPCommand(mcu),
                 //new PUSHCommand(mcu),
-                //new RCALLCommand(mcu),
+                new RCALLCommand(mcu),
                 //new RETCommand(mcu),
                 //new RETICommand(mcu),
                 //new RJMPCommand(mcu),
@@ -607,6 +607,28 @@ namespace Avr
 
     }
 
+    public class ICALLCommand : BaseCommand
+    {
+        public ICALLCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "ICALL ; Call on address in Z (" + address.ToString("X8")+")";
+        public override bool ItsMe(ushort command) => command == 0b1001010100001001;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            byte h = mcu.DataMemory.GetByteByOffset(31);
+            byte l = mcu.DataMemory.GetByteByOffset(30);
+            address = (uint)(h * 256 + l);
+            uint retAddress = mcu.PC + 2;
+            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
+            mcu.DataMemory.SetByteByOffset(mcu.SP + 1, (byte)(retAddress & 0xFF));
+            mcu.SP -= 2;
+            mcu.ClockCounter = mcu.ClockCounter + 3;
+            mcu.PC = address; // Комманды двухбайтовые
+        }
+        protected uint address;
+
+    }
+
     public class JMPCommand : BaseCommand
     {
         public JMPCommand(MCU mcu) : base(mcu){ }
@@ -638,6 +660,32 @@ namespace Avr
         }
 
     }
+
+    public class RCALLCommand : BaseCommand
+    {
+        public RCALLCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "RCALL ; Call on address in Z (" + address.ToString("X8") + ")";
+        public override bool ItsMe(ushort command) => (command & 0b1111000000000000) == 0b1101000000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            address = GetValueOnCommandMask(command, 0b0000011111111111);
+
+
+
+
+            uint retAddress = mcu.PC + 2;
+            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
+            mcu.DataMemory.SetByteByOffset(mcu.SP + 1, (byte)(retAddress & 0xFF));
+            mcu.SP -= 2;
+            mcu.ClockCounter = mcu.ClockCounter + 3;
+            mcu.PC = address; // Комманды двухбайтовые
+        }
+        protected uint address;
+
+    }
+
+
 
     public class SECCommand : BaseCommand
     {
