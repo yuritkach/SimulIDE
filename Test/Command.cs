@@ -26,7 +26,7 @@ namespace Avr
                 new BRCCCommand(mcu),
                 new BRCSCommand(mcu),
                 new BREAKCommand(mcu),
-                //new BREQCommand(mcu),
+                new BREQCommand(mcu),
                 //new BRGECommand(mcu),
                 //new BRHCCommand(mcu),
                 //new BRHSCommand(mcu),
@@ -586,6 +586,36 @@ namespace Avr
 
     }
 
+    public class BREQCommand : BaseCommand
+    {
+        public BREQCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BREQ " + offset.ToString("x4") + " ; Branch if Zerro Flag set";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111000000000001;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (mcu.SREG.Z)
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter += 2;
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+        }
+        protected uint offset;
+    }
+
+
+
+
     public class CALLCommand : BaseCommand
     {
         public CALLCommand(MCU mcu) : base(mcu) { }
@@ -670,10 +700,6 @@ namespace Avr
         public override void Execute(MCU mcu, ushort command)
         {
             address = GetValueOnCommandMask(command, 0b0000011111111111);
-
-
-
-
             uint retAddress = mcu.PC + 2;
             mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
             mcu.DataMemory.SetByteByOffset(mcu.SP + 1, (byte)(retAddress & 0xFF));
