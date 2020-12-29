@@ -27,9 +27,9 @@ namespace Avr
                 new BRCSCommand(mcu),
                 new BREAKCommand(mcu),
                 new BREQCommand(mcu),
-                //new BRGECommand(mcu),
-                //new BRHCCommand(mcu),
-                //new BRHSCommand(mcu),
+                new BRGECommand(mcu),
+                new BRHCCommand(mcu),
+                new BRHSCommand(mcu),
                 //new BRIDCommand(mcu),
                 //new BRIECommand(mcu),
                 //new BRLOCommand(mcu),
@@ -613,6 +613,86 @@ namespace Avr
         protected uint offset;
     }
 
+    public class BRGECommand : BaseCommand
+    {
+        public BRGECommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRGE " + offset.ToString("x4") + " ; Branch if Signed Flag clear";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111010000000100;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (!mcu.SREG.S)
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter += 2;
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+        }
+        protected uint offset;
+    }
+
+    public class BRHCCommand : BaseCommand
+    {
+        public BRHCCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRHC " + offset.ToString("x4") + " ; Branch if half carry Flag clear";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111010000000101;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (!mcu.SREG.H)
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter += 2;
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+        }
+        protected uint offset;
+    }
+
+    public class BRHSCommand : BaseCommand
+    {
+        public BRHSCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "BRHS " + offset.ToString("x4") + " ; Branch if half carry Flag set";
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111110000000111) == 0b1111000000000101;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            offset = GetValueOnCommandMask(command, 0b0000001111111000);
+            if (mcu.SREG.H)
+            {
+                mcu.PC = mcu.PC + offset + 2;
+                mcu.ClockCounter += 2;
+            }
+            else
+            {
+                mcu.PC += 2;
+                mcu.ClockCounter++;
+            }
+        }
+        protected uint offset;
+    }
 
 
 
