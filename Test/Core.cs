@@ -61,6 +61,23 @@ namespace Avr
             }
         }
 
+        public void SetByIndex(int index, bool value)
+        {
+            switch (index)
+            {
+                case 0: C=value;break;
+                case 1: Z=value;break;
+                case 2: N=value;break;
+                case 3: V=value;break;
+                case 4: S=value;break;
+                case 5: H=value;break;
+                case 6: T=value;break;
+                case 7: I=value;break;
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+
+
         public string FlagNameByIndex(int index)
         {
             switch (index)
