@@ -45,7 +45,7 @@ namespace Avr
                 new BSETCommand(mcu),
                 new BSTCommand(mcu),
                 new CALLCommand(mcu),
-                //new CBICommand(mcu),
+                new CBICommand(mcu),
                 //new CBRCommand(mcu),
                 //new CLCCommand(mcu),
                 //new CLHCommand(mcu),
@@ -194,6 +194,17 @@ namespace Avr
         {
             uint v = (uint)(1 << index);
             return ((value & v) == v);
+        }
+
+        protected void SetBitValueOnIndex(ref byte value, byte index)
+        {
+            uint v = (uint)(1 << index);
+            value = (byte)(value | v);
+        }
+        protected void ClearBitValueOnIndex(ref byte value, byte index)
+        {
+            uint v = (uint)(1 << index);
+            value = (byte)(value - v);
         }
 
         protected MCU mcu;
@@ -1096,6 +1107,33 @@ namespace Avr
         protected uint address;
 
     }
+
+    public class CBICommand : BaseCommand
+    {
+        public CBICommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble()
+        {
+            return "CBI " + regoffset.ToString() + ", " + bitoffset.ToString() + " ; Clear bit "+ bitoffset.ToString()+ " in "+mcu.IO.GetNameByAddress(regoffset);
+        }
+
+        public override bool ItsMe(ushort command) => (command & 0b1111111100000000) == 0b1001100000000000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            regoffset = (byte)(GetValueOnCommandMask(command, 0b0000000011111000) + 0x20);
+            bitoffset = (byte)GetValueOnCommandMask(command, 0b0000000000000111);
+            byte rr = GetDataMemoryByteOnRegistrIndex(regoffset);
+            ClearBitValueOnIndex(ref rr, bitoffset);
+            mcu.PC += 2;
+            mcu.ClockCounter++;
+
+        }
+        protected byte regoffset;
+        protected byte bitoffset;
+    }
+
+
+
 
     public class ICALLCommand : BaseCommand
     {
