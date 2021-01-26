@@ -46,8 +46,8 @@ namespace Avr
                 new BSTCommand(mcu),
                 new CALLCommand(mcu),
                 new CBICommand(mcu),
-                //new CBRCommand(mcu),
-                //new CLCCommand(mcu),
+              //   new CBRCommand(mcu), // equal to ANDI command - therefore not implement 
+                new CLCCommand(mcu),
                 //new CLHCommand(mcu),
                 //new CLICommand(mcu),
                 //new CLNCommand(mcu),
@@ -187,7 +187,7 @@ namespace Avr
 
         protected byte GetDataMemoryByteOnRegistrIndex(byte index)
         {
-            return mcu.DataMemory.GetByteByOffset(index);
+            return mcu.DataMemory[index];
         }
 
         protected bool GetBitValueOnIndex(byte value, byte index)
@@ -231,7 +231,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
             mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
-            mcu.DataMemory.SetByteByOffset(rdindex,r);
+            mcu.DataMemory[rdindex]=r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -264,7 +264,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
             mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
-            mcu.DataMemory.SetByteByOffset(rdindex, r);
+            mcu.DataMemory[rdindex] = r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -298,13 +298,13 @@ namespace Avr
             byte laddr =(byte)(24 + (ridx << 1));
             byte haddr = (byte)(24 + (ridx << 1)+1);
 
-            byte l = mcu.DataMemory.GetByteByOffset(laddr);
-            byte h = mcu.DataMemory.GetByteByOffset(haddr);
+            byte l = mcu.DataMemory[laddr];
+            byte h = mcu.DataMemory[haddr];
             uint res = (uint) (h << 8) + l + rvalue;
             byte rl = (byte)(res & 0xFF);
             byte rh = (byte)((res >> 8) & 0xFF);
-            mcu.DataMemory.SetByteByOffset(laddr, rl);
-            mcu.DataMemory.SetByteByOffset(haddr, rh);
+            mcu.DataMemory[laddr] = rl;
+            mcu.DataMemory[haddr] = rh;
 
             mcu.SREG.N = (rh & 0x80) == 0x80;
             mcu.SREG.V = ((h & 0x80) == 0) && mcu.SREG.N;
@@ -338,7 +338,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
             mcu.SREG.C = mcu.SREG.CalcC(rr, rd, r);
-            mcu.DataMemory.SetByteByOffset(rdindex, r);
+            mcu.DataMemory[rdindex] = r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -365,7 +365,7 @@ namespace Avr
             mcu.SREG.N = (r & 0b10000000) == 0b10000000;
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
-            mcu.DataMemory.SetByteByOffset(rdindex, r);
+            mcu.DataMemory[rdindex] = r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -396,7 +396,7 @@ namespace Avr
             mcu.SREG.S = mcu.SREG.V ^ mcu.SREG.N;
             mcu.SREG.Z = r == 0;
 
-            mcu.DataMemory.SetByteByOffset(rdindex, r);
+            mcu.DataMemory[rdindex] = r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -466,7 +466,7 @@ namespace Avr
             byte mask = (byte)(1 << bitindex);
             byte v = (byte)((mcu.SREG.T ? 1 : 0)<<bitindex); 
             byte r = (byte)(rd-mask+v);
-            mcu.DataMemory.SetByteByOffset(rdindex, r);
+            mcu.DataMemory[rdindex] = r;
 
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
@@ -1098,8 +1098,8 @@ namespace Avr
             uint bigcommand = (uint)((command << 16) + mcu.ProgramMemory.GetData(mcu.PC + 2)); //берем следующие 2 байта после PC
             address = GetValueOnCommandMask(bigcommand, 0b00000001111100011111111111111111);
             uint retAddress = mcu.PC + 4;
-            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
-            mcu.DataMemory.SetByteByOffset(mcu.SP+1, (byte)(retAddress & 0xFF));
+            mcu.DataMemory[mcu.SP] = (byte)((retAddress >> 8) & 0xFF);
+            mcu.DataMemory[mcu.SP+1] = (byte)(retAddress & 0xFF);
             mcu.SP -= 2;
             mcu.ClockCounter = mcu.ClockCounter + 4;
             mcu.PC = address; // Комманды двухбайтовые
@@ -1113,7 +1113,7 @@ namespace Avr
         public CBICommand(MCU mcu) : base(mcu) { }
         public override string Disasemble()
         {
-            return "CBI " + regoffset.ToString() + ", " + bitoffset.ToString() + " ; Clear bit "+ bitoffset.ToString()+ " in "+mcu.IO.GetNameByAddress(regoffset);
+            return "CBI " + regoffset.ToString() + ", " + bitoffset.ToString() + " ; Clear bit "+ bitoffset.ToString()+ " in "+mcu.CellNames[regoffset];
         }
 
         public override bool ItsMe(ushort command) => (command & 0b1111111100000000) == 0b1001100000000000;
@@ -1132,6 +1132,23 @@ namespace Avr
         protected byte bitoffset;
     }
 
+    public class CLCCommand : BaseCommand
+    {
+        public CLCCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "CLC;    Clear Carry Flag";
+        public override bool ItsMe(ushort command) => command == 0b1001010010001000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.C = false;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+    }
+
+
+
+
 
 
 
@@ -1143,12 +1160,12 @@ namespace Avr
 
         public override void Execute(MCU mcu, ushort command)
         {
-            byte h = mcu.DataMemory.GetByteByOffset(31);
-            byte l = mcu.DataMemory.GetByteByOffset(30);
+            byte h = mcu.DataMemory[31];
+            byte l = mcu.DataMemory[30];
             address = (uint)(h * 256 + l);
             uint retAddress = mcu.PC + 2;
-            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
-            mcu.DataMemory.SetByteByOffset(mcu.SP + 1, (byte)(retAddress & 0xFF));
+            mcu.DataMemory[mcu.SP] = (byte)((retAddress >> 8) & 0xFF);
+            mcu.DataMemory[mcu.SP + 1] = (byte)(retAddress & 0xFF);
             mcu.SP -= 2;
             mcu.ClockCounter = mcu.ClockCounter + 3;
             mcu.PC = address; // Комманды двухбайтовые
@@ -1199,8 +1216,8 @@ namespace Avr
         {
             address = GetValueOnCommandMask(command, 0b0000011111111111);
             uint retAddress = mcu.PC + 2;
-            mcu.DataMemory.SetByteByOffset(mcu.SP, (byte)((retAddress >> 8) & 0xFF));
-            mcu.DataMemory.SetByteByOffset(mcu.SP + 1, (byte)(retAddress & 0xFF));
+            mcu.DataMemory[mcu.SP] = (byte)((retAddress >> 8) & 0xFF);
+            mcu.DataMemory[mcu.SP + 1] = (byte)(retAddress & 0xFF);
             mcu.SP -= 2;
             mcu.ClockCounter = mcu.ClockCounter + 3;
             mcu.PC = address; // Комманды двухбайтовые
@@ -1279,7 +1296,7 @@ namespace Avr
         public override void Execute(MCU mcu, ushort command)
         {
             rdindex = (byte)GetValueOnCommandMask(command, 0b0000000011110000);
-            mcu.DataMemory.SetByteByOffset((uint)(rdindex + 16), 0xFF);
+            mcu.DataMemory[(uint)(rdindex + 16)] = 0xFF;
             mcu.ClockCounter++;
             mcu.PC += 2; // Комманды двухбайтовые
         }
@@ -1319,9 +1336,9 @@ namespace Avr
             rdindex = (byte)GetValueOnCommandMask(command, 0b0000000111110000);
             byte fromRD = GetDataMemoryByteOnRegistrIndex(rdindex);
             uint address =(uint)(GetDataMemoryByteOnRegistrIndex(31) * 256 + GetDataMemoryByteOnRegistrIndex(30));
-            byte fromRAM = mcu.DataMemory.GetByteByOffset(address);
-            mcu.DataMemory.SetByteByOffset(rdindex, fromRAM);
-            mcu.DataMemory.SetByteByOffset(address, fromRD);
+            byte fromRAM = mcu.DataMemory[address];
+            mcu.DataMemory[rdindex] = fromRAM;
+            mcu.DataMemory[address] = fromRD;
 
             mcu.ClockCounter+=2; // Два цикла
             mcu.PC += 2; // Комманды двухбайтовые
