@@ -48,9 +48,9 @@ namespace Avr
                 new CBICommand(mcu),
               //   new CBRCommand(mcu), // equal to ANDI command - therefore not implement 
                 new CLCCommand(mcu),
-                //new CLHCommand(mcu),
-                //new CLICommand(mcu),
-                //new CLNCommand(mcu),
+                new CLHCommand(mcu),
+                new CLICommand(mcu),
+                new CLNCommand(mcu),
                 //new CLRCommand(mcu),
                 //new CLSCommand(mcu),
                 //new CLTCommand(mcu),
@@ -1146,7 +1146,47 @@ namespace Avr
         }
     }
 
+    public class CLHCommand : BaseCommand
+    {
+        public CLHCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "CLH;    Clear Half Carry Flag";
+        public override bool ItsMe(ushort command) => command == 0b1001010011011000;
 
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.H = false;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+    }
+
+    public class CLICommand : BaseCommand
+    {
+        public CLICommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "CLI;    Clear Global Interrupt Flag";
+        public override bool ItsMe(ushort command) => command == 0b1001010011111000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.I = false;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+    }
+
+    public class CLNCommand : BaseCommand
+    {
+        public CLNCommand(MCU mcu) : base(mcu) { }
+        public override string Disasemble() => "CLN;    Clear Negative Flag";
+        public override bool ItsMe(ushort command) => command == 0b1001010010101000;
+
+        public override void Execute(MCU mcu, ushort command)
+        {
+            mcu.SREG.N = false;
+            mcu.ClockCounter++;
+            mcu.PC += 2; // Комманды двухбайтовые
+        }
+    }
 
 
 

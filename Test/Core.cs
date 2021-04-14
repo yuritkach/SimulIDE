@@ -387,6 +387,16 @@ namespace Avr
             commandExecutor.Execute(command);
         }
 
+        public void LoadProgram(string filename)
+        {
+
+        }
+
+        public void Run()
+        {
+
+        }
+
         protected CommandExecutor commandExecutor;
         protected MCU mcu;
 

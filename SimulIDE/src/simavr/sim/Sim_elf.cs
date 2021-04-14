@@ -13,15 +13,12 @@ namespace SimulIDE.src.simavr.sim
 //#define O_BINARY 0
 //#endif
 
-//        int
-//        avr_load_firmware(
-//                avr_t* avr,
-//                elf_firmware_t* firmware)
-//        {
-//            if (firmware->frequency) avr->frequency = firmware->frequency;
-//            if (firmware->vcc) avr->vcc = firmware->vcc;
-//            if (firmware->avcc) avr->avcc = firmware->avcc;
-//            if (firmware->aref) avr->aref = firmware->aref;
+        public static int Avr_load_firmware(Avr avr,Elf_firmware firmware)
+        {
+            if (firmware.frequency!=0) avr.frequency = firmware.frequency;
+            if (firmware.vcc!=0) avr.vcc = firmware.vcc;
+            if (firmware.avcc!=0) avr.avcc = firmware.avcc;
+            if (firmware.aref!=0) avr.aref = firmware.aref;
 //#if CONFIG_SIMAVR_TRACE && ELF_SYMBOLS
 //	int scount = firmware->flashsize >> 1;
 //	avr->trace_data->codeline = malloc(scount * sizeof(avr_symbol_t*));
@@ -41,55 +38,54 @@ namespace SimulIDE.src.simavr.sim
 //	}
 //#endif
 
-//            if (avr_loadcode(avr, firmware->flash,
-//                    firmware->flashsize, firmware->flashbase) != 0)
-//            {
-//                return -1;
-//            }
-//            avr->codeend = firmware->flashsize +
-//                    firmware->flashbase - firmware->datasize;
+            if (avr_loadcode(avr, firmware.flash,
+                    firmware.flashsize, firmware.flashbase) != 0)
+            {
+                return -1;
+            }
+            avr.codeend = firmware.flashsize + firmware.flashbase - firmware.datasize;
 
-//            if (firmware->eeprom && firmware->eesize)
-//            {
-//                avr_eeprom_desc_t d =
-//                {
-//				.ee = firmware->eeprom,
-//				.offset = 0,
-//				.size = firmware->eesize
-//        };
-//                avr_ioctl(avr, AVR_IOCTL_EEPROM_SET, &d);
-//            }
-//            if (firmware->fuse) memcpy(avr->fuse, firmware->fuse, firmware->fusesize);
-//            if (firmware->lockbits) avr->lockbits = firmware->lockbits[0];
-//            // load the default pull up/down values for ports
-//            for (int i = 0; i < 8 && firmware->external_state[i].port; i++)
-//            {
-//                avr_ioport_external_t e = {
-//			.name = firmware->external_state[i].port,
-//			.mask = firmware->external_state[i].mask,
-//			.value = firmware->external_state[i].value,
-//        };
-//                avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL(e.name), &e);
-//            }
-//            avr_set_command_register(avr, firmware->command_register_addr);
-//            avr_set_console_register(avr, firmware->console_register_addr);
+            if ((firmware.eeprom.Length>0) && (firmware.eesize>0))
+            {
+                Avr_eeprom_desc d = new Avr_eeprom_desc();
+                d.ee = firmware.eeprom;
+                d.offset = 0;
+                d.size = firmware.eesize;
+                // avr_ioctl(avr, AVR_IOCTL_EEPROM_SET, d);
+            }
+            if (firmware.fuse.Length > 0)
+                Array.Copy(firmware.fuse, avr.fuse, firmware.fusesize);
+                
+            if (firmware.lockbits.Length>0)
+                avr.lockbits = firmware.lockbits[0];
+            // load the default pull up/down values for ports
+            for (int i = 0; i < (8 & firmware.external_state[i].port); i++)
+            {
+                Avr_ioport_external e = new Avr_ioport_external();
+                e.name = firmware->external_state[i].port;
+                e.mask = firmware->external_state[i].mask;
+                e.value = firmware->external_state[i].value;
+                avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL(e.name), e);
+            }
+            avr_set_command_register(avr, firmware->command_register_addr);
+            avr_set_console_register(avr, firmware->console_register_addr);
 
 //            // rest is initialization of the VCD file
-//            if (firmware->tracecount == 0) return 0;
+            if (firmware->tracecount == 0) return 0;
 
-//            avr->vcd = malloc(sizeof(*avr->vcd));
+            avr->vcd = malloc(sizeof(*avr->vcd));
 //            memset(avr->vcd, 0, sizeof(*avr->vcd));
-//            avr_vcd_init(avr,
-//                firmware->tracename[0] ? firmware->tracename : "gtkwave_trace.vcd",
-//                avr->vcd,
-//                firmware->traceperiod >= 1000 ? firmware->traceperiod : 1000);
+            avr_vcd_init(avr,
+                firmware->tracename[0] ? firmware->tracename : "gtkwave_trace.vcd",
+                avr->vcd,
+                firmware->traceperiod >= 1000 ? firmware->traceperiod : 1000);
 
 //            AVR_LOG(avr, LOG_TRACE, "Creating VCD trace file '%s'\n", avr->vcd->filename);
 
-//            for (int ti = 0; ti < firmware->tracecount; ti++)
-//            {
-//                if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_PORTPIN)
-//                {
+            for (int ti = 0; ti < firmware->tracecount; ti++)
+            {
+                if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_PORTPIN)
+                {
 //                    avr_irq_t* irq = avr_io_getirq(avr,
 //                            AVR_IOCTL_IOPORT_GETIRQ(firmware->trace[ti].mask),
 //                            firmware->trace[ti].addr);
@@ -102,9 +98,9 @@ namespace SimulIDE.src.simavr.sim
 //                            firmware->trace[ti].name[0] ?
 //                                firmware->trace[ti].name : name);
 //                    }
-//                }
-//                else if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_IRQ)
-//                {
+                }
+                else if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_IRQ)
+                {
 //                    avr_irq_t* bit = avr_get_interrupt_irq(avr, firmware->trace[ti].mask);
 //                    if (bit && firmware->trace[ti].addr < AVR_INT_IRQ_COUNT)
 //                        avr_vcd_add_signal(avr->vcd,
@@ -162,14 +158,15 @@ namespace SimulIDE.src.simavr.sim
 //                            avr_vcd_add_signal(avr->vcd,
 //                                    bit, 1, firmware->trace[ti].name);
 //                        }
-//                }
-//            }
+                }
+            }
 //            // if the firmware has specified a command register, do NOT start the trace here
 //            // the firmware probably knows best when to start/stop it
 //            if (!firmware->command_register_addr) avr_vcd_start(avr->vcd);
 
-//            return 0;
-//        }
+            return 0;
+        }
+
 //        //#ifndef _WIN32
 //        static void
 //        elf_parse_mmcu_section(
@@ -463,7 +460,7 @@ namespace SimulIDE.src.simavr.sim
 
         public class External_state
         {
-            public char port;
+            public byte port;
             public byte mask, value;
         }
 

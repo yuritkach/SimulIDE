@@ -129,7 +129,7 @@ namespace SimulIDE.src.simavr
             00: idle (no wait, no pending interrupts) or disabled
             <0: wait till zero
             >0: interrupt pending */
-        public byte interrupt_state; // interrupt state
+        public int interrupt_state; // interrupt state
 
         /*
         * ** current PC **
@@ -138,12 +138,12 @@ namespace SimulIDE.src.simavr
         * this is why you will see >>1 and <<1 in the decoder to handle jumps.
         * It CAN be a little confusing, so concentrate, young grasshopper.
         */
-        public UInt32 PC;
+        public uint PC;
         /*
         * Reset PC, this is the value used to jump to at reset time, this
         * allow support for bootloaders
         */
-        public UInt32 reset_pc;
+        public uint reset_pc;
 
         /*
         * callback when specific IO registers are read/written.
@@ -201,9 +201,9 @@ namespace SimulIDE.src.simavr
     public Avr_cmd_table commands = new Avr_cmd_table();
 
 // cycle timers tracking & delivery
-//avr_cycle_timer_pool_t cycle_timers;
+    public Avr_cycle_timer_pool cycle_timers;
 // interrupt vectors and delivery fifo
-//avr_int_table_t interrupts;
+    public Avr_int_table Interrupts;
 
 // DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
         byte trace = 1,
@@ -328,29 +328,32 @@ int gdb_port;
         //            avr->flash = avr->data = NULL;
         //        }
 
-        //        void avr_reset(avr_t* avr)
-        //        {
+        public static void Avr_reset(Avr avr)
+        {
         //            AVR_LOG(avr, LOG_TRACE, "%s reset\n", avr->mmcu);
 
-        //            avr->cyclesDone = 0;
-        //            avr->state = cpu_Running;
-        //            for (int i = 0x20; i <= avr->ioend; i++)
-        //                avr->data[i] = 0;
-        //            _avr_sp_set(avr, avr->ramend);
-        //            avr->pc = avr->reset_pc;	// Likely to be zero
-        //            for (int i = 0; i < 8; i++) avr->sreg[i] = 0;
+            avr.cyclesDone = 0;
+            avr.state = CoreStates.cpu_Running;
+            for (int i = 0x20; i <= avr.ioend; i++)
+                avr.data[i] = 0;
 
-        //            avr_interrupt_reset(avr);
-        //            avr_cycle_timer_reset(avr);
-        //            if (avr->reset) avr->reset(avr);
+            Sim_core._avr_sp_set(avr, avr.ramend);
+            avr.PC = avr.reset_pc;	// Likely to be zero
+            for (int i = 0; i < 8; i++)
+                avr.sreg[i] = 0;
 
-        //            avr_io_t* port = avr->io_port;
-        //            while (port)
-        //            {
-        //                if (port->reset) port->reset(port);
-        //                port = port->next;
-        //            }
-        //        }
+            Sim_interrupts.Avr_interrupt_reset(avr);
+          //  avr_cycle_timer_reset(avr);
+            if (avr.Reset!=null)
+                avr.Reset(avr);
+
+//            Avr_io port = avr.io_port;
+//            while (port)
+ //           {
+  //            if (port->reset) port->reset(port);
+  //            port = port->next;
+  //          }
+        }
 
         //        void avr_sadly_crashed(avr_t* avr, uint8_t signal)
         //        {
@@ -557,70 +560,90 @@ int gdb_port;
             return avr;
         }
 
-//        static void std_logger(avr_t* avr, const int level, const char* format, va_list ap)
-//        {
-//            if (!avr || avr->log >= level)
-//            {
-//                vfprintf((level > LOG_ERROR) ? stdout : stderr, format, ap);
-//            }
-//        }
+        //        static void std_logger(avr_t* avr, const int level, const char* format, va_list ap)
+        //        {
+        //            if (!avr || avr->log >= level)
+        //            {
+        //                vfprintf((level > LOG_ERROR) ? stdout : stderr, format, ap);
+        //            }
+        //        }
 
 
 
-//typedef uint32_t avr_flashaddr_t;
+        //typedef uint32_t avr_flashaddr_t;
 
-//struct avr_t;
-//        typedef uint8_t(*avr_io_read_t)(
-//        struct avr_t* avr,
-//		avr_io_addr_t addr,
-//        void* param);
+        //struct avr_t;
+        //        typedef uint8_t(*avr_io_read_t)(
+        //        struct avr_t* avr,
+        //		avr_io_addr_t addr,
+        //        void* param);
 
-//        typedef void (* avr_io_write_t) (
-//        struct avr_t* avr,
-//		avr_io_addr_t addr,
-//        uint8_t v,
-//        void* param);
+        //        typedef void (* avr_io_write_t) (
+        //        struct avr_t* avr,
+        //		avr_io_addr_t addr,
+        //        uint8_t v,
+        //        void* param);
 
-//        enum {
-//            S_C = 0, S_Z, S_N, S_V, S_S, S_H, S_T, S_I,      // SREG bit indexes
-//            R_XL = 0x1a, R_XH, R_YL, R_YH, R_ZL, R_ZH, // 16 bits register pairs
-//            R_SPL = 32 + 0x3d, R_SPH,                 // stack pointer
-//            R_SREG = 32 + 0x3f,                        // real SREG
+        //        enum {
+        //            S_C = 0, S_Z, S_N, S_V, S_S, S_H, S_T, S_I,      // SREG bit indexes
+        //            R_XL = 0x1a, R_XH, R_YL, R_YH, R_ZL, R_ZH, // 16 bits register pairs
+        //            R_SPL = 32 + 0x3d, R_SPH,                 // stack pointer
+        //            R_SREG = 32 + 0x3f,                        // real SREG
 
-//            // maximum number of IO registers, on normal AVRs
-//            MAX_IOs = 280,  // Bigger AVRs need more than 256-32 (mega1280)
-//        };
+        //            // maximum number of IO registers, on normal AVRs
+        //            MAX_IOs = 280,  // Bigger AVRs need more than 256-32 (mega1280)
+        //        };
+        public static byte S_C = 0;
+        public static byte S_Z = 1;
+        public static byte S_N = 2;
+        public static byte S_V = 3;
+        public static byte S_S = 4;
+        public static byte S_H = 5;
+        public static byte S_T = 6;
+        public static byte S_I = 7;
 
-//#define AVR_DATA_TO_IO(v) ((v) - 32)
-//#define AVR_IO_TO_DATA(v) ((v) + 32)
+        public static byte R_XL = 0x1A;
+        public static byte R_XH = 0x1B;
+        public static byte R_YL = 0x1C;
+        public static byte R_YH = 0x1D;
+        public static byte R_ZL = 0x1E;
+        public static byte R_ZH = 0x1F;
 
-//        /**
-//         * Logging macros and associated log levels.
-//         * The current log level is kept in avr->log.
-//         */
-//        enum {
-//            LOG_NONE = 0,
-//            LOG_OUTPUT,
-//            LOG_ERROR,
-//            LOG_WARNING,
-//            LOG_TRACE,
-//            LOG_DEBUG,
-//        };
+        public static byte R_SPL = 32 + 0x3D;
+        public static byte R_SPH = 32 + 0x3E;
+        public static byte R_SREG = 32 + 0x3F;
+        public static int MAX_IOs = 280;
+
+        //#define AVR_DATA_TO_IO(v) ((v) - 32)
+        //#define AVR_IO_TO_DATA(v) ((v) + 32)
+
+        //        /**
+        //         * Logging macros and associated log levels.
+        //         * The current log level is kept in avr->log.
+        //         */
+        //        enum {
+        //            LOG_NONE = 0,
+        //            LOG_OUTPUT,
+        //            LOG_ERROR,
+        //            LOG_WARNING,
+        //            LOG_TRACE,
+        //            LOG_DEBUG,
+        //        };
 
 
-//#ifndef AVR_LOG
-//#define AVR_LOG(avr, level, ...) \
-//	do { \
-//		avr_global_logger(avr, level, __VA_ARGS__); \
-//	} while(0)
-//#endif
-//#define AVR_TRACE(avr, ... ) \
-//	AVR_LOG(avr, LOG_TRACE, __VA_ARGS__)
+        //#ifndef AVR_LOG
+        //#define AVR_LOG(avr, level, ...) \
+        //	do { \
+        //		avr_global_logger(avr, level, __VA_ARGS__); \
+        //	} while(0)
+        //#endif
+        //#define AVR_TRACE(avr, ... ) \
+        //	AVR_LOG(avr, LOG_TRACE, __VA_ARGS__)
 
-///*
-// * Core states.
-// */
-public enum CoreStates {
+        ///*
+        // * Core states.
+        // */
+        public enum CoreStates {
         cpu_Limbo = 0,  // before initialization is finished
         cpu_Stopped,    // all is stopped, timers included
         cpu_Running,    // we're free running

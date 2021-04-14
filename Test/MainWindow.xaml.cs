@@ -1,4 +1,5 @@
-﻿using SimulIDE.src.gui.circuitwidget.components;
+﻿using Avr;
+using SimulIDE.src.gui.circuitwidget.components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +22,16 @@ namespace Test
     /// </summary>
     public partial class MainWindow : Window
     {
+        protected Core core;
+        protected MCU mcu;
+
         public MainWindow()
         {
             InitializeComponent();
-
-            CircLabel label = new CircLabel();
-            label.SetPlainText("blablabla");
-            label.labelx = 100;
-            label.labely = 100;
-            label.labelrot = 45;
-            label.SetLabelPos();
+            mcu = new MCU();
+            core = new Core(mcu);
+            core.LoadProgram("d:\\1.dat");
+            core.Run();
         }
     }
 }

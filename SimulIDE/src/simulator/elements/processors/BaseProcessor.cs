@@ -287,7 +287,7 @@ namespace SimulIDE.src.simulator.elements.processors
         public virtual void StepCpu() { }
         public virtual void Reset() { }
         public virtual int PC(){return 0;}
-        public virtual UInt64 Cycle() { return 0; }
+        public virtual int Cycle() { return 0; }
         public virtual byte GetRamValue(int address) { return 0; }
 
         protected virtual List<string> GetRegList() { return regList; }
@@ -306,7 +306,7 @@ namespace SimulIDE.src.simulator.elements.processors
         protected double nextCycle;
         protected double mcuStepsPT;
         protected int msimStep;
-        protected UInt64 extraCycle;
+        protected int extraCycle;
 
         protected RamTable ramTable;
         protected List<string> regList=new List<string>();

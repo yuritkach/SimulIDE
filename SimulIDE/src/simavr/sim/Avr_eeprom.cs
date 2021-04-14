@@ -49,9 +49,9 @@ namespace SimulIDE.src.simavr.sim
 
     public class Avr_eeprom_desc
     {
-        byte[] ee;
-        UInt16 offset;
-        UInt32 size;
+        public byte[] ee;
+        public UInt16 offset;
+        public UInt32 size;
     }
 
 

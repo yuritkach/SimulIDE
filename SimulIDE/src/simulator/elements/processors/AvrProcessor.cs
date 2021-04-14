@@ -25,13 +25,13 @@ namespace SimulIDE.src.simulator.elements.processors
 
         public override void Terminate()
         {
-        //    base.Terminate();
-        //    if (avrProcessor)
-        //    {
-        //        Avr_deinit_gdb(avrProcessor);
-        //        Avr_terminate(avrProcessor);
-        //    }
-        //    avrProcessor = null;
+            base.Terminate();
+            if (avrProcessor!=null)
+            {
+         //       Avr_deinit_gdb(avrProcessor);
+         //       Avr_terminate(avrProcessor);
+            }
+            avrProcessor = null;
         }
 
         public override bool LoadFirmware(string fileN)
@@ -150,61 +150,62 @@ namespace SimulIDE.src.simulator.elements.processors
 
             ///// TODO: Catch possible abort signal here, otherwise application will crash on the invalid firmware load
             ///// Done: Modified simavr to not call abort(), instead it returns error code.
-            //if (avr_load_firmware(m_avrProcessor, &f) != 0)
-            //{
-            //    QMessageBox::warning(0, tr("Error:"), tr("Wrong firmware!!").arg(f.mmcu));
-            //    return false;
-            //}
-            //if (f.flashbase) m_avrProcessor->pc = f.flashbase;
+            if (avr_load_firmware(avrProcessor, f) != 0)
+            {
+                MessageBox.Show("Wrong firmware!! "+f.mmcu);
+                return false;
+            }
+            if (f.flashbase!=0)
+                avrProcessor.PC = f.flashbase;
 
-            //setEeprom(m_eeprom); // Load EEPROM
+            setEeprom(m_eeprom); // Load EEPROM
 
-            //m_avrProcessor->frequency = 16000000;
-            //m_avrProcessor->cycle = 0;
-            //m_avrProcessor->gdb_port = 1212;
-            //m_symbolFile = fileN;
+            m_avrProcessor->frequency = 16000000;
+            m_avrProcessor->cycle = 0;
+            m_avrProcessor->gdb_port = 1212;
+            m_symbolFile = fileN;
 
-            //if (m_initGdb)
-            //{
-            //    int ok = avr_gdb_init(m_avrProcessor);
-            //    if (ok < 0) qDebug() << "avr_gdb_init ERROR " << ok;
-            //    else qDebug() << "avr_gdb_init OK";
-            //}
+            if (m_initGdb)
+            {
+                int ok = avr_gdb_init(m_avrProcessor);
+                if (ok < 0) qDebug() << "avr_gdb_init ERROR " << ok;
+                else qDebug() << "avr_gdb_init OK";
+            }
 
-            //initialized();
+            initialized();
 
             return true;
         }
 
-        public void Reset()
+        public override void Reset()
         {
             if (!loadStatus) return;
             ////qDebug() << "AvrProcessor::reset("<< eeprom();
 
-            //for (int i = 0; i < avrProcessor->ramend; i++) m_avrProcessor->data[i] = 0;
+            for (int i = 0; i < avrProcessor.ramend; i++) avrProcessor.data[i] = 0;
 
-            //Avr_reset(avrProcessor);
-            //avrProcessor.pc = 0;
-            //avrProcessor.cycle = 0;
-            //nextCycle = mcuStepsPT;
-            //extraCycle = 0;
+            Sim_Avr.Avr_reset(avrProcessor);
+            avrProcessor.PC = 0;
+            avrProcessor.cycle = 0;
+            nextCycle = mcuStepsPT;
+            extraCycle = 0;
         }
 
-        public void StepOne()
+        public override void StepOne()
         {
             //qDebug() <<"AvrProcessor::stepOne()"<<m_avrProcessor->cycle << m_nextCycle;
 
-            //if (avrProcessor.state < cpu_Done)
-            //    avrProcessor.Run(avrProcessor);
+            if (avrProcessor.state < Sim_Avr.CoreStates.cpu_Done)
+                avrProcessor.Run(avrProcessor);
 
-            //while (avrProcessor.cycle >= nextCycle)
-            //{
-            //    nextCycle += mcuStepsPT; //McuComponent::self()->freq(); //
-            //    RunSimuStep(); // 1 simu step = 1uS
-            //}
+            while (avrProcessor.cycle >= nextCycle)
+            {
+                nextCycle += mcuStepsPT; //McuComponent::self()->freq(); //
+                RunSimuStep(); // 1 simu step = 1uS
+            }
         }
 
-        public UInt64 PC()
+        public override uint PC()
         {
             return avrProcessor.PC;
         }

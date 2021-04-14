@@ -104,9 +104,11 @@
     <Compile Include="src\simavr\sim\avr\Avr_mcu_section.cs" />
     <Compile Include="src\simavr\sim\Avr_eeprom.cs" />
     <Compile Include="src\simavr\sim\Avr_flash.cs" />
+    <Compile Include="src\simavr\sim\avr_ioport.cs" />
     <Compile Include="src\simavr\sim\Avr_timer.cs" />
     <Compile Include="src\simavr\sim\Avr_vcd.cs" />
     <Compile Include="src\simavr\sim\Sim_Cmds.cs" />
+    <Compile Include="src\simavr\sim\Sim_core.cs" />
     <Compile Include="src\simavr\sim\Sim_cycle_timers.cs" />
     <Compile Include="src\simavr\sim\Sim_elf.cs" />
     <Compile Include="src\simavr\sim\Sim_interrupts.cs" />
