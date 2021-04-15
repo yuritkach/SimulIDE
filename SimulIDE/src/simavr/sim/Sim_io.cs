@@ -8,20 +8,30 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
+    public delegate int ioctl_function(Avr_io io, uint ctl, object[] io_param);
+
+    public class Avr_io
+    {
+        public Avr_io next;
+        public Avr avr;     // avr we are attached to
+        public string kind;       // pretty name, for debug
+        public string[] irq_names; // IRQ names
+
+        public uint irq_ioctl_get; // used to get irqs from this module
+        public int irq_count;  // number of (optional) irqs
+        public Avr_irq[] irq;		// optional external IRQs
+    	// called at reset time
+    	//void (* reset) (struct avr_io_t *io);
+    	// called externally. allow access to io modules and so on
+    	public ioctl_function ioctl;
+        // optional, a function to free up allocated system resources
+        //        void (* dealloc) (struct avr_io_t *io);
+    }
     
 
     public class Sim_io
     {
-
-
-
-        //# include <stdlib.h>
-        //# include <stdio.h>
-        //# include <string.h>
-        //# include <ctype.h>
-        //# include <stdint.h>
-        //# include "sim_io.h"
-
+        
         public static uint AVR_IOCTL_DEF(byte _a,byte _b,byte _c,byte _d)
         {
             return (uint)(((_a) << 24) | ((_b) << 16) | ((_c) << 8) | ((_d)));
@@ -29,12 +39,12 @@ namespace SimulIDE.src.simavr.sim
 
         public static int Avr_ioctl(Avr avr,uint ctl,object io_param)
         {
-            List<Avr_io> ports = avr.io_ports;
+            Avr_io[] ports = avr.io_ports;
             int res = -1;
-            for(int i=0;i<ports.Count;i++)
+            foreach(Avr_io port in ports)
             {
-                if (ports[i].ioctl!=null)
-                    res = ports[i].ioctl(ports[i], ctl, io_param);
+                if (port.ioctl!=null)
+                    res = port.ioctl(port, ctl, new object[1] { io_param });
             }
             return res;
         }
@@ -144,21 +154,16 @@ namespace SimulIDE.src.simavr.sim
             avr.io[a].w.c = writep;
         }
 
-//        avr_irq_t*
-//        avr_io_getirq(
-//                avr_t* avr,
-//                uint32_t ctl,
-//                int index)
-//        {
-//            avr_io_t* port = avr->io_port;
-//            while (port)
-//            {
-//                if (port->irq && port->irq_ioctl_get == ctl && port->irq_count > index)
-//                    return port->irq + index;
-//                port = port->next;
-//            }
-//            return NULL;
-//        }
+        public static Avr_irq Avr_io_getirq(Avr avr,uint ctl,int index)
+        {
+            Avr_io[] ports = avr.io_ports;
+            foreach(Avr_io port in ports)
+            {
+                if ((port.irq.Length>0 && port.irq_ioctl_get == ctl) && (port.irq_count > index))
+                    return port.irq[index];
+            }
+            return null;
+        }
 
 //        avr_irq_t*
 //        avr_iomem_getirq(
@@ -353,26 +358,6 @@ namespace SimulIDE.src.simavr.sim
 // * IO module base struct
 // * Modules uses that as their first member in their own struct
 // */
-//typedef struct avr_io_t
-//        {
-//            struct avr_io_t * 	next;
-//	avr_t* avr;     // avr we are attached to
-//            const char* kind;       // pretty name, for debug
-
-//            const char** irq_names; // IRQ names
-
-//            uint32_t irq_ioctl_get; // used to get irqs from this module
-//            int irq_count;  // number of (optional) irqs
-//            struct avr_irq_t *	irq;		// optional external IRQs
-//	// called at reset time
-//	void (* reset) (struct avr_io_t *io);
-//	// called externally. allow access to io modules and so on
-//	int (* ioctl) (struct avr_io_t *io, uint32_t ctl, void* io_param);
-
-//            // optional, a function to free up allocated system resources
-//            void (* dealloc) (struct avr_io_t *io);
-//}
-//        avr_io_t;
 
 ///*
 // * IO modules helper functions

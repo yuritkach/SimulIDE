@@ -85,18 +85,15 @@ namespace SimulIDE.src.simavr.sim
             {
                 if (firmware.trace[ti].kind == AVR_MMCU_TAGS.AVR_MMCU_TAG_VCD_PORTPIN)
                 {
-//                    avr_irq_t* irq = avr_io_getirq(avr,
-//                            AVR_IOCTL_IOPORT_GETIRQ(firmware->trace[ti].mask),
-//                            firmware->trace[ti].addr);
-//                    if (irq)
-//                    {
-//                        char name[16];
-//                        sprintf(name, "%c%d", firmware->trace[ti].mask,
-//                                firmware->trace[ti].addr);
-//                        avr_vcd_add_signal(avr->vcd, irq, 1,
-//                            firmware->trace[ti].name[0] ?
-//                                firmware->trace[ti].name : name);
-//                    }
+                    Avr_irq irq = Sim_io.Avr_io_getirq(avr,
+                            Avr_ioports.AVR_IOCTL_IOPORT_GETIRQ(firmware.trace[ti].mask),
+                            firmware.trace[ti].addr);
+                    if (irq!=null)
+                    {
+                        string name="";
+                        //sprintf(name, "%c%d", firmware->trace[ti].mask,firmware->trace[ti].addr);
+                        Avr_vcd_file.avr_vcd_add_signal(ref avr.vcd,ref irq, 1,firmware.trace[ti].Name!=""?firmware.trace[ti].Name : name);
+                    }
                 }
                 else if (firmware.trace[ti].kind == AVR_MMCU_TAGS.AVR_MMCU_TAG_VCD_IRQ)
                 {

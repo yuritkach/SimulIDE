@@ -14,7 +14,7 @@ namespace SimulIDE.src.simavr
 
     public delegate void InitDelegate(Avr avr);
     public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object[] param);
-    public delegate  byte Avr_io_read_function(Avr avr, uint addr,object[] param); 
+    public delegate byte Avr_io_read_function(Avr avr, uint addr,object[] param); 
 
     public struct Avr_regbit
     {
@@ -67,6 +67,7 @@ namespace SimulIDE.src.simavr
         public Avr()
         {
             commands = new Avr_cmd_table();
+            io = new IO[MAX_IOs];
             for (int i = 0; i < MAX_IOs; i++)
                 io[i] = new IO();
         }
@@ -204,7 +205,7 @@ namespace SimulIDE.src.simavr
     public byte[] data;
 
     // queue of io modules
-    public List<Avr_io> io_ports;
+    public Avr_io[] io_ports;
 
     // Builtin and user-defined commands
     public Avr_cmd_table commands = new Avr_cmd_table();

@@ -4,23 +4,23 @@ namespace SimulIDE.src.simavr.sim {
 
     public delegate int IOPortIOCtlDelegate(Avr_io port, uint ctl, object parms);
 
-    public class Avr_io
-    {
-        public string kind;
-        public IOPortResetDelegate reset;
-        public IOPortIOCtlDelegate ioctl;
-        public string[] irq_names;
+    //public class Avr_io
+    //{
+    //    public string kind;
+    //    public IOPortResetDelegate reset;
+    //    public IOPortIOCtlDelegate ioctl;
+    //    public string[] irq_names;
 
-        public Avr_io(string kind, IOPortResetDelegate reset,
-             IOPortIOCtlDelegate ioctl, string[] irq_names)
-        {
-            this.kind = kind;
-            this.reset = reset;
-            this.ioctl = ioctl;
-            this.irq_names = irq_names;
-        }
+    //    public Avr_io(string kind, IOPortResetDelegate reset,
+    //         IOPortIOCtlDelegate ioctl, string[] irq_names)
+    //    {
+    //        this.kind = kind;
+    //        this.reset = reset;
+    //        this.ioctl = ioctl;
+    //        this.irq_names = irq_names;
+    //    }
 
-    }
+    //}
 
     public class Avr_ioport_external
     {
@@ -240,7 +240,7 @@ namespace SimulIDE.src.simavr.sim {
             // 		avr_irq_register_notify(p.io.irq + i, avr_ioport_irq_notify, p);
         }
 
-        public static int avr_ioport_ioctl(Avr_io port, uint ctl, object io_param)
+        public static int avr_ioport_ioctl(Avr_io port, uint ctl, object[] io_param)
         {
             //	avr_ioport_t * p = (avr_ioport_t *)port;
             //	avr_t * avr = p->io.avr;
@@ -315,6 +315,7 @@ namespace SimulIDE.src.simavr.sim {
         public const int IOPORT_IRQ_REG_PIN = 11;
         public const int IOPORT_IRQ_COUNT = 12;
 
+        protected static Avr_io _io;
 
         public static string[] irq_names = new string[IOPORT_IRQ_COUNT];
 
@@ -332,9 +333,15 @@ namespace SimulIDE.src.simavr.sim {
             irq_names[IOPORT_IRQ_DIRECTION_ALL] = "8>ddr";
             irq_names[IOPORT_IRQ_REG_PORT] = "8>port";
             irq_names[IOPORT_IRQ_REG_PIN] = "8>pin";
-        }
 
-        public static Avr_io _io = new Avr_io("port", avr_ioport_reset, avr_ioport_ioctl, irq_names);
+            _io = new Avr_io();
+            _io.kind = "port";
+            _io.ioctl = avr_ioport_ioctl;
+//            _io.            
+//            , avr_ioport_reset, , irq_names);
+    }
+
+
 
 
         //void avr_ioport_init(avr_t * avr, avr_ioport_t * p)
@@ -395,12 +402,15 @@ namespace SimulIDE.src.simavr.sim {
         //#include "sim_avr.h"
 
 
-       
+
 
         //#define AVR_IOPORT_OUTPUT 0x100
 
-        //// add port name (uppercase) to get the real IRQ
-        //#define AVR_IOCTL_IOPORT_GETIRQ(_name) AVR_IOCTL_DEF('i','o','g',(_name))
+        // add port name (uppercase) to get the real IRQ
+        public static uint AVR_IOCTL_IOPORT_GETIRQ(byte _name)
+        {
+            return Sim_io.AVR_IOCTL_DEF((byte)'i',(byte) 'o',(byte) 'g', _name);
+        }
 
 
         //// this ioctl takes a avr_regbit_t, compares the register address
@@ -456,11 +466,7 @@ namespace SimulIDE.src.simavr.sim {
         //		.name = _cname, .r_port = PORT ## _uname, .r_ddr = DDR ## _uname, .r_pin = PIN ## _uname, \
         //	}
 
-        //#ifdef __cplusplus
-        //};
-        //#endif
-
-        //#endif /* __AVR_IOPORT_H__ */
+        
 
     }
 }

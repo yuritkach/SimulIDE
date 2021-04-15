@@ -468,36 +468,31 @@ namespace SimulIDE.src.simavr.sim
 //	avr_vcd_fifo_write(&vcd->log, l);
 //}
 
-//int
-//avr_vcd_add_signal(
-//        avr_vcd_t* vcd,
-//        avr_irq_t* signal_irq,
-//        int signal_bit_size,
-//		const char* name)
-//{
-//    if (vcd->signal_count == AVR_VCD_MAX_SIGNALS)
-//        return -1;
-//    int index = vcd->signal_count++;
-//    avr_vcd_signal_t* s = &vcd->signal[index];
-//    strncpy(s->name, name, sizeof(s->name));
-//    s->size = signal_bit_size;
-//    s->alias = ' ' + vcd->signal_count;
+        public static int avr_vcd_add_signal(ref Avr_vcd vcd, ref Avr_irq signal_irq, int signal_bit_size,string name)
+        {
+  //          if (vcd.signal_count == AVR_VCD_MAX_SIGNALS)
+  //              return -1;
+   //         int index = vcd.signal_count++;
+    //        Avr_vcd_signal s = vcd.signal[index];
+            //strncpy(s->name, name, sizeof(s->name));
+            //s->size = signal_bit_size;
+            //s->alias = ' ' + vcd->signal_count;
 
-//    /* manufacture a nice IRQ name */
-//    int l = strlen(name);
-//    char iname[10 + l + 1];
-//    if (signal_bit_size > 1)
-//        sprintf(iname, "%d>vcd.%s", signal_bit_size, name);
-//    else
-//        sprintf(iname, ">vcd.%s", name);
+            /* manufacture a nice IRQ name */
+      //      int l = name.Length;
+            //char iname[10 + l + 1];
+            //if (signal_bit_size > 1)
+            //    sprintf(iname, "%d>vcd.%s", signal_bit_size, name);
+            //else
+            //    sprintf(iname, ">vcd.%s", name);
 
-//    const char* names[1] = { iname };
-//    avr_init_irq(&vcd->avr->irq_pool, &s->irq, index, 1, names);
-//    avr_irq_register_notify(&s->irq, _avr_vcd_notify, vcd);
+            //const char* names[1] = { iname };
+            //avr_init_irq(&vcd->avr->irq_pool, &s->irq, index, 1, names);
+            //avr_irq_register_notify(&s->irq, _avr_vcd_notify, vcd);
 
-//    avr_connect_irq(signal_irq, &s->irq);
-//    return 0;
-//}
+//            avr_connect_irq(signal_irq, &s->irq);
+            return 0;
+        }
 
 
     public static int  Avr_vcd_start(Avr_vcd vcd)
