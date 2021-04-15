@@ -195,7 +195,7 @@ namespace SimulIDE.src.simavr
     public byte[] data;
 
     // queue of io modules
-//    struct avr_io_t io_port;
+    public List<Avr_io> io_ports;
 
     // Builtin and user-defined commands
     public Avr_cmd_table commands = new Avr_cmd_table();
@@ -217,7 +217,7 @@ namespace SimulIDE.src.simavr
 // firmware that is loaded explicitly asks for a trace
 // to be generated, and allocates it's own symbols
 // using AVR_MMCU_TAG_VCD_TRACE (see avr_mcu_section.h)
-  public Avr_vcd vcd;
+    public Avr_vcd vcd;
 
 // gdb hooking structure. Only present when gdb server is active
 //struct avr_gdb_t * gdb;
@@ -225,7 +225,7 @@ namespace SimulIDE.src.simavr
 // if non-zero, the gdb server will be started when the core
 // crashed even if not activated at startup
 // if zero, the simulator will just exit() in case of a crash
-int gdb_port;
+    public int gdb_port;
 
 // buffer for console debugging output from register
 //struct {
@@ -367,9 +367,9 @@ int gdb_port;
         //            if (!avr->gdb) avr->state = cpu_Crashed;
         //        }
 
-        public void Avr_set_command_register(Avr avr, UInt16 addr)
+        public static void Avr_set_command_register(Avr avr, UInt16 addr)
         {
-          //  Avr_cmd_set_register(avr, addr);
+            Avr_cmd_set_register(avr, addr);
         }
 
         //        static void _avr_io_console_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v,  void* param)
@@ -391,23 +391,22 @@ int gdb_port;
         //            if (v >= ' ') avr->io_console_buffer.buf[avr->io_console_buffer.len++] = v;
         //        }
 
-        //        void avr_set_console_register(avr_t* avr, avr_io_addr_t addr)
-        //        {
-        //            if (addr)
-        //                avr_register_io_write(avr, addr, _avr_io_console_write, NULL);
-        //        }
+        public static void Avr_set_console_register(Avr avr, int addr)
+        {
+            if (addr>=0)
+               avr_register_io_write(avr, addr, _avr_io_console_write, null);
+        }
 
-        //        int avr_loadcode(avr_t* avr,uint8_t* code, uint32_t size, avr_flashaddr_t address)
-        //        {
-        //            if ((address + size) > avr->flashend + 1)
-        //            {
-        //                AVR_LOG(avr, LOG_ERROR, "avr_loadcode(): Attempted to load code of size %d but flash size is only %d.\n",
-        //                    size, avr->flashend + 1);
-        //                return -1;
-        //            }
-        //            memcpy(avr->flash + address, code, size);
-        //            return 0;
-        //        }
+        public static int Avr_loadcode(Avr avr,byte[] code, uint size, uint address)
+        {
+            if ((address + size) > avr.flashend + 1)
+            {
+//                        AVR_LOG(avr, LOG_ERROR, "avr_loadcode(): Attempted to load code of size %d but flash size is only %d.\n",                            size, avr->flashend + 1);
+                return -1;
+            }
+            Array.Copy(code, 0, avr.flash, address, size);
+            return 0;
+        }
 
         //        /**
         //        * Accumulates sleep requests (and returns a sleep time of 0) until
@@ -919,9 +918,6 @@ int gdb_port;
 //// specify the "console register" -- output sent to this register
 //// is printed on the simulator console, without using a UART
 //void avr_set_console_register(avr_t* avr, avr_io_addr_t addr);
-
-//// load code in the "flash"
-//int avr_loadcode(avr_t* avr, uint8_t* code, uint32_t size, avr_flashaddr_t address);
 
 ///*
 // * These are accessors for avr->data but allows watchpoints to be set for gdb

@@ -10,29 +10,29 @@ namespace SimulIDE.src.simavr.sim
     public class Sim_io
     {
 
-//# include <stdlib.h>
-//# include <stdio.h>
-//# include <string.h>
-//# include <ctype.h>
-//# include <stdint.h>
-//# include "sim_io.h"
+        //# include <stdlib.h>
+        //# include <stdio.h>
+        //# include <string.h>
+        //# include <ctype.h>
+        //# include <stdint.h>
+        //# include "sim_io.h"
 
-//        int
-//        avr_ioctl(
-//                avr_t* avr,
-//                uint32_t ctl,
-//                void* io_param)
-//        {
-//            avr_io_t* port = avr->io_port;
-//            int res = -1;
-//            while (port && res == -1)
-//            {
-//                if (port->ioctl)
-//                    res = port->ioctl(port, ctl, io_param);
-//                port = port->next;
-//            }
-//            return res;
-//        }
+        public static uint AVR_IOCTL_DEF(byte _a,byte _b,byte _c,byte _d)
+        {
+            return (uint)(((_a) << 24) | ((_b) << 16) | ((_c) << 8) | ((_d)));
+        }
+
+        public static int Avr_ioctl(Avr avr,uint ctl,object io_param)
+        {
+            List<Avr_io> ports = avr.io_ports;
+            int res = -1;
+            for(int i=0;i<ports.Count;i++)
+            {
+                if (ports[i].ioctl!=null)
+                    res = ports[i].ioctl(ports[i], ctl, io_param);
+            }
+            return res;
+        }
 
 //        void
 //        avr_register_io(

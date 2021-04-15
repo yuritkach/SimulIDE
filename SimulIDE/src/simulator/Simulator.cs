@@ -185,7 +185,7 @@ namespace SimulIDE.src.simulator
             //qDebug() << "Simulator::runCircuit Time nS:"<<time<<circTime<<count << circTime/count;
         }
 
-        public void RunExtraStep(int cycle)
+        public void RunExtraStep(uint cycle)
         {
             //if( !m_isrunning ) return;
 

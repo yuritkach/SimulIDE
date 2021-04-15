@@ -150,7 +150,7 @@ namespace SimulIDE.src.simulator.elements.processors
 
             ///// TODO: Catch possible abort signal here, otherwise application will crash on the invalid firmware load
             ///// Done: Modified simavr to not call abort(), instead it returns error code.
-            if (avr_load_firmware(avrProcessor, f) != 0)
+            if (Sim_elf.Avr_load_firmware(avrProcessor, f) != 0)
             {
                 MessageBox.Show("Wrong firmware!! "+f.mmcu);
                 return false;
@@ -158,22 +158,20 @@ namespace SimulIDE.src.simulator.elements.processors
             if (f.flashbase!=0)
                 avrProcessor.PC = f.flashbase;
 
-            setEeprom(m_eeprom); // Load EEPROM
+            SetEeprom(eeprom); // Load EEPROM
 
-            m_avrProcessor->frequency = 16000000;
-            m_avrProcessor->cycle = 0;
-            m_avrProcessor->gdb_port = 1212;
-            m_symbolFile = fileN;
+            avrProcessor.frequency = 16000000;
+            avrProcessor.cycle = 0;
+            avrProcessor.gdb_port = 1212;
+            symbolFile = fileN;
 
-            if (m_initGdb)
+            if (initGdb)
             {
-                int ok = avr_gdb_init(m_avrProcessor);
-                if (ok < 0) qDebug() << "avr_gdb_init ERROR " << ok;
-                else qDebug() << "avr_gdb_init OK";
+                //int ok = avr_gdb_init(avrProcessor);
+                //if (ok < 0) qDebug() << "avr_gdb_init ERROR " << ok;
+                //else qDebug() << "avr_gdb_init OK";
             }
-
-            initialized();
-
+            Initialized();
             return true;
         }
 

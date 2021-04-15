@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.simavr.sim.avr;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,7 @@ namespace SimulIDE.src.simavr.sim
 {
     public class Sim_elf
     {
-
-//# ifndef O_BINARY
-//#define O_BINARY 0
-//#endif
+        public const int O_BINARY = 0;
 
         public static int Avr_load_firmware(Avr avr,Elf_firmware firmware)
         {
@@ -38,7 +36,7 @@ namespace SimulIDE.src.simavr.sim
 //	}
 //#endif
 
-            if (avr_loadcode(avr, firmware.flash,
+            if (Sim_Avr.Avr_loadcode(avr, firmware.flash,
                     firmware.flashsize, firmware.flashbase) != 0)
             {
                 return -1;
@@ -51,7 +49,8 @@ namespace SimulIDE.src.simavr.sim
                 d.ee = firmware.eeprom;
                 d.offset = 0;
                 d.size = firmware.eesize;
-                // avr_ioctl(avr, AVR_IOCTL_EEPROM_SET, d);
+                uint AVR_IOCTL_EEPROM_SET = Sim_io.AVR_IOCTL_DEF((byte)'e', (byte)'e', (byte)'s', (byte)'p');
+                Sim_io.Avr_ioctl(avr, AVR_IOCTL_EEPROM_SET, d);
             }
             if (firmware.fuse.Length > 0)
                 Array.Copy(firmware.fuse, avr.fuse, firmware.fusesize);
@@ -62,29 +61,31 @@ namespace SimulIDE.src.simavr.sim
             for (int i = 0; i < (8 & firmware.external_state[i].port); i++)
             {
                 Avr_ioport_external e = new Avr_ioport_external();
-                e.name = firmware->external_state[i].port;
-                e.mask = firmware->external_state[i].mask;
-                e.value = firmware->external_state[i].value;
-                avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL(e.name), e);
+                e.name = firmware.external_state[i].port;
+                e.mask = firmware.external_state[i].mask;
+                e.value = firmware.external_state[i].value;
+
+                uint AVR_IOCTL_IOPORT_SET_EXTERNAL = Sim_io.AVR_IOCTL_DEF((byte)'i', (byte)'o', (byte)'p', (byte)e.name);
+                Sim_io.Avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL, e);
             }
-            avr_set_command_register(avr, firmware->command_register_addr);
-            avr_set_console_register(avr, firmware->console_register_addr);
+            Sim_Avr.Avr_set_command_register(avr, firmware.command_register_addr);
+            Sim_Avr.Avr_set_console_register(avr, firmware.console_register_addr);
 
 //            // rest is initialization of the VCD file
-            if (firmware->tracecount == 0) return 0;
+            if (firmware.tracecount == 0) return 0;
 
-            avr->vcd = malloc(sizeof(*avr->vcd));
-//            memset(avr->vcd, 0, sizeof(*avr->vcd));
+            avr.vcd = new Avr_vcd_file.Avr_vcd();
+            //            memset(avr->vcd, 0, sizeof(*avr->vcd));
             avr_vcd_init(avr,
-                firmware->tracename[0] ? firmware->tracename : "gtkwave_trace.vcd",
-                avr->vcd,
-                firmware->traceperiod >= 1000 ? firmware->traceperiod : 1000);
+                firmware.tracename[0] ? firmware.tracename : "gtkwave_trace.vcd",
+                avr.vcd,
+                firmware.traceperiod >= 1000 ? firmware.traceperiod : 1000);
 
 //            AVR_LOG(avr, LOG_TRACE, "Creating VCD trace file '%s'\n", avr->vcd->filename);
 
-            for (int ti = 0; ti < firmware->tracecount; ti++)
+            for (int ti = 0; ti < firmware.tracecount; ti++)
             {
-                if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_PORTPIN)
+                if (firmware.trace[ti].kind == AVR_MMCU_TAGS.AVR_MMCU_TAG_VCD_PORTPIN)
                 {
 //                    avr_irq_t* irq = avr_io_getirq(avr,
 //                            AVR_IOCTL_IOPORT_GETIRQ(firmware->trace[ti].mask),
@@ -99,7 +100,7 @@ namespace SimulIDE.src.simavr.sim
 //                                firmware->trace[ti].name : name);
 //                    }
                 }
-                else if (firmware->trace[ti].kind == AVR_MMCU_TAG_VCD_IRQ)
+                else if (firmware.trace[ti].kind == AVR_MMCU_TAGS.AVR_MMCU_TAG_VCD_IRQ)
                 {
 //                    avr_irq_t* bit = avr_get_interrupt_irq(avr, firmware->trace[ti].mask);
 //                    if (bit && firmware->trace[ti].addr < AVR_INT_IRQ_COUNT)
@@ -452,7 +453,7 @@ namespace SimulIDE.src.simavr.sim
 
     public class Trace
         {
-            public byte kind;
+            public AVR_MMCU_TAGS kind;
             public byte mask;
             public UInt16 addr;
             public string Name;
