@@ -119,14 +119,14 @@ namespace SimulIDE.src.gui.editor
 
         public int Step()
         {
-            int pc = BaseProcessor.Self().PC();
+            int pc = (int) BaseProcessor.Self().PC();
 
             int i = 0;
             for (i = 0; i < 10; i++) // If runs 10 times and get to same PC return 0
             {
                 BaseProcessor.Self().StepOne();
 
-                int pc2 = BaseProcessor.Self().PC();
+                int pc2 = (int) BaseProcessor.Self().PC();
                 //qDebug() <<"BaseDebugger::step "<<pc<<pc2;
                 if (pc != pc2)
                 {

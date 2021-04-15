@@ -13,338 +13,333 @@ namespace SimulIDE.src.simavr.sim
 
 
 
-//        DEFINE_FIFO(avr_vcd_log_t, avr_vcd_fifo);
+        //        DEFINE_FIFO(avr_vcd_log_t, avr_vcd_fifo);
 
-//#define strdupa(__s) strcpy(alloca(strlen(__s)+1), __s)
+        //#define strdupa(__s) strcpy(alloca(strlen(__s)+1), __s)
 
-//        static void
-//        _avr_vcd_notify(
+        //        static void
+        //        _avr_vcd_notify(
 
-//        struct avr_irq_t * irq,
-//		uint32_t value,
+        //        struct avr_irq_t * irq,
+        //		uint32_t value,
 
-//        void* param);
+        //        void* param);
 
-//        int
-//        avr_vcd_init(
 
-//        struct avr_t * avr,
-//		const char* filename,
-//        avr_vcd_t * vcd,
-//		uint32_t period)
-//{
+        public static int Avr_vcd_init(Avr avr, string filename, ref Avr_vcd vcd, uint period)
+        {
+            vcd = new Avr_vcd();
+            vcd.avr = avr;
+            vcd.filename = filename;
+            vcd.period = Sim_time.Avr_usec_to_cycles(vcd.avr, period);
+            return 0;
+        }
 
-//    memset(vcd, 0, sizeof(avr_vcd_t));
-//        vcd->avr = avr;
-//	vcd->filename = strdup(filename);
-//        vcd->period = avr_usec_to_cycles(vcd->avr, period);
 
-//	return 0;
-//}
 
-//    /*
-//     * Parse a VCD 'timing' line. The lines are assumed to be:
-//     * #<absolute timestamp>[\n][<value x/0/1><signal alias character>|
-//     * 		b[x/0/1]?<space><signal alias character]+
-//     * For example:
-//     * #1234 1' 0$
-//     * Or:
-//     * #1234
-//     * b1101x1 '
-//     * 0$
-//     *
-//     * This function tries to handle this transparently, and pushes the
-//     * signal/values into the FIFO for processing by the timer when
-//     * convenient.
-//     * NOTE: Add 'floating' support here. Also, FIX THE TIMING.
-//     */
-//    static avr_cycle_count_t
-//    avr_vcd_input_parse_line(
-//            avr_vcd_t* vcd,
-//            argv_p v)
-//    {
-//        avr_cycle_count_t res = 0;
-//        int vi = 0;
+        //    /*
+        //     * Parse a VCD 'timing' line. The lines are assumed to be:
+        //     * #<absolute timestamp>[\n][<value x/0/1><signal alias character>|
+        //     * 		b[x/0/1]?<space><signal alias character]+
+        //     * For example:
+        //     * #1234 1' 0$
+        //     * Or:
+        //     * #1234
+        //     * b1101x1 '
+        //     * 0$
+        //     *
+        //     * This function tries to handle this transparently, and pushes the
+        //     * signal/values into the FIFO for processing by the timer when
+        //     * convenient.
+        //     * NOTE: Add 'floating' support here. Also, FIX THE TIMING.
+        //     */
+        //    static avr_cycle_count_t
+        //    avr_vcd_input_parse_line(
+        //            avr_vcd_t* vcd,
+        //            argv_p v)
+        //    {
+        //        avr_cycle_count_t res = 0;
+        //        int vi = 0;
 
-//        if (v->argc == 0)
-//            return res;
+        //        if (v->argc == 0)
+        //            return res;
 
-//        if (v->argv[0][0] == '#')
-//        {
-//            res = atoll(v->argv[0] + 1) * vcd->vcd_to_us;
-//            vcd->start = vcd->period;
-//            vcd->period = res;
-//            vi++;
-//        }
-//        for (int i = vi; i < v->argc; i++)
-//        {
-//            char* a = v->argv[i];
-//            uint32_t val = 0;
-//            int floating = 0;
-//            char name = 0;
-//            int sigindex = -1;
+        //        if (v->argv[0][0] == '#')
+        //        {
+        //            res = atoll(v->argv[0] + 1) * vcd->vcd_to_us;
+        //            vcd->start = vcd->period;
+        //            vcd->period = res;
+        //            vi++;
+        //        }
+        //        for (int i = vi; i < v->argc; i++)
+        //        {
+        //            char* a = v->argv[i];
+        //            uint32_t val = 0;
+        //            int floating = 0;
+        //            char name = 0;
+        //            int sigindex = -1;
 
-//            if (*a == 'b')
-//                a++;
-//            while (*a)
-//            {
-//                if (*a == 'x')
-//                {
-//                    val <<= 1;
-//                    floating |= (floating << 1) | 1;
-//                }
-//                else if (*a == '0' || *a == '1')
-//                {
-//                    val = (val << 1) | (*a - '0');
-//                    floating <<= 1;
-//                }
-//                else
-//                {
-//                    name = *a;
-//                    break;
-//                }
-//                a++;
-//            }
-//            if (!name && (i < v->argc - 1))
-//            {
-//                const char* n = v->argv[i + 1];
-//                if (strlen(n) == 1)
-//                {
-//                    // we've got a name, it was not attached
-//                    name = *n;
-//                    i++;    // skip that one
-//                }
-//            }
-//            if (name)
-//            {
-//                for (int si = 0;
-//                            si < vcd->signal_count &&
-//                            sigindex == -1; si++)
-//                {
-//                    if (vcd->signal[si].alias == name)
-//                        sigindex = si;
-//                }
-//            }
-//            if (sigindex == -1)
-//            {
-//                printf("Signal name '%c' value %x not found\n",
-//                        name ? name : '?', val);
-//                continue;
-//            }
-//            avr_vcd_log_t e = {
-//				.when = vcd->period,
-//				.sigindex = sigindex,
-//				.floating = !!floating,
-//				.value = val,
-//        };
-//            //	printf("%10u %d\n", e.when, e.value);
-//            avr_vcd_fifo_write(&vcd->log, e);
-//        }
-//        return res;
-//    }
+        //            if (*a == 'b')
+        //                a++;
+        //            while (*a)
+        //            {
+        //                if (*a == 'x')
+        //                {
+        //                    val <<= 1;
+        //                    floating |= (floating << 1) | 1;
+        //                }
+        //                else if (*a == '0' || *a == '1')
+        //                {
+        //                    val = (val << 1) | (*a - '0');
+        //                    floating <<= 1;
+        //                }
+        //                else
+        //                {
+        //                    name = *a;
+        //                    break;
+        //                }
+        //                a++;
+        //            }
+        //            if (!name && (i < v->argc - 1))
+        //            {
+        //                const char* n = v->argv[i + 1];
+        //                if (strlen(n) == 1)
+        //                {
+        //                    // we've got a name, it was not attached
+        //                    name = *n;
+        //                    i++;    // skip that one
+        //                }
+        //            }
+        //            if (name)
+        //            {
+        //                for (int si = 0;
+        //                            si < vcd->signal_count &&
+        //                            sigindex == -1; si++)
+        //                {
+        //                    if (vcd->signal[si].alias == name)
+        //                        sigindex = si;
+        //                }
+        //            }
+        //            if (sigindex == -1)
+        //            {
+        //                printf("Signal name '%c' value %x not found\n",
+        //                        name ? name : '?', val);
+        //                continue;
+        //            }
+        //            avr_vcd_log_t e = {
+        //				.when = vcd->period,
+        //				.sigindex = sigindex,
+        //				.floating = !!floating,
+        //				.value = val,
+        //        };
+        //            //	printf("%10u %d\n", e.when, e.value);
+        //            avr_vcd_fifo_write(&vcd->log, e);
+        //        }
+        //        return res;
+        //    }
 
-//    /*
-//     * Read some signals from the file and fill the FIFO with it, we read
-//     * a completely arbitrary amount of stuff to fill the FIFO reasonably well
-//     */
-//    static int
-//    avr_vcd_input_read(
-//            avr_vcd_t* vcd)
-//    {
-//        char line[1024];
+        //    /*
+        //     * Read some signals from the file and fill the FIFO with it, we read
+        //     * a completely arbitrary amount of stuff to fill the FIFO reasonably well
+        //     */
+        //    static int
+        //    avr_vcd_input_read(
+        //            avr_vcd_t* vcd)
+        //    {
+        //        char line[1024];
 
-//        while (fgets(line, sizeof(line), vcd->input))
-//        {
-//            //	printf("%s", line);
-//            if (!line[0])   // technically can't happen, but make sure next line works
-//                continue;
-//            vcd->input_line = argv_parse(vcd->input_line, line);
-//            avr_vcd_input_parse_line(vcd, vcd->input_line);
-//            /* stop once the fifo is full enough */
-//            if (avr_vcd_fifo_get_read_size(&vcd->log) >= 128)
-//                break;
-//        }
-//        return avr_vcd_fifo_isempty(&vcd->log);
-//    }
+        //        while (fgets(line, sizeof(line), vcd->input))
+        //        {
+        //            //	printf("%s", line);
+        //            if (!line[0])   // technically can't happen, but make sure next line works
+        //                continue;
+        //            vcd->input_line = argv_parse(vcd->input_line, line);
+        //            avr_vcd_input_parse_line(vcd, vcd->input_line);
+        //            /* stop once the fifo is full enough */
+        //            if (avr_vcd_fifo_get_read_size(&vcd->log) >= 128)
+        //                break;
+        //        }
+        //        return avr_vcd_fifo_isempty(&vcd->log);
+        //    }
 
-//    /*
-//     * This is called when we need to change the state of one or more IRQ,
-//     * so look in the FIFO to know 'our' stamp time, read as much as we can
-//     * that is still on that same timestamp.
-//     * When when the FIFO content has too far in the future, re-schedule the
-//     * timer for that time and shoot of.
-//     * Also try to top up the FIFO with new read stuff when it's drained
-//     */
-//    static avr_cycle_count_t
-//    _avr_vcd_input_timer(
+        //    /*
+        //     * This is called when we need to change the state of one or more IRQ,
+        //     * so look in the FIFO to know 'our' stamp time, read as much as we can
+        //     * that is still on that same timestamp.
+        //     * When when the FIFO content has too far in the future, re-schedule the
+        //     * timer for that time and shoot of.
+        //     * Also try to top up the FIFO with new read stuff when it's drained
+        //     */
+        //    static avr_cycle_count_t
+        //    _avr_vcd_input_timer(
 
-//        struct avr_t * avr,
-//        avr_cycle_count_t when,
-//		void* param)
-//{
-//	avr_vcd_t* vcd = param;
+        //        struct avr_t * avr,
+        //        avr_cycle_count_t when,
+        //		void* param)
+        //{
+        //	avr_vcd_t* vcd = param;
 
-//	// get some more if needed
-//	if (avr_vcd_fifo_get_read_size(&vcd->log) < (vcd->signal_count* 16))
-//		avr_vcd_input_read(vcd);
+        //	// get some more if needed
+        //	if (avr_vcd_fifo_get_read_size(&vcd->log) < (vcd->signal_count* 16))
+        //		avr_vcd_input_read(vcd);
 
-//	if (avr_vcd_fifo_isempty(&vcd->log)) {
-//		printf("%s DONE but why are we here?\n", __func__);
-//		return 0;
-//	}
+        //	if (avr_vcd_fifo_isempty(&vcd->log)) {
+        //		printf("%s DONE but why are we here?\n", __func__);
+        //		return 0;
+        //	}
 
-//avr_vcd_log_t log = avr_vcd_fifo_read_at(&vcd->log, 0);
-//uint64_t stamp = log.when;
-//	while (!avr_vcd_fifo_isempty(&vcd->log)) {
-//		log = avr_vcd_fifo_read_at(&vcd->log, 0);
-//		if (log.when != stamp)	// leave those in the FIFO
-//			break;
-//		// we already have it
-//		avr_vcd_fifo_read_offset(&vcd->log, 1);
-//avr_vcd_signal_p signal = &vcd->signal[log.sigindex];
-//avr_raise_irq_float(&signal->irq, log.value, log.floating);
-//	}
+        //avr_vcd_log_t log = avr_vcd_fifo_read_at(&vcd->log, 0);
+        //uint64_t stamp = log.when;
+        //	while (!avr_vcd_fifo_isempty(&vcd->log)) {
+        //		log = avr_vcd_fifo_read_at(&vcd->log, 0);
+        //		if (log.when != stamp)	// leave those in the FIFO
+        //			break;
+        //		// we already have it
+        //		avr_vcd_fifo_read_offset(&vcd->log, 1);
+        //avr_vcd_signal_p signal = &vcd->signal[log.sigindex];
+        //avr_raise_irq_float(&signal->irq, log.value, log.floating);
+        //	}
 
-//	if (avr_vcd_fifo_isempty(&vcd->log)) {
-//		AVR_LOG(vcd->avr, LOG_TRACE,
-//				"%s Finished reading, ending simavr\n",
-//                vcd->filename);
-//avr->state = cpu_Done;
-//		return 0;
-//	}
-//	log = avr_vcd_fifo_read_at(&vcd->log, 0);
+        //	if (avr_vcd_fifo_isempty(&vcd->log)) {
+        //		AVR_LOG(vcd->avr, LOG_TRACE,
+        //				"%s Finished reading, ending simavr\n",
+        //                vcd->filename);
+        //avr->state = cpu_Done;
+        //		return 0;
+        //	}
+        //	log = avr_vcd_fifo_read_at(&vcd->log, 0);
 
-//when += avr_usec_to_cycles(avr, log.when - stamp);
+        //when += avr_usec_to_cycles(avr, log.when - stamp);
 
-//	return when;
-//}
+        //	return when;
+        //}
 
-//int
-//avr_vcd_init_input(
+        //int
+        //avr_vcd_init_input(
 
-//        struct avr_t * avr,
+        //        struct avr_t * avr,
 
-//        const char* filename,   // filename to read
-//        avr_vcd_t * vcd )		// vcd struct to initialize
-//{
-//	memset(vcd, 0, sizeof(avr_vcd_t));
-//vcd->avr = avr;
-//	vcd->filename = strdup(filename);
+        //        const char* filename,   // filename to read
+        //        avr_vcd_t * vcd )		// vcd struct to initialize
+        //{
+        //	memset(vcd, 0, sizeof(avr_vcd_t));
+        //vcd->avr = avr;
+        //	vcd->filename = strdup(filename);
 
-//vcd->input = fopen(vcd->filename, "r");
-//	if (!vcd->input) {
-//		perror(filename);
-//		return -1;
-//	}
-//	char line[1024];
-//argv_p v = NULL;
+        //vcd->input = fopen(vcd->filename, "r");
+        //	if (!vcd->input) {
+        //		perror(filename);
+        //		return -1;
+        //	}
+        //	char line[1024];
+        //argv_p v = NULL;
 
-//	while (fgets(line, sizeof(line), vcd->input)) {
-//		if (!line[0])	// technically can't happen, but make sure next line works
-//			continue;
-//		v = argv_parse(v, line);
+        //	while (fgets(line, sizeof(line), vcd->input)) {
+        //		if (!line[0])	// technically can't happen, but make sure next line works
+        //			continue;
+        //		v = argv_parse(v, line);
 
-//		// we are done reading headers, got our first timestamp
-//		if (v->line[0] == '#') {
-//			vcd->start = 0;
-//			avr_vcd_input_parse_line(vcd, v);
-//avr_cycle_timer_register_usec(vcd->avr,
-//            vcd->period, _avr_vcd_input_timer, vcd);
-//			break;
-//		}
-//		// ignore multiline stuff
-//		if (v->line[0] != '$')
-//			continue;
+        //		// we are done reading headers, got our first timestamp
+        //		if (v->line[0] == '#') {
+        //			vcd->start = 0;
+        //			avr_vcd_input_parse_line(vcd, v);
+        //avr_cycle_timer_register_usec(vcd->avr,
+        //            vcd->period, _avr_vcd_input_timer, vcd);
+        //			break;
+        //		}
+        //		// ignore multiline stuff
+        //		if (v->line[0] != '$')
+        //			continue;
 
-//		const char* end = !strcmp(v->argv[v->argc - 1], "$end") ?
-//                                v->argv[v->argc - 1] : NULL;
-//const char* keyword = v->argv[0];
+        //		const char* end = !strcmp(v->argv[v->argc - 1], "$end") ?
+        //                                v->argv[v->argc - 1] : NULL;
+        //const char* keyword = v->argv[0];
 
-//		if (keyword == end)
-//			keyword = NULL;
-//		if (!keyword)
-//			continue;
+        //		if (keyword == end)
+        //			keyword = NULL;
+        //		if (!keyword)
+        //			continue;
 
-//		if (!strcmp(keyword, "$timescale")) {
-//			double cnt = 0;
-//vcd->vcd_to_us = 1;
-//			char* si = v->argv[1];
-//			while (si && * si && isdigit(*si))
-//				cnt = (cnt* 10) + (* si++ - '0');
-//			while (* si == ' ')
-//				si++;
-//			if (!* si)
-//				si = v->argv[2];
-//		//	if (!strcmp(si, "ns")) // TODO: Check that,
-//		//		vcd->vcd_to_us = cnt;
-//		//	printf("cnt %dus; unit %s\n", (int)cnt, si);
-//		} else if (!strcmp(keyword, "$var")) {
-//			const char* name = v->argv[4];
+        //		if (!strcmp(keyword, "$timescale")) {
+        //			double cnt = 0;
+        //vcd->vcd_to_us = 1;
+        //			char* si = v->argv[1];
+        //			while (si && * si && isdigit(*si))
+        //				cnt = (cnt* 10) + (* si++ - '0');
+        //			while (* si == ' ')
+        //				si++;
+        //			if (!* si)
+        //				si = v->argv[2];
+        //		//	if (!strcmp(si, "ns")) // TODO: Check that,
+        //		//		vcd->vcd_to_us = cnt;
+        //		//	printf("cnt %dus; unit %s\n", (int)cnt, si);
+        //		} else if (!strcmp(keyword, "$var")) {
+        //			const char* name = v->argv[4];
 
-//vcd->signal[vcd->signal_count].alias = v->argv[3][0];
-//			vcd->signal[vcd->signal_count].size = atoi(v->argv[2]);
-//strncpy(vcd->signal[vcd->signal_count].name, name,
-//						sizeof(vcd->signal[0].name));
+        //vcd->signal[vcd->signal_count].alias = v->argv[3][0];
+        //			vcd->signal[vcd->signal_count].size = atoi(v->argv[2]);
+        //strncpy(vcd->signal[vcd->signal_count].name, name,
+        //						sizeof(vcd->signal[0].name));
 
-//			vcd->signal_count++;
-//		}
-//	}
-//	// reuse this one
-//	vcd->input_line = v;
+        //			vcd->signal_count++;
+        //		}
+        //	}
+        //	// reuse this one
+        //	vcd->input_line = v;
 
-//	for (int i = 0; i<vcd->signal_count; i++) {
-//		AVR_LOG(vcd->avr, LOG_TRACE, "%s %2d '%c' %s : size %d\n",
-//                __func__, i,
-//                vcd->signal[i].alias, vcd->signal[i].name,
-//                vcd->signal[i].size);
-//		/* format is <four-character ioctl>[_<IRQ index>] */
-//		/*if (strlen(vcd->signal[i].name) >= 4) {
-//			char *dup = strdupa(vcd->signal[i].name);
-//			char *ioctl = strsep(&dup, "_");
-//			int index = 0;
-//			if (dup)
-//				index = atoi(dup);
-//			if (strlen(ioctl) == 4) {
-//				uint32_t ioc = AVR_IOCTL_DEF(
-//									ioctl[0], ioctl[1], ioctl[2], ioctl[3]);
-//				avr_irq_t * irq = avr_io_getirq(vcd->avr, ioc, index);
-//				if (irq) {
-//					vcd->signal[i].irq.flags = IRQ_FLAG_INIT;
-//					avr_connect_irq(&vcd->signal[i].irq, irq);
-//				} else
-//					AVR_LOG(vcd->avr, LOG_WARNING,
-//							"%s IRQ was not found\n",
-//							vcd->signal[i].name);
-//				continue;
-//			}
-//			AVR_LOG(vcd->avr, LOG_WARNING,
-//					"%s is an invalid IRQ format\n",
-//					vcd->signal[i].name);
-//		}*/
-//	}
-//	return 0;
-//}
+        //	for (int i = 0; i<vcd->signal_count; i++) {
+        //		AVR_LOG(vcd->avr, LOG_TRACE, "%s %2d '%c' %s : size %d\n",
+        //                __func__, i,
+        //                vcd->signal[i].alias, vcd->signal[i].name,
+        //                vcd->signal[i].size);
+        //		/* format is <four-character ioctl>[_<IRQ index>] */
+        //		/*if (strlen(vcd->signal[i].name) >= 4) {
+        //			char *dup = strdupa(vcd->signal[i].name);
+        //			char *ioctl = strsep(&dup, "_");
+        //			int index = 0;
+        //			if (dup)
+        //				index = atoi(dup);
+        //			if (strlen(ioctl) == 4) {
+        //				uint32_t ioc = AVR_IOCTL_DEF(
+        //									ioctl[0], ioctl[1], ioctl[2], ioctl[3]);
+        //				avr_irq_t * irq = avr_io_getirq(vcd->avr, ioc, index);
+        //				if (irq) {
+        //					vcd->signal[i].irq.flags = IRQ_FLAG_INIT;
+        //					avr_connect_irq(&vcd->signal[i].irq, irq);
+        //				} else
+        //					AVR_LOG(vcd->avr, LOG_WARNING,
+        //							"%s IRQ was not found\n",
+        //							vcd->signal[i].name);
+        //				continue;
+        //			}
+        //			AVR_LOG(vcd->avr, LOG_WARNING,
+        //					"%s is an invalid IRQ format\n",
+        //					vcd->signal[i].name);
+        //		}*/
+        //	}
+        //	return 0;
+        //}
 
-//void
-//avr_vcd_close(
-//        avr_vcd_t* vcd)
-//{
-//    avr_vcd_stop(vcd);
+        //void
+        //avr_vcd_close(
+        //        avr_vcd_t* vcd)
+        //{
+        //    avr_vcd_stop(vcd);
 
-//    /* dispose of any link and hooks */
-//    for (int i = 0; i < vcd->signal_count; i++)
-//    {
-//        avr_vcd_signal_t* s = &vcd->signal[i];
+        //    /* dispose of any link and hooks */
+        //    for (int i = 0; i < vcd->signal_count; i++)
+        //    {
+        //        avr_vcd_signal_t* s = &vcd->signal[i];
 
-//        avr_free_irq(&s->irq, 1);
-//    }
+        //        avr_free_irq(&s->irq, 1);
+        //    }
 
-//    if (vcd->filename)
-//    {
-//        free(vcd->filename);
-//        vcd->filename = NULL;
-//    }
-//}
+        //    if (vcd->filename)
+        //    {
+        //        free(vcd->filename);
+        //        vcd->filename = NULL;
+        //    }
+        //}
 
         public static string _avr_vcd_get_float_signal_text(Avr_vcd_signal s)
         {

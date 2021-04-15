@@ -71,14 +71,12 @@ namespace SimulIDE.src.simavr.sim
             Sim_Avr.Avr_set_command_register(avr, firmware.command_register_addr);
             Sim_Avr.Avr_set_console_register(avr, firmware.console_register_addr);
 
-//            // rest is initialization of the VCD file
+            // rest is initialization of the VCD file
             if (firmware.tracecount == 0) return 0;
 
             avr.vcd = new Avr_vcd_file.Avr_vcd();
-            //            memset(avr->vcd, 0, sizeof(*avr->vcd));
-            avr_vcd_init(avr,
-                firmware.tracename[0] ? firmware.tracename : "gtkwave_trace.vcd",
-                avr.vcd,
+            Avr_vcd_file.Avr_vcd_init(avr,
+                firmware.tracename!="" ? firmware.tracename : "gtkwave_trace.vcd",ref avr.vcd,
                 firmware.traceperiod >= 1000 ? firmware.traceperiod : 1000);
 
 //            AVR_LOG(avr, LOG_TRACE, "Creating VCD trace file '%s'\n", avr->vcd->filename);
@@ -127,9 +125,9 @@ namespace SimulIDE.src.simavr.sim
 //                    {
 //                        avr_vcd_add_signal(avr->vcd, all, 8, firmware->trace[ti].name);
 //                    }
-//                }
-//                else
-//                {
+                }
+                else
+                {
 //                    int count = __builtin_popcount(firmware->trace[ti].mask);
 //                    //	for (int bi = 0; bi < 8; bi++)
 //                    //		if (firmware->trace[ti].mask & (1 << bi))

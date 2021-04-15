@@ -3,12 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
+    
+
     public class Sim_io
     {
+
+
 
         //# include <stdlib.h>
         //# include <stdio.h>
@@ -86,63 +91,58 @@ namespace SimulIDE.src.simavr.sim
 //            }
 //        }
 
-//        public static void Avr_register_io_write(Avr avr, UInt16 addr, Avr_io_write writep,object[] param)
-//        {
-//            UInt16 a =(UInt16) Mcu.AVR_DATA_TO_IO(new object[] { addr });
+        public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object[] param)
+        {
+            uint a =(UInt16) Sim_Avr.AVR_DATA_TO_IO(addr);
 
-//            if (a >= MAX_IOs)
-//            {
-////                AVR_LOG(avr, LOG_ERROR,
-////                        "IO: %s(): IO address 0x%04x out of range (max 0x%04x).\n",
-////                        __func__, a, MAX_IOs);
-//                Abort();
-//            }
-//            /*
-//             * Verifying that some other piece of code is not installed to watch write
-//             * on this address. If there is, this code installs a "dispatcher" callback
-//             * instead to handle multiple clients, otherwise, it continues as usual
-//             */
-//            if (avr->io[a].w.param || avr->io[a].w.c)
-//            {
-////                if (avr->io[a].w.param != param || avr->io[a].w.c != writep)
-////                {
-////                    // if the muxer not already installed, allocate a new slot
-////                    if (avr->io[a].w.c != _avr_io_mux_write)
-////                    {
-////                        int no = avr->io_shared_io_count++;
-////                        if (avr->io_shared_io_count > ARRAY_SIZE(avr->io_shared_io))
-////                        {
-////                            AVR_LOG(avr, LOG_ERROR,
-////                                    "IO: %s(): Too many shared IO registers.\n", __func__);
-////                            abort();
-////                        }
-////                        AVR_LOG(avr, LOG_TRACE,
-////                                "IO: %s(%04x): Installing muxer on register.\n",
-////                                __func__, addr);
-////                        avr->io_shared_io[no].used = 1;
-////                        avr->io_shared_io[no].io[0].param = avr->io[a].w.param;
-////                        avr->io_shared_io[no].io[0].c = avr->io[a].w.c;
-////                        avr->io[a].w.param = (void*)(intptr_t)no;
-////                        avr->io[a].w.c = _avr_io_mux_write;
-////                    }
-////                    int no = (intptr_t)avr->io[a].w.param;
-////                    int d = avr->io_shared_io[no].used++;
-////                    if (avr->io_shared_io[no].used > ARRAY_SIZE(avr->io_shared_io[0].io))
-////                    {
-////                        AVR_LOG(avr, LOG_ERROR,
-////                                "IO: %s(): Too many callbacks on %04x.\n",
-////                                __func__, addr);
-////                        abort();
-////                    }
-////                    avr->io_shared_io[no].io[d].param = param;
-////                    avr->io_shared_io[no].io[d].c = writep;
-////                    return;
-////                }
-//            }
+            if (a >= Sim_Avr.MAX_IOs)
+                throw new Exception("IO address 0x "+a.ToString()+" out of range ("+ Sim_Avr.MAX_IOs.ToString()+")");
+            /*
+             * Verifying that some other piece of code is not installed to watch write
+             * on this address. If there is, this code installs a "dispatcher" callback
+             * instead to handle multiple clients, otherwise, it continues as usual
+             */
+            if ((avr.io[a].w.param!=null) || (avr.io[a].w.c!=null))
+            {
+//                if (avr->io[a].w.param != param || avr->io[a].w.c != writep)
+//                {
+//                    // if the muxer not already installed, allocate a new slot
+//                    if (avr->io[a].w.c != _avr_io_mux_write)
+//                    {
+//                        int no = avr->io_shared_io_count++;
+//                        if (avr->io_shared_io_count > ARRAY_SIZE(avr->io_shared_io))
+//                        {
+//                            AVR_LOG(avr, LOG_ERROR,
+//                                    "IO: %s(): Too many shared IO registers.\n", __func__);
+//                            abort();
+//                        }
+//                        AVR_LOG(avr, LOG_TRACE,
+//                                "IO: %s(%04x): Installing muxer on register.\n",
+//                                __func__, addr);
+//                        avr->io_shared_io[no].used = 1;
+//                        avr->io_shared_io[no].io[0].param = avr->io[a].w.param;
+//                        avr->io_shared_io[no].io[0].c = avr->io[a].w.c;
+//                        avr->io[a].w.param = (void*)(intptr_t)no;
+//                        avr->io[a].w.c = _avr_io_mux_write;
+//                    }
+//                    int no = (intptr_t)avr->io[a].w.param;
+//                    int d = avr->io_shared_io[no].used++;
+//                    if (avr->io_shared_io[no].used > ARRAY_SIZE(avr->io_shared_io[0].io))
+//                    {
+//                        AVR_LOG(avr, LOG_ERROR,
+//                                "IO: %s(): Too many callbacks on %04x.\n",
+//                                __func__, addr);
+//                        abort();
+//                    }
+//                    avr->io_shared_io[no].io[d].param = param;
+//                    avr->io_shared_io[no].io[d].c = writep;
+//                    return;
+//                }
+            }
              
-//            avr.io[a].w.param = param;
-//            avr.io[a].w.c = writep;
-//        }
+            avr.io[a].w.param = param;
+            avr.io[a].w.c = writep;
+        }
 
 //        avr_irq_t*
 //        avr_io_getirq(

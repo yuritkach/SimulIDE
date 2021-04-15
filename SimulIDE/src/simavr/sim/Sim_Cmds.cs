@@ -25,7 +25,7 @@ namespace SimulIDE.src.simavr.sim
 
     class Sim_Cmds
     {
-        public static void _avr_cmd_io_write( Avr avr, UInt16 addr, byte v, object[] param)
+        public static void _avr_cmd_io_write( Avr avr, uint addr, byte v, object[] param)
         {
             Avr_cmd_table commands = avr.commands;
             Avr_cmd command = commands.pending[0];
@@ -56,9 +56,10 @@ namespace SimulIDE.src.simavr.sim
         }
 
 
-        public void Avr_cmd_set_register( Avr avr, UInt16 addr)
+        public static void Avr_cmd_set_register( Avr avr, UInt16 addr)
         {
-           // if (addr!=0) Avr_register_io_write(avr, addr, _avr_cmd_io_write, null);
+            if (addr!=0)
+                Sim_io.Avr_register_io_write(avr, addr, _avr_cmd_io_write, null);
         }
 
         public static void Avr_cmd_register( ref Avr avr, SIMAVR_CMDS code, avr_cmd_handler handler, object[] param)

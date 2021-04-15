@@ -13,6 +13,8 @@ namespace SimulIDE.src.simavr
 {
 
     public delegate void InitDelegate(Avr avr);
+    public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object[] param);
+    public delegate  byte Avr_io_read_function(Avr avr, uint addr,object[] param); 
 
     public struct Avr_regbit
     {
@@ -40,6 +42,23 @@ namespace SimulIDE.src.simavr
         byte[] data;
     }
 
+    public class ReadIO
+    {
+        public object param;
+        public Avr_io_read_function c;
+    }
+    public class WriteIO
+    {
+        public object param;
+        public Avr_io_write_function c;
+    }
+
+    public class IO
+    {
+        public  Avr_irq irq; // optional, used only if asked for with avr_iomem_getirq()
+        public ReadIO r;
+        public WriteIO w;
+    }
 
     public delegate void Avr_run(Avr avr);
 
@@ -48,6 +67,8 @@ namespace SimulIDE.src.simavr
         public Avr()
         {
             commands = new Avr_cmd_table();
+            for (int i = 0; i < MAX_IOs; i++)
+                io[i] = new IO();
         }
 
 
@@ -154,20 +175,8 @@ namespace SimulIDE.src.simavr
         * If you wanted to emulate the BIG AVRs, and XMegas, this would need
         * work.
         */
-//struct {
-
-//        struct avr_irq_t * irq; // optional, used only if asked for with avr_iomem_getirq()
-//        struct {
-
-//            void* param;
-//            avr_io_read_t c;
-//		        } r;
-//		struct {
-
-//            void* param;
-//            avr_io_write_t c;
-//		        } w;
-//	} io[MAX_IOs];
+        
+        public IO[] io; 
 
 	/*
 	 * This block allows sharing of the IO write/read on addresses between
@@ -369,11 +378,11 @@ namespace SimulIDE.src.simavr
 
         public static void Avr_set_command_register(Avr avr, UInt16 addr)
         {
-            Avr_cmd_set_register(avr, addr);
+            Sim_Cmds.Avr_cmd_set_register(avr, addr);
         }
 
-        //        static void _avr_io_console_write(struct avr_t * avr, avr_io_addr_t addr, uint8_t v,  void* param)
-        //        {
+        public static void _avr_io_console_write(Avr avr, uint addr, byte v,  object[] param)
+        {
         //            if (v == '\r' && avr->io_console_buffer.buf)
         //            {
         //		        avr->io_console_buffer.buf[avr->io_console_buffer.len] = 0;
@@ -389,12 +398,12 @@ namespace SimulIDE.src.simavr
         //                    avr->io_console_buffer.size);
         //	        }
         //            if (v >= ' ') avr->io_console_buffer.buf[avr->io_console_buffer.len++] = v;
-        //        }
+        }
 
-        public static void Avr_set_console_register(Avr avr, int addr)
+        public static void Avr_set_console_register(Avr avr, uint addr)
         {
             if (addr>=0)
-               avr_register_io_write(avr, addr, _avr_io_console_write, null);
+               Sim_io.Avr_register_io_write(avr, addr, _avr_io_console_write, null);
         }
 
         public static int Avr_loadcode(Avr avr,byte[] code, uint size, uint address)
@@ -613,8 +622,19 @@ namespace SimulIDE.src.simavr
         public static byte R_SREG = 32 + 0x3F;
         public static int MAX_IOs = 280;
 
-        //#define AVR_DATA_TO_IO(v) ((v) - 32)
-        //#define AVR_IO_TO_DATA(v) ((v) + 32)
+
+
+        public static uint AVR_DATA_TO_IO(uint v)
+        {
+            return v - 32;
+        }
+
+        public static uint AVR_IO_TO_DATA(uint v)
+        {
+            return v + 32;
+        }
+
+
 
         //        /**
         //         * Logging macros and associated log levels.

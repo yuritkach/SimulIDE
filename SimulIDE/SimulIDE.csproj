@@ -115,6 +115,7 @@
     <Compile Include="src\simavr\sim\Sim_io.cs" />
     <Compile Include="src\simavr\sim\Sim_irq.cs" />
     <Compile Include="src\simavr\sim\Sim_regbit.cs" />
+    <Compile Include="src\simavr\sim\Sim_time.cs" />
     <Compile Include="src\simavr\sim\Sim_utils.cs" />
     <Compile Include="src\simavr\Sim_Avr.cs" />
     <Compile Include="src\simavr\Sim_core_decl.cs" />
