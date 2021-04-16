@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
-    class Avr_flash
+    public class Avr_flash
     {
 
 

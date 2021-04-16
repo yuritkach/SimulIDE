@@ -273,8 +273,8 @@ namespace SimulIDE.src.simavr.sim
         //	return(avr->flash[addr] | (avr->flash[addr + 1] << 8));
         //}
 
-        //void avr_core_watch_write(avr_t *avr, uint16_t addr, uint8_t v)
-        //{
+        public static void Avr_core_watch_write(Avr avr, uint addr, byte v)
+        {
         //	if (addr > avr->ramend) {
         //		AVR_LOG(avr, LOG_ERROR, FONT_RED
         //				"CORE: *** Invalid write address "
@@ -308,7 +308,7 @@ namespace SimulIDE.src.simavr.sim
         //	}
 
         //	avr->data[addr] = v;
-        //}
+        }
 
         //uint8_t avr_core_watch_read(avr_t *avr, uint16_t addr)
         //{

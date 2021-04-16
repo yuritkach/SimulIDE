@@ -70,7 +70,11 @@ namespace SimulIDE.src.simulator.elements.processors
 
                 int lastFChunk = 0;
 
-                for (int ci = 0; ci < cnt; ci++)
+                 
+                int loadBase = Sim_elf.AVR_SEGMENT_OFFSET_EEPROM;
+                //int loadBase = Sim_elf.AVR_SEGMENT_OFFSET_FLASH;
+
+                    for (int ci = 0; ci < cnt; ci++)
                 {
                     if (chunk[ci].baseaddr < (1 * 1024 * 1024)) lastFChunk = ci;
                 }
@@ -87,7 +91,8 @@ namespace SimulIDE.src.simulator.elements.processors
                             f.flash[chunk[ci].baseaddr + i] = chunk[ci].data[i];
                         }
                     }
-                    if (chunk[ci].baseaddr >= Sim_elf.AVR_SEGMENT_OFFSET_EEPROM)
+                    if ((chunk[ci].baseaddr >= Sim_elf.AVR_SEGMENT_OFFSET_EEPROM) ||
+                      (chunk[ci].baseaddr + loadBase >= Sim_elf.AVR_SEGMENT_OFFSET_EEPROM))
                     {
                         f.eeprom = chunk[ci].data;
                         f.eesize = chunk[ci].size;

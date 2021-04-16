@@ -21,13 +21,12 @@ namespace SimulIDE.src.simavr.cores
         protected override void InitConstants()
         {
             base.InitConstants();
-            EE_READY_vect = 22;
         }
 
         protected virtual void Avr_core_init(Avr core)
         {
-            core.mmcu = SIM_MMCU;
-            DefaultCore(SIM_VECTOR_SIZE);
+            core.mmcu = Constants.SIM_MMCU;
+            DefaultCore(Constants.SIM_VECTOR_SIZE);
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
         }
@@ -35,7 +34,7 @@ namespace SimulIDE.src.simavr.cores
         protected virtual void Avr_eeprom_init(Avr core)
         {
             eeprom = new Avr_eeprom();
-            Avr_eeprom.Avr_eeprom_declare((Mcu)this, EE_READY_vect);
+            Avr_eeprom.Avr_eeprom_declare((Mcu)this, Constants.EE_READY_vect);
         }
 
         protected void Mx8_init(Avr avr)
@@ -45,9 +44,9 @@ namespace SimulIDE.src.simavr.cores
 //            Avr_flash_init(avr, &mcu->selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
-//            avr_ioport_init(avr, &mcu->portb);
-//            avr_ioport_init(avr, &mcu->portc);
-//            avr_ioport_init(avr, &mcu->portd);
+            Avr_ioports.Avr_ioport_init(avr, ref this.portb);
+            Avr_ioports.Avr_ioport_init(avr, ref this.portc);
+            Avr_ioports.Avr_ioport_init(avr, ref this.portd);
 //            avr_uart_init(avr, &mcu->uart);
 //            avr_acomp_init(avr, &mcu->acomp);
 //            avr_adc_init(avr, &mcu->adc);
@@ -64,11 +63,6 @@ namespace SimulIDE.src.simavr.cores
         }
 
 
-
-        //# ifdef SIM_CORENAME
-
-
-        //#endif
 
         ///* Termporary hack for mega 324 due to mangled headers */
         //# ifdef _AVR_IOM328P_H_
@@ -386,8 +380,7 @@ namespace SimulIDE.src.simavr.cores
 
         //};
 
-        public string SIM_MMCU;
-        public byte SIM_VECTOR_SIZE;
+    
 
     }
 }

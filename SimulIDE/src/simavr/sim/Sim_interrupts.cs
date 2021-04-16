@@ -63,11 +63,8 @@ namespace SimulIDE.src.simavr.sim
                 table.vector[i].pending = 0;
         }
 
-        //        void
-        //        avr_register_vector(
-        //                avr_t* avr,
-        //                avr_int_vector_t* vector)
-        //        {
+        public static void Avr_register_vector(Avr avr, ref Avr_int_vector vector)
+        {
         //            if (!vector->vector)
         //                return;
 
@@ -235,7 +232,7 @@ namespace SimulIDE.src.simavr.sim
         //                    table->running[table->running_ptr - 1]->vector : 0);
         //    avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
         //            avr_has_pending_interrupts(avr));
-        //}
+        }
 
         ///*
         // * check whether interrupts are pending. If so, check if the interrupt "latency" is reached,

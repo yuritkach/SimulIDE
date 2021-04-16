@@ -43,7 +43,7 @@ namespace SimulIDE.src.simavr.sim
             }
             avr.codeend = firmware.flashsize + firmware.flashbase - firmware.datasize;
 
-            if ((firmware.eeprom.Length>0) && (firmware.eesize>0))
+            if ((firmware.eeprom!=null) && (firmware.eesize>0))
             {
                 Avr_eeprom_desc d = new Avr_eeprom_desc();
                 d.ee = firmware.eeprom;

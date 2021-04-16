@@ -140,7 +140,7 @@ namespace SimulIDE.src.simavr
 	    * Every IRQs will be stored in this pool. It is not
 	    * mandatory (yet) but will allow listing IRQs and their connections
 	    */
-	    Avr_irq_pool irq_pool;
+	    public Avr_irq_pool irq_pool;
 
         // Mirror of the SREG register, to facilitate the access to bits
         // in the opcode decoder.
@@ -205,7 +205,7 @@ namespace SimulIDE.src.simavr
     public byte[] data;
 
     // queue of io modules
-    public Avr_io[] io_ports;
+    public Queue<Avr_io> io_ports;
 
     // Builtin and user-defined commands
     public Avr_cmd_table commands = new Avr_cmd_table();

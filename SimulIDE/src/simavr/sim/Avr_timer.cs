@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
-    class Avr_timer
+    public class Avr_timer
     {
 
 

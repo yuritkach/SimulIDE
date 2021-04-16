@@ -1,3 +1,5 @@
+using System;
+
 namespace SimulIDE.src.simavr.sim {
 
     public delegate void IOPortResetDelegate(Avr_io port);
@@ -35,12 +37,12 @@ namespace SimulIDE.src.simavr.sim {
     public class Avr_ioport
     {
         public Avr_io io;
-        public string name;
+        public char name;
         public uint r_port;
         public uint r_ddr;
         public uint r_pin;
 
-        Avr_int_vector pcint;   // PCINT vector
+        public Avr_int_vector pcint;   // PCINT vector
         public uint r_pcint;        // pcint 8 pins mask
 
         // this represent the default IRQ value when
@@ -134,20 +136,17 @@ namespace SimulIDE.src.simavr.sim {
         // 	}
         //}
 
-        //static void
-        //avr_ioport_write(
-        //		struct avr_t * avr,
-        //		avr_io_addr_t addr,
-        //		uint8_t v,
-        //		void * param)
-        //{
-        //	avr_ioport_t * p = (avr_ioport_t *)param;
+        public static void Avr_ioport_write(Avr avr, uint addr,byte v,object param)
+        {
+        	Avr_ioport p = (Avr_ioport) param;
 
-        //	D(if (avr->data[addr] != v) printf("** PORT%c(%02x) = %02x\r\n", p->name, addr, v);)
-        //	avr_core_watch_write(avr, addr, v);
-        //	avr_raise_irq(p->io.irq + IOPORT_IRQ_REG_PORT, v);
-        //	avr_ioport_update_irqs(p);
-        //}
+        	if (avr.data[addr] != v)
+                Console.WriteLine("** PORT%c(%02x) = %02x\r\n", p.name, addr, v);
+
+        	avr_core_watch_write(avr, addr, v);
+        	avr_raise_irq(p->io.irq + IOPORT_IRQ_REG_PORT, v);
+        	avr_ioport_update_irqs(p);
+        }
 
         ///*
         // * This is a reasonably new behaviour for the io-ports. Writing 1's to the PIN register
@@ -240,7 +239,7 @@ namespace SimulIDE.src.simavr.sim {
             // 		avr_irq_register_notify(p.io.irq + i, avr_ioport_irq_notify, p);
         }
 
-        public static int avr_ioport_ioctl(Avr_io port, uint ctl, object[] io_param)
+        public static int Avr_ioport_ioctl(Avr_io port, uint ctl, object[] io_param)
         {
             //	avr_ioport_t * p = (avr_ioport_t *)port;
             //	avr_t * avr = p->io.avr;
@@ -336,7 +335,7 @@ namespace SimulIDE.src.simavr.sim {
 
             _io = new Avr_io();
             _io.kind = "port";
-            _io.ioctl = avr_ioport_ioctl;
+            _io.ioctl = Avr_ioport_ioctl;
 //            _io.            
 //            , avr_ioport_reset, , irq_names);
     }
@@ -344,31 +343,29 @@ namespace SimulIDE.src.simavr.sim {
 
 
 
-        //void avr_ioport_init(avr_t * avr, avr_ioport_t * p)
-        //{
-        //	if (!p->r_port) {
-        //		printf("skipping PORT%c for core %s\n", p->name, avr->mmcu);
-        //		return;
-        //	}
-        //	p->io = _io;
-        ////	printf("%s PIN%c 0x%02x DDR%c 0x%02x PORT%c 0x%02x\n", __FUNCTION__,
-        ////		p->name, p->r_pin,
-        ////		p->name, p->r_ddr,
-        ////		p->name, p->r_port);
+        public static void Avr_ioport_init(Avr avr, ref Avr_ioport p)
+        {
+        	if (p.r_port==0) {
+                Console.WriteLine("skipping PORT%c for core %s\n", p.name, avr.mmcu);
+        		return;
+        	}
+        	p.io = _io;
+            Console.WriteLine("Avr_ioport_init PIN%c 0x%02x DDR%c 0x%02x PORT%c 0x%02x\n", 
+        		p.name, p.r_pin,p.name, p.r_ddr,p.name, p.r_port);
 
-        //	avr_register_io(avr, &p->io);
-        //	avr_register_vector(avr, &p->pcint);
-        //	// allocate this module's IRQ
-        //	avr_io_setirqs(&p->io, AVR_IOCTL_IOPORT_GETIRQ(p->name), IOPORT_IRQ_COUNT, NULL);
+        	Sim_io.Avr_register_io(avr, ref p.io);
+        	Sim_interrupts.Avr_register_vector(avr, ref p.pcint);
+        	// allocate this module's IRQ
+        	Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_IOPORT_GETIRQ((byte)p.name), IOPORT_IRQ_COUNT, null);
 
-        //	for (int i = 0; i < IOPORT_IRQ_COUNT; i++)
-        //		p->io.irq[i].flags |= IRQ_FLAG_FILTERED;
+        	for (int i = 0; i < IOPORT_IRQ_COUNT; i++)
+        		p.io.irq[i].flags |= Sim_irq.IRQ_FLAG_FILTERED;
 
-        //	avr_register_io_write(avr, p->r_port, avr_ioport_write, p);
-        //	avr_register_io_read(avr, p->r_pin, avr_ioport_read, p);
-        //	avr_register_io_write(avr, p->r_pin, avr_ioport_pin_write, p);
-        //	avr_register_io_write(avr, p->r_ddr, avr_ioport_ddr_write, p);
-        //}
+        	Sim_io.Avr_register_io_write(avr, p.r_port, avr_ioport_write, p);
+            Sim_io.Avr_register_io_read(avr, p.r_pin, avr_ioport_read, p);
+            Sim_io.Avr_register_io_write(avr, p.r_pin, avr_ioport_pin_write, p);
+            Sim_io.Avr_register_io_write(avr, p.r_ddr, avr_ioport_ddr_write, p);
+        }
 
 
         ///*

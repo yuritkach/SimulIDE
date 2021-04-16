@@ -28,17 +28,17 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_eeprom_declare(Mcu mcu, byte _vector)
         {
 
-            mcu.eeprom.size = (ushort)(mcu.E2END + 1);
-            mcu.eeprom.r_eearh = mcu.EEARH;
-            mcu.eeprom.r_eearl = mcu.EEARL;
-            mcu.eeprom.r_eedr = mcu.EEDR;
-            mcu.eeprom.r_eedr = mcu.EECR;
-            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EEPM0), Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EEPM1) };
-            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EEMPE);
-            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EEPE);
-            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EERE);
+            mcu.eeprom.size = (ushort)(Constants.E2END + 1);
+            mcu.eeprom.r_eearh = Constants.EEARH;
+            mcu.eeprom.r_eearl = Constants.EEARL;
+            mcu.eeprom.r_eedr = Constants.EEDR;
+            mcu.eeprom.r_eedr = Constants.EECR;
+            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM0), Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM1) };
+            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEMPE);
+            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPE);
+            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERE);
             Avr_int_vector vec = new Avr_int_vector();
-            vec.enable = Sim_regbit.AVR_IO_REGBIT(mcu.EECR, mcu.EERIE);
+            vec.enable = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERIE);
             vec.vector = _vector;
             mcu.eeprom.ready = vec;
         }

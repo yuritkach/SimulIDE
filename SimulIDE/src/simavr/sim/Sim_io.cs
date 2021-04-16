@@ -15,10 +15,10 @@ namespace SimulIDE.src.simavr.sim
         public Avr_io next;
         public Avr avr;     // avr we are attached to
         public string kind;       // pretty name, for debug
-        public string[] irq_names; // IRQ names
+        public char[] irq_names; // IRQ names
 
         public uint irq_ioctl_get; // used to get irqs from this module
-        public int irq_count;  // number of (optional) irqs
+        public uint irq_count;  // number of (optional) irqs
         public Avr_irq[] irq;		// optional external IRQs
     	// called at reset time
     	//void (* reset) (struct avr_io_t *io);
@@ -39,9 +39,8 @@ namespace SimulIDE.src.simavr.sim
 
         public static int Avr_ioctl(Avr avr,uint ctl,object io_param)
         {
-            Avr_io[] ports = avr.io_ports;
             int res = -1;
-            foreach(Avr_io port in ports)
+            foreach(Avr_io port in avr.io_ports)
             {
                 if (port.ioctl!=null)
                     res = port.ioctl(port, ctl, new object[1] { io_param });
@@ -49,15 +48,12 @@ namespace SimulIDE.src.simavr.sim
             return res;
         }
 
-//        void
-//        avr_register_io(
-//                avr_t* avr,
-//                avr_io_t* io)
-//        {
-//            io->next = avr->io_port;
-//            io->avr = avr;
-//            avr->io_port = io;
-//        }
+        public static void Avr_register_io(Avr avr,ref Avr_io io)
+        {
+            io.next = avr.io_ports.Peek();
+            io.avr = avr;
+            avr.io_ports.Enqueue(io);
+        }
 
 //        void
 //        avr_register_io_read(
@@ -156,8 +152,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static Avr_irq Avr_io_getirq(Avr avr,uint ctl,int index)
         {
-            Avr_io[] ports = avr.io_ports;
-            foreach(Avr_io port in ports)
+            foreach(Avr_io port in avr.io_ports)
             {
                 if ((port.irq.Length>0 && port.irq_ioctl_get == ctl) && (port.irq_count > index))
                     return port.irq[index];
@@ -210,74 +205,65 @@ namespace SimulIDE.src.simavr.sim
 //	return avr->io[a].irq + index;
 //}
 
-//avr_irq_t*
-//avr_io_setirqs(
-//        avr_io_t* io,
-//        uint32_t ctl,
-//        int count,
-//        avr_irq_t* irqs)
-//{
-//    // allocate this module's IRQ
-//    io->irq_count = count;
+        public static Avr_irq[] Avr_io_setirqs(ref Avr_io io,uint ctl,uint count, Avr_irq[] irqs)
+        {
+            // allocate this module's IRQ
+            io.irq_count = count;
 
-//    if (!irqs)
-//    {
-//        const char** irq_names = NULL;
+            if (irqs==null)
+            {
+                char[] irq_names = null;
 
-//        if (io->irq_names)
-//        {
-//            irq_names = malloc(count * sizeof(char*));
-//            memset(irq_names, 0, count * sizeof(char*));
-//            char buf[64];
-//            for (int i = 0; i < count; i++)
-//            {
-//                /*
-//				 * this bit takes the io module 'kind' ("port")
-//				 * the IRQ name ("=0") and the last character of the ioctl ('p','o','r','A')
-//				 * to create a full name "=porta.0"
-//				 */
-//                char* dst = buf;
-//                // copy the 'flags' of the name out
-//                const char* kind = io->irq_names[i];
-//                while (isdigit(*kind))
-//                    *dst++ = *kind++;
-//                while (!isalpha(*kind))
-//                    *dst++ = *kind++;
-//                // add avr name
-//                //				strcpy(dst, io->avr->mmcu);
-//                strcpy(dst, "avr");
-//                dst += strlen(dst);
-//                *dst++ = '.';
-//                // add module 'kind'
-//                strcpy(dst, io->kind);
-//                dst += strlen(dst);
-//                // add port name, if any
-//                if ((ctl & 0xff) > ' ')
-//                    *dst++ = tolower(ctl & 0xff);
-//                *dst++ = '.';
-//                // add the rest of the irq name
-//                strcpy(dst, kind);
-//                dst += strlen(dst);
-//                *dst = 0;
+                if (io.irq_names!=null)
+                {
+                    irq_names = new char[count];
+                    char[] buf= new char[64];
+                    for (int i = 0; i < count; i++)
+                    {
+                        /*
+                        * this bit takes the io module 'kind' ("port")
+                        * the IRQ name ("=0") and the last character of the ioctl ('p','o','r','A')
+                        * to create a full name "=porta.0"
+                        */
+                    
+                        char[] dst = buf;
+                        // copy the 'flags' of the name out
+                        char kind = io.irq_names[i];
 
-//                //				printf("%s\n", buf);
-//                irq_names[i] = strdup(buf);
-//            }
-//        }
-//        irqs = avr_alloc_irq(&io->avr->irq_pool, 0,
-//                        count, irq_names);
-//        if (irq_names)
-//        {
-//            for (int i = 0; i < count; i++)
-//                free((char*)irq_names[i]);
-//            free((char*)irq_names);
-//        }
-//    }
+             //           while (isdigit(*kind))
+             //               *dst++ = *kind++;
+             //           while (!isalpha(*kind))
+             //               *dst++ = *kind++;
+                        // add avr name
+                    
+                        //				strcpy(dst, io->avr->mmcu);
+            //            strcpy(dst, "avr");
+            //            dst += strlen(dst);
+            //            *dst++ = '.';
+                        // add module 'kind'
+            //            strcpy(dst, io->kind);
+            //            dst += strlen(dst);
+                        // add port name, if any
+            //            if ((ctl & 0xff) > ' ')
+            //                *dst++ = tolower(ctl & 0xff);
+            //            *dst++ = '.';
+                        // add the rest of the irq name
+            //            strcpy(dst, kind);
+            //            dst += strlen(dst);
+            //            *dst = 0;
+                        //				printf("%s\n", buf);
+            //            irq_names[i] = strdup(buf);
+                    }
+                }
 
-//    io->irq = irqs;
-//    io->irq_ioctl_get = ctl;
-//    return io->irq;
-//}
+                irqs = Sim_irq.Avr_alloc_irq(ref io.avr.irq_pool, 0,count, irq_names);
+                irq_names = null;
+            }
+    
+            io.irq = irqs;
+            io.irq_ioctl_get = ctl;
+            return io.irq;
+        }
 
 //static void
 //avr_deallocate_io(
