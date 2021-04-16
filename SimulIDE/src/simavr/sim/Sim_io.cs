@@ -50,14 +50,16 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_io(Avr avr,ref Avr_io io)
         {
-            io.next = avr.io_ports.Peek();
+            if (avr.io_ports.Count > 0)
+                io.next = avr.io_ports.Peek();
+            else io.next = null;
             io.avr = avr;
             avr.io_ports.Enqueue(io);
         }
 
         public static void Avr_register_io_read(Avr avr,uint addr,Avr_io_read_function readp,object param)
         {
-            uint a = Sim_Avr.AVR_DATA_TO_IO(addr);
+            int a = Sim_Avr.AVR_DATA_TO_IO((int)addr);
             if (avr.io[a].r.param!=null || avr.io[a].r.c!=null)
             {
                 if (avr.io[a].r.param != param || avr.io[a].r.c != readp)
@@ -89,8 +91,8 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object param)
         {
-            uint a =(UInt16) Sim_Avr.AVR_DATA_TO_IO(addr);
-
+            int a =Sim_Avr.AVR_DATA_TO_IO((int)addr);
+            if (a < 0) return;
             if (a >= Sim_Avr.MAX_IOs)
                 throw new Exception("IO address 0x "+a.ToString()+" out of range ("+ Sim_Avr.MAX_IOs.ToString()+")");
             /*

@@ -197,6 +197,7 @@ namespace SimulIDE.src.simavr.sim
 
             for (int i = 0; i < count; i++)
             {
+                irq[i] = new Avr_irq();
                 irq[i].irq = (uint)(_base + i);
                 irq[i].flags = IRQ_FLAG_INIT;
                 if (pool!=null)

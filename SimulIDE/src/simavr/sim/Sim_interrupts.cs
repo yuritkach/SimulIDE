@@ -238,10 +238,8 @@ namespace SimulIDE.src.simavr.sim
         // * check whether interrupts are pending. If so, check if the interrupt "latency" is reached,
         // * and if so triggers the handlers and jump to the vector.
         // */
-        //void
-        //avr_service_interrupts(
-        //        avr_t* avr)
-        //{
+        public static void Avr_service_interrupts(Avr avr)
+        {
         //    if (!avr->sreg[S_I] || !avr->interrupt_state)
         //        return;
 
@@ -305,7 +303,7 @@ namespace SimulIDE.src.simavr.sim
         //        }
         //        avr_clear_interrupt(avr, vector);
         //    }
-        //}
+        }
 
 
 

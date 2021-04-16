@@ -460,38 +460,46 @@ namespace SimulIDE.src.simavr.sim
             public byte mask, value;
         }
 
-        public class Elf_firmware
-        {
-            public string mmcu;
-            public UInt32 frequency;
-            public UInt32 vcc, avcc, aref;
+    public class Elf_firmware
+    {
+        public string mmcu;
+        public UInt32 frequency;
+        public UInt32 vcc, avcc, aref;
 
-            public string tracename;    // trace filename
-            public UInt32 traceperiod;
-            public int tracecount;
-            public Trace[] trace; //32 шт
-            public External_state[] external_state; //8шт
+        public string tracename;    // trace filename
+        public UInt32 traceperiod;
+        public int tracecount;
+        public Trace[] trace; //32 шт
+        public External_state[] external_state = new External_state[8]; //8шт
     
-            // register to listen to for commands from the firmware
-            public UInt16 command_register_addr;
-            public UInt16 console_register_addr;
+        // register to listen to for commands from the firmware
+        public UInt16 command_register_addr;
+        public UInt16 console_register_addr;
 
-            public UInt32 flashbase; // base address
-            public byte[] flash;
-            public UInt32 flashsize;
-            public UInt32 datasize;
-            public UInt32 bsssize;
-            // read the .eeprom section of the elf, too
-            public byte[] eeprom;
-            public UInt32 eesize;
-            public byte[] fuse;
-            public UInt32 fusesize;
-            public byte[] lockbits;
+        public UInt32 flashbase; // base address
+        public byte[] flash;
+        public UInt32 flashsize;
+        public UInt32 datasize;
+        public UInt32 bsssize;
+        
+        // read the .eeprom section of the elf, too
+        public byte[] eeprom;
+        public UInt32 eesize;
+        public byte[] fuse = new byte[0];
+        public UInt32 fusesize;
+        public byte[] lockbits = new byte[0];
 
-            //#if ELF_SYMBOLS
-            //    avr_symbol_t** symbol;
-            //    uint32_t symbolcount;
-            //#endif
+        public Elf_firmware()
+        {
+            for(int i=0; i<8;i++)
+                external_state[i] = new External_state();
+        }
+
+
+        //#if ELF_SYMBOLS
+        //    avr_symbol_t** symbol;
+        //    uint32_t symbolcount;
+        //#endif
     }
     
 

@@ -55,9 +55,9 @@ namespace SimulIDE.src.simavr
 
     public class IO
     {
-        public  Avr_irq irq; // optional, used only if asked for with avr_iomem_getirq()
-        public ReadIO r;
-        public WriteIO w;
+        public  Avr_irq irq = new Avr_irq(); // optional, used only if asked for with avr_iomem_getirq()
+        public ReadIO r = new ReadIO();
+        public WriteIO w = new WriteIO();
     }
 
     public delegate void Avr_run(Avr avr);
@@ -70,6 +70,7 @@ namespace SimulIDE.src.simavr
             io = new IO[MAX_IOs];
             for (int i = 0; i < MAX_IOs; i++)
                 io[i] = new IO();
+            io_ports = new Queue<Avr_io>();
         }
 
 
@@ -80,8 +81,8 @@ namespace SimulIDE.src.simavr
         public UInt32 flashend;
         public UInt32 e2end;
         public byte vector_size;
-        public byte[] signature;
-        public byte[] fuse;
+        public byte[] signature = new byte[0];
+        public byte[] fuse= new byte[0];
         public byte lockbits;
         public UInt16 rampz;    // optional, only for ELPM/SPM on >64Kb cores
         public UInt16 eind; // optional, only for EIJMP/EICALL on >64Kb cores
@@ -145,7 +146,7 @@ namespace SimulIDE.src.simavr
         // Mirror of the SREG register, to facilitate the access to bits
         // in the opcode decoder.
         // This array is re-synthesized back/forth when SREG changes
-        public byte[] sreg;
+        public byte[] sreg = new byte[8];
 
         /* Interrupt state:
             00: idle (no wait, no pending interrupts) or disabled
@@ -177,7 +178,7 @@ namespace SimulIDE.src.simavr
         * work.
         */
         
-        public IO[] io; 
+        public IO[] io = new IO[0]; 
 
 	/*
 	 * This block allows sharing of the IO write/read on addresses between
@@ -200,20 +201,20 @@ namespace SimulIDE.src.simavr
 //	} io_shared_io[4];
 
 	// flash memory (initialized to 0xff, and code loaded into it)
-	public byte[] flash;
+	public byte[] flash = new byte[0];
 // this is the general purpose registers, IO registers, and SRAM
-    public byte[] data;
+    public byte[] data = new byte[0];
 
     // queue of io modules
-    public Queue<Avr_io> io_ports;
+    public Queue<Avr_io> io_ports = new Queue<Avr_io>();
 
     // Builtin and user-defined commands
     public Avr_cmd_table commands = new Avr_cmd_table();
 
 // cycle timers tracking & delivery
-    public Avr_cycle_timer_pool cycle_timers;
+    public Avr_cycle_timer_pool cycle_timers = new Avr_cycle_timer_pool();
 // interrupt vectors and delivery fifo
-    public Avr_int_table Interrupts;
+    public Avr_int_table Interrupts= new Avr_int_table();
 
 // DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
         byte trace = 1,
@@ -295,19 +296,19 @@ namespace SimulIDE.src.simavr
         Sim_Cmds.Avr_cmd_init(ref avr);
         //Avr_interrupt_init(ref avr);
         
-        //	        if (avr->custom.init)
-        //		        avr->custom.init(avr, avr->custom.data);
-        //	        if (avr->init)
-        //		        avr->init(avr);
-        //            // set default (non gdb) fast callbacks
-        //            avr->run = avr_callback_run_raw;
-        //	        avr->sleep = avr_callback_sleep_raw;
-        //	        // number of address bytes to push/pull on/off the stack
-        //	        avr->address_size = avr->eind? 3 : 2;
-        //	        avr->log = 1;
-        //	        avr_reset(avr);
-        //            avr_regbit_set(avr, avr->reset_flags.porf);		// by  default set to power-on reset
-        	        return 0;
+        //if (avr.custom.init)
+       // 	avr.custom.init(avr, avr.custom.data);
+       // if (avr->init)
+        //	avr->init(avr);
+        // set default (non gdb) fast callbacks
+        avr.Run = Avr_callback_run_raw;
+        //avr->sleep = avr_callback_sleep_raw;
+        // number of address bytes to push/pull on/off the stack
+        //avr.address_size = avr.eind? 3 : 2;
+        //avr->log = 1;
+        //avr_reset(avr);
+        //avr_regbit_set(avr, avr->reset_flags.porf);		// by  default set to power-on reset
+        return 0;
         }
 
         //        void avr_terminate( avr_t* avr)
@@ -494,49 +495,51 @@ namespace SimulIDE.src.simavr
         //            //if (usec > 0) usleep(usec);
         //        }
 
-        //        void avr_callback_run_raw(avr_t* avr)
-        //        {
-        //            if (avr->state == cpu_Done) return;
+        public static void Avr_callback_run_raw(Avr avr)
+        {
+              if (avr.state == CoreStates.cpu_Done) return;
 
-        //            if (avr->state == cpu_Running)
-        //            {
-        //                if (avr->cyclesDone > 1) avr->cyclesDone -= 1;
-        //                else avr->pc = avr_run_one(avr);
-        //                avr->cycle += 1;
-        //            }
+              if (avr.state == CoreStates.cpu_Running)
+              {
+                   if (avr.cyclesDone > 1)
+                        avr.cyclesDone -= 1;
+                   else
+                        avr.PC = Sim_core.Avr_run_one(avr);
+                   avr.cycle += 1;
+              }
 
-        //            // run the cycle timers, get the suggested sleep time until the next timer is due
-        //            //avr_cycle_count_t sleep =
-        //            avr_cycle_timer_process(avr);
+              // run the cycle timers, get the suggested sleep time until the next timer is due
+              //avr_cycle_count_t sleep =
+              Sim_cycle_timers.Avr_cycle_timer_process(avr);
 
-        //            if (avr->state == cpu_Sleeping)
-        //            {
-        //                if (!avr->sreg[S_I])
-        //                {
-        //                    if (avr->log) AVR_LOG(avr, LOG_TRACE, "simavr: sleeping with interrupts off, quitting gracefully\n");
+              if (avr.state == CoreStates.cpu_Sleeping)
+              {
+                   if (avr.sreg[S_I]!=0)
+                   {
+                        //if (avr.log) AVR_LOG(avr, LOG_TRACE, "simavr: sleeping with interrupts off, quitting gracefully\n");
+                        avr.state = CoreStates.cpu_Done;
+                        return;
+                   }
 
-        //                    avr->state = cpu_Done;
-        //                    return;
-        //                }
+                   //avr->sleep(avr, sleep); //try to sleep for as long as we can( ?)
+                   avr.cycle += 1; // + sleep;
+              }
 
-        //                //avr->sleep(avr, sleep); //try to sleep for as long as we can( ?)
-        //                avr->cycle += 1; // + sleep;
-        //            }
+              if (avr.state == CoreStates.cpu_Running || avr.state == CoreStates.cpu_Sleeping) // Interrupts might change the PC too, during 'sleep'
+              {
+                   /* Note: checking interrupt_state here is completely superfluous, however
+                   as interrupt_state tells us all we really need to know, here
+                   a simple check here may be cheaper than a call not needed. */
+                   if (avr.interrupt_state!=0)
+                        Avr_service_interrupts(avr);
+              }
+        }
 
-        //            if (avr->state == cpu_Running || avr->state == cpu_Sleeping) // Interrupts might change the PC too, during 'sleep'
-        //            {
-        //                /* Note: checking interrupt_state here is completely superfluous, however
-        //                    as interrupt_state tells us all we really need to know, here
-        //                    a simple check here may be cheaper than a call not needed. */
-        //                if (avr->interrupt_state) avr_service_interrupts(avr);
-        //            }
-        //        }
-
-        //        int avr_run(avr_t* avr)
-        //        {
-        //            avr->run(avr);
-        //            return avr->state;
-        //        }
+        CoreStates Avr_run(Avr avr)
+        {
+            avr.Run(avr);
+            return avr.state;
+        }
 
         public static Avr Avr_core_allocate(Avr core)
         {
@@ -625,12 +628,12 @@ namespace SimulIDE.src.simavr
 
 
 
-        public static uint AVR_DATA_TO_IO(uint v)
+        public static int AVR_DATA_TO_IO(int v)
         {
             return v - 32;
         }
 
-        public static uint AVR_IO_TO_DATA(uint v)
+        public static int AVR_IO_TO_DATA(int v)
         {
             return v + 32;
         }

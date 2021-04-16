@@ -769,11 +769,11 @@ namespace SimulIDE.src.simavr.sim
         // * The number of cycles taken by instruction has been added, but might not be
         // * entirely accurate.
         // */
-        //avr_flashaddr_t avr_run_one(avr_t * avr)
-        //{
-        //    //run_one_again:
+        public static uint Avr_run_one(Avr avr)
+        {
+            //run_one_again:
 
-        //    // Ensure we don't crash simavr due to a bad instruction reading past the end of the flash.
+            // Ensure we don't crash simavr due to a bad instruction reading past the end of the flash.
         //    if( unlikely(avr->pc >= avr->flashend) )
         //    {
         //        STATE("CRASH\n");
@@ -782,8 +782,8 @@ namespace SimulIDE.src.simavr.sim
         //    }
 
         //    uint32_t		opcode = _avr_flash_read16le(avr, avr->pc);
-        //    avr_flashaddr_t	new_pc = avr->pc + 2;	// future "default" pc
-        //    int 			cycle = 1;
+            uint new_pc = avr.PC + 2;	// future "default" pc
+            int cycle = 1;
 
         //	switch (opcode & 0xf000) {
         //		case 0x0000: {
@@ -1573,8 +1573,8 @@ namespace SimulIDE.src.simavr.sim
         //        goto run_one_again;
         //    }*/
 
-        //    return new_pc;
-        //}
+            return new_pc;
+        }
 
     }
 }

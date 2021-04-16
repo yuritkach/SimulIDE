@@ -61,21 +61,16 @@ namespace SimulIDE.src.simavr.sim
             avr.run_cycle_limit = 1;
         }
 
-        //static avr_cycle_count_t
-        //avr_cycle_timer_return_sleep_run_cycles_limited(
-        //    avr_t* avr,
-        //    avr_cycle_count_t sleep_cycle_count)
-        //{
-        //    // run_cycle_count is bound to run_cycle_limit but NOT less than 1 cycle...
-        //    //	this is not an error!..  unless you like deadlock.
-        //    avr_cycle_count_t run_cycle_count = ((avr->run_cycle_limit >= sleep_cycle_count) ?
-        //        sleep_cycle_count : avr->run_cycle_limit);
-
-        //    avr->run_cycle_count = run_cycle_count ? run_cycle_count : 1;
-
-        //    // sleep cycles are returned unbounded thus preserving original behavior.
-        //    return (sleep_cycle_count);
-        //}
+        public static ulong Avr_cycle_timer_return_sleep_run_cycles_limited(Avr avr,ulong sleep_cycle_count)
+        {
+            // run_cycle_count is bound to run_cycle_limit but NOT less than 1 cycle...
+            //	this is not an error!..  unless you like deadlock.
+            ulong run_cycle_count = ((avr.run_cycle_limit >= sleep_cycle_count) ?
+                sleep_cycle_count : avr.run_cycle_limit);
+            avr.run_cycle_count = run_cycle_count!=0 ? run_cycle_count : 1;
+            // sleep cycles are returned unbounded thus preserving original behavior.
+            return (sleep_cycle_count);
+        }
 
         //static void
         //avr_cycle_timer_reset_sleep_run_cycles_limited(
@@ -211,10 +206,8 @@ namespace SimulIDE.src.simavr.sim
         // * clear the ones that wants it, and calculate the next
         // * potential cycle we could sleep for...
         // */
-        //avr_cycle_count_t
-        //avr_cycle_timer_process(
-        //        avr_t* avr)
-        //{
+        public static ulong Avr_cycle_timer_process(Avr avr)
+        {
         //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
 
         //    if (pool->timer) do
@@ -243,11 +236,11 @@ namespace SimulIDE.src.simavr.sim
         //            QUEUE(pool->timer_free, t);
         //        } while (pool->timer);
 
-        //    // original behavior was to return 1000 cycles when no timers were present...
-        //    // run_cycles are bound to at least one cycle but no more than requested limit...
-        //    //	value passed here is returned unbounded, thus preserving original behavior.
-        //    return avr_cycle_timer_return_sleep_run_cycles_limited(avr, DEFAULT_SLEEP_CYCLES);
-        //}
+            // original behavior was to return 1000 cycles when no timers were present...
+            // run_cycles are bound to at least one cycle but no more than requested limit...
+            //	value passed here is returned unbounded, thus preserving original behavior.
+            return Avr_cycle_timer_return_sleep_run_cycles_limited(avr, DEFAULT_SLEEP_CYCLES);
+        }
 
 
         public static int MAX_CYCLE_TIMERS = 64;
