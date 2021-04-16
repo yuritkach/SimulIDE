@@ -1,3 +1,4 @@
+using SimulIDE.src.simavr.cores;
 using System;
 
 namespace SimulIDE.src.simavr.sim {
@@ -84,30 +85,23 @@ namespace SimulIDE.src.simavr.sim {
         // */
 
 
-        //#define D(_w)
+        public static byte Avr_ioport_read(Avr avr,uint addr,object param)
+        {
+        	Avr_ioport p = (Avr_ioport)param;
+        	byte ddr = avr.data[p.r_ddr];
+        	byte v = (byte)((avr.data[p.r_pin] & ~ddr) | (avr.data[p.r_port] & ddr));
+        	avr.data[addr] = v;
+        	// made to trigger potential watchpoints
+        	v = Sim_core.Avr_core_watch_read(avr, addr);
+        	Sim_irq.Avr_raise_irq(p.io.irq[IOPORT_IRQ_REG_PIN], v);
+        	if (avr.data[addr] != v)
+                Console.WriteLine("** PIN%c(%02x) = %02x\r\n", p.name, addr, v);
 
-        //static uint8_t
-        //avr_ioport_read(
-        //		struct avr_t * avr,
-        //		avr_io_addr_t addr,
-        //		void * param)
-        //{
-        //	avr_ioport_t * p = (avr_ioport_t *)param;
-        //	uint8_t ddr = avr->data[p->r_ddr];
-        //	uint8_t v = (avr->data[p->r_pin] & ~ddr) | (avr->data[p->r_port] & ddr);
-        //	avr->data[addr] = v;
-        //	// made to trigger potential watchpoints
-        //	v = avr_core_watch_read(avr, addr);
-        //	avr_raise_irq(p->io.irq + IOPORT_IRQ_REG_PIN, v);
-        //	D(if (avr->data[addr] != v) printf("** PIN%c(%02x) = %02x\r\n", p->name, addr, v);)
+        	return v;
+        }
 
-        //	return v;
-        //}
-
-        //static void
-        //avr_ioport_update_irqs(
-        //		avr_ioport_t * p)
-        //{
+        public static void Avr_ioport_update_irqs(ref Avr_ioport p)
+        {
         //	avr_t * avr = p->io.avr;
         //	uint8_t ddr = avr->data[p->r_ddr];
         //	// Set the PORT value if the pin is marked as output
@@ -134,7 +128,7 @@ namespace SimulIDE.src.simavr.sim {
         //		for (int i = 0; i < 8; i++)
         //			avr_raise_irq(avr->io[port_io].irq + i, (avr->data[p->r_port] >> i) & 1);
         // 	}
-        //}
+        }
 
         public static void Avr_ioport_write(Avr avr, uint addr,byte v,object param)
         {
@@ -142,48 +136,37 @@ namespace SimulIDE.src.simavr.sim {
 
         	if (avr.data[addr] != v)
                 Console.WriteLine("** PORT%c(%02x) = %02x\r\n", p.name, addr, v);
-
-        	avr_core_watch_write(avr, addr, v);
-        	avr_raise_irq(p->io.irq + IOPORT_IRQ_REG_PORT, v);
-        	avr_ioport_update_irqs(p);
+        	Sim_core.Avr_core_watch_write(avr, addr, v);
+        	Sim_irq.Avr_raise_irq(p.io.irq[IOPORT_IRQ_REG_PORT], v);
+            Avr_ioport_update_irqs(ref p);
         }
 
         ///*
         // * This is a reasonably new behaviour for the io-ports. Writing 1's to the PIN register
         // * toggles the PORT equivalent bit (regardless of direction
         // */
-        //static void
-        //avr_ioport_pin_write(
-        //		struct avr_t * avr,
-        //		avr_io_addr_t addr,
-        //		uint8_t v,
-        //		void * param)
-        //{
-        //	avr_ioport_t * p = (avr_ioport_t *)param;
-
-        //	avr_ioport_write(avr, p->r_port, avr->data[p->r_port] ^ v, param);
-        //}
+        public static void Avr_ioport_pin_write(Avr avr, uint addr,byte v,object param)
+        {
+        	Avr_ioport p = (Avr_ioport)param;
+        	Avr_ioport_write(avr, p.r_port, (byte)(avr.data[p.r_port]^v), param);
+        }
 
         ///*
         // * This is a the callback for the DDR register. There is nothing much to do here, apart
         // * from triggering an IRQ in case any 'client' code is interested in the information,
         // * and restoring all PIN bits marked as output to PORT values.
         // */
-        //static void
-        //avr_ioport_ddr_write(
-        //		struct avr_t * avr,
-        //		avr_io_addr_t addr,
-        //		uint8_t v,
-        //		void * param)
-        //{
-        //	avr_ioport_t * p = (avr_ioport_t *)param;
+        public static void Avr_ioport_ddr_write(Avr avr,uint addr,byte v,object param)
+        {
+        	Avr_ioport p = (Avr_ioport)param;
 
-        //	D(if (avr->data[addr] != v) printf("** DDR%c(%02x) = %02x\r\n", p->name, addr, v);)
-        //	avr_raise_irq(p->io.irq + IOPORT_IRQ_DIRECTION_ALL, v);
-        //	avr_core_watch_write(avr, addr, v);
+        	if (avr.data[addr] != v)
+                Console.WriteLine("** DDR%c(%02x) = %02x\r\n", p.name, addr, v);
+        	//Avr_raise_irq(p.io.irq + IOPORT_IRQ_DIRECTION_ALL, v);
+        	//Avr_core_watch_write(avr, addr, v);
 
-        //	avr_ioport_update_irqs(p);
-        //}
+        	//Avr_ioport_update_irqs(p);
+        }
 
         ///*
         // * this is our "main" pin change callback, it can be triggered by either the
@@ -361,10 +344,10 @@ namespace SimulIDE.src.simavr.sim {
         	for (int i = 0; i < IOPORT_IRQ_COUNT; i++)
         		p.io.irq[i].flags |= Sim_irq.IRQ_FLAG_FILTERED;
 
-        	Sim_io.Avr_register_io_write(avr, p.r_port, avr_ioport_write, p);
-            Sim_io.Avr_register_io_read(avr, p.r_pin, avr_ioport_read, p);
-            Sim_io.Avr_register_io_write(avr, p.r_pin, avr_ioport_pin_write, p);
-            Sim_io.Avr_register_io_write(avr, p.r_ddr, avr_ioport_ddr_write, p);
+        	Sim_io.Avr_register_io_write(avr, p.r_port, Avr_ioport_write, p);
+            Sim_io.Avr_register_io_read(avr, p.r_pin, Avr_ioport_read, p);
+            Sim_io.Avr_register_io_write(avr, p.r_pin, Avr_ioport_pin_write, p);
+            Sim_io.Avr_register_io_write(avr, p.r_ddr, Avr_ioport_ddr_write, p);
         }
 
 

@@ -55,31 +55,21 @@ namespace SimulIDE.src.simavr.sim
             avr.io_ports.Enqueue(io);
         }
 
-//        void
-//        avr_register_io_read(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
-//                avr_io_read_t readp,
-//                void* param)
-//        {
-//            avr_io_addr_t a = AVR_DATA_TO_IO(addr);
-//            if (avr->io[a].r.param || avr->io[a].r.c)
-//            {
-//                if (avr->io[a].r.param != param || avr->io[a].r.c != readp)
-//                {
-//                    AVR_LOG(avr, LOG_ERROR,
-//                            "IO: %s(): Already registered, refusing to override.\n",
-//                            __func__);
-//                    AVR_LOG(avr, LOG_ERROR,
-//                            "IO: %s(%04x : %p/%p): %p/%p\n",
-//                            __func__, a,
-//                            avr->io[a].r.c, avr->io[a].r.param, readp, param);
+        public static void Avr_register_io_read(Avr avr,uint addr,Avr_io_read_function readp,object param)
+        {
+            uint a = Sim_Avr.AVR_DATA_TO_IO(addr);
+            if (avr.io[a].r.param!=null || avr.io[a].r.c!=null)
+            {
+                if (avr.io[a].r.param != param || avr.io[a].r.c != readp)
+                {
+//                    AVR_LOG(avr, LOG_ERROR,"IO: %s(): Already registered, refusing to override.\n",__func__);
+//                    AVR_LOG(avr, LOG_ERROR,"IO: %s(%04x : %p/%p): %p/%p\n",__func__, a,avr->io[a].r.c, avr->io[a].r.param, readp, param);
 //                    abort();
-//                }
-//            }
-//            avr->io[a].r.param = param;
-//            avr->io[a].r.c = readp;
-//        }
+                }
+            }
+            avr.io[a].r.param = param;
+            avr.io[a].r.c = readp;
+        }
 
 //        static void
 //        _avr_io_mux_write(
@@ -97,7 +87,7 @@ namespace SimulIDE.src.simavr.sim
 //            }
 //        }
 
-        public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object[] param)
+        public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object param)
         {
             uint a =(UInt16) Sim_Avr.AVR_DATA_TO_IO(addr);
 

@@ -310,23 +310,25 @@ namespace SimulIDE.src.simavr.sim
         //	avr->data[addr] = v;
         }
 
-        //uint8_t avr_core_watch_read(avr_t *avr, uint16_t addr)
-        //{
-        //	if (addr > avr->ramend) {
-        //		AVR_LOG(avr, LOG_ERROR, FONT_RED
-        //				"CORE: *** Invalid read address "
-        //				"PC=%04x SP=%04x O=%04x Address %04x out of ram (%04x)\n"
-        //				FONT_DEFAULT,
-        //				avr->pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr->pc), addr, avr->ramend);
-        //		crash(avr);
-        //	}
+        public static byte Avr_core_watch_read(Avr avr, uint addr)
+        {
+        	if (addr > avr.ramend)
+            {
+//        		AVR_LOG(avr, LOG_ERROR, FONT_RED
+//        				"CORE: *** Invalid read address "
+//        				"PC=%04x SP=%04x O=%04x Address %04x out of ram (%04x)\n"
+//        				FONT_DEFAULT,
+//        				avr->pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr->pc), addr, avr->ramend);
+//        		crash(avr);
+        	}
 
-        //	if (avr->gdb) {
-        //		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_READ);
-        //	}
+//        	if (avr.gdb)
+//            {
+//        		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_READ);
+//        	}
 
-        //	return avr->data[addr];
-        //}
+        	return avr.data[addr];
+        }
 
         ///*
         // * Set a register (r < 256)

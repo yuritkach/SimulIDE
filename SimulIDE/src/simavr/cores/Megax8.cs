@@ -14,8 +14,58 @@ namespace SimulIDE.src.simavr.cores
     {
         public Megax8()
         {
-            core = new Avr();
+            InitStructure(); 
             Mx8_init(core);
+        }
+
+        private void InitPortB()
+        {
+            portb = new Avr_ioport();
+            portb.name = 'B';
+            portb.r_port = Constants.PORTB;
+            portb.r_ddr = Constants.DDRB;
+            portb.r_pin = Constants.PINB;
+            portb.pcint = new Avr_int_vector();
+            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE0);
+            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF0);
+            portb.pcint.vector = Constants.PCINT0_vect;
+            portb.r_pcint = Constants.PCMSK0;
+        }
+        private void InitPortC()
+        {
+            portc = new Avr_ioport();
+            portc.name = 'C';
+            portc.r_port = Constants.PORTC;
+            portc.r_ddr = Constants.DDRC;
+            portc.r_pin = Constants.PINC;
+            portc.pcint = new Avr_int_vector();
+            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE1);
+            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF1);
+            portc.pcint.vector = Constants.PCINT1_vect;
+            portc.r_pcint = Constants.PCMSK1;
+        }
+        private void InitPortD()
+        {
+            portd = new Avr_ioport();
+            portd.name = 'D';
+            portd.r_port = Constants.PORTD;
+            portd.r_ddr = Constants.DDRD;
+            portd.r_pin = Constants.PIND;
+            portd.pcint = new Avr_int_vector();
+            portd.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE2);
+            portd.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF2);
+            portd.pcint.vector = Constants.PCINT2_vect;
+            portd.r_pcint = Constants.PCMSK2;
+        }
+
+        protected void InitStructure()
+        {
+            core = new Avr();
+            eeprom = new Avr_eeprom();
+            InitPortB();
+            InitPortC();
+            InitPortD();
+
         }
 
         protected override void InitConstants()
@@ -33,7 +83,6 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void Avr_eeprom_init(Avr core)
         {
-            eeprom = new Avr_eeprom();
             Avr_eeprom.Avr_eeprom_declare((Mcu)this, Constants.EE_READY_vect);
         }
 
@@ -44,9 +93,9 @@ namespace SimulIDE.src.simavr.cores
 //            Avr_flash_init(avr, &mcu->selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
-            Avr_ioports.Avr_ioport_init(avr, ref this.portb);
-            Avr_ioports.Avr_ioport_init(avr, ref this.portc);
-            Avr_ioports.Avr_ioport_init(avr, ref this.portd);
+            Avr_ioports.Avr_ioport_init(avr, ref portb);
+            Avr_ioports.Avr_ioport_init(avr, ref portc);
+            Avr_ioports.Avr_ioport_init(avr, ref portd);
 //            avr_uart_init(avr, &mcu->uart);
 //            avr_acomp_init(avr, &mcu->acomp);
 //            avr_adc_init(avr, &mcu->adc);
@@ -91,33 +140,7 @@ namespace SimulIDE.src.simavr.cores
         //		AVR_EXTINT_DECLARE(0, 'D', 2),
         //		AVR_EXTINT_DECLARE(1, 'D', 3),
         //	},
-        //	.portb = {
-        //		.name = 'B', .r_port = PORTB, .r_ddr = DDRB, .r_pin = PINB,
-        //		.pcint = {
-        //			.enable = AVR_IO_REGBIT(PCICR, PCIE0),
-        //			.raised = AVR_IO_REGBIT(PCIFR, PCIF0),
-        //			.vector = PCINT0_vect,
-        //		},
-        //		.r_pcint = PCMSK0,
-        //	},
-        //	.portc = {
-        //		.name = 'C', .r_port = PORTC, .r_ddr = DDRC, .r_pin = PINC,
-        //		.pcint = {
-        //			.enable = AVR_IO_REGBIT(PCICR, PCIE1),
-        //			.raised = AVR_IO_REGBIT(PCIFR, PCIF1),
-        //			.vector = PCINT1_vect,
-        //		},
-        //		.r_pcint = PCMSK1,
-        //	},
-        //	.portd = {
-        //		.name = 'D', .r_port = PORTD, .r_ddr = DDRD, .r_pin = PIND,
-        //		.pcint = {
-        //			.enable = AVR_IO_REGBIT(PCICR, PCIE2),
-        //			.raised = AVR_IO_REGBIT(PCIFR, PCIF2),
-        //			.vector = PCINT2_vect,
-        //		},
-        //		.r_pcint = PCMSK2,
-        //	},
+        
 
         //	//PRR/PRUSART0, upe=UPE, reg/bit name index=0, no 'C' in RX/TX vector names
         //	AVR_UART_DECLARE(PRR, PRUSART0, UPE, 0, ),

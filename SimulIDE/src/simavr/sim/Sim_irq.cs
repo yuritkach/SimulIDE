@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.simavr.cores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,22 +49,15 @@ namespace SimulIDE.src.simavr.sim
         //struct avr_irq_t;
 
         public delegate void Avr_irq_notify(ref Avr_irq irq, UInt32 value, object[] param);
-//        typedef void (* avr_irq_notify_t) (
+    //        typedef void (* avr_irq_notify_t) (
 
-        //        struct avr_irq_t * irq,
-        //		uint32_t value,
+    //        struct avr_irq_t * irq,
+    //		uint32_t value,
 
-        //        void* param);
+    //        void* param);
 
 
-        //        enum {
-        //            IRQ_FLAG_NOT = (1 << 0),    //!< change polarity of the IRQ
-        //            IRQ_FLAG_FILTERED = (1 << 1),   //!< do not "notify" if "value" is the same as previous raise
-        //            IRQ_FLAG_ALLOC = (1 << 2), //!< this irq structure was malloced via avr_alloc_irq
-        //            IRQ_FLAG_INIT = (1 << 3), //!< this irq hasn't been used yet
-        //            IRQ_FLAG_FLOATING = (1 << 4), //!< this 'pin'/signal is floating
-        //            IRQ_FLAG_USER = (1 << 5), //!< Can be used by irq users
-        //        };
+        
 
         //        /*
         //         * IRQ Pool structure
@@ -120,11 +114,9 @@ namespace SimulIDE.src.simavr.sim
     //        avr_irq_set_flags(
     //                avr_irq_t* irq,
     //                uint8_t flags);
-    //        //! 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value'
-    //        void
-    //        avr_raise_irq(
-    //                avr_irq_t* irq,
-    //                uint32_t value);
+    
+    /* 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value' */
+    
     //        //! Same as avr_raise_irq(), but also allow setting the float status
     //        void
     //        avr_raise_irq_float(
@@ -156,7 +148,7 @@ namespace SimulIDE.src.simavr.sim
 
     class Sim_irq
     {
-   
+
         ///*
         // * Internal IRQ system
         // *
@@ -309,12 +301,8 @@ namespace SimulIDE.src.simavr.sim
         //    }
         //}
 
-        //void
-        //avr_raise_irq_float(
-        //        avr_irq_t* irq,
-        //        uint32_t value,
-        //        int floating)
-        //{
+        public static void Avr_raise_irq_float(Avr_irq irq,uint value,int floating)
+        {
         //    if (!irq)
         //        return;
         //    uint32_t output = (irq->flags & IRQ_FLAG_NOT) ? !value : value;
@@ -345,15 +333,13 @@ namespace SimulIDE.src.simavr.sim
         //    // can themselves compare for old/new values between their parameter
         //    // they are passed (new value) and the previous irq->value
         //    irq->value = output;
-        //}
+        }
 
-        //void
-        //avr_raise_irq(
-        //        avr_irq_t* irq,
-        //        uint32_t value)
-        //{
-        //    avr_raise_irq_float(irq, value, !!(irq->flags & IRQ_FLAG_FLOATING));
-        //}
+        /* 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value' */
+        public static void Avr_raise_irq(Avr_irq irq,uint value)
+        {
+            Avr_raise_irq_float(irq, value, (irq.flags & IRQ_FLAG_FLOATING));
+        }
 
         //void
         //avr_connect_irq(
