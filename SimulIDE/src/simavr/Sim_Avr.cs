@@ -531,7 +531,7 @@ namespace SimulIDE.src.simavr
                    as interrupt_state tells us all we really need to know, here
                    a simple check here may be cheaper than a call not needed. */
                    if (avr.interrupt_state!=0)
-                        Avr_service_interrupts(avr);
+                        Sim_interrupts.Avr_service_interrupts(avr);
               }
         }
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace SimulIDE.src.simavr.sim
 {
     public class Sim_core:Sim_Avr
@@ -214,7 +216,8 @@ namespace SimulIDE.src.simavr.sim
 
         //int donttrace = 0;
 
-        //#define STATE(_f, args...) { \
+        public static void STATE(object param)
+        { 
         //	if (avr->trace) {\
         //		if (avr->trace_data->codeline && avr->trace_data->codeline[avr->pc>>1]) {\
         //			const char * symn = avr->trace_data->codeline[avr->pc>>1]->symbol; \
@@ -228,7 +231,9 @@ namespace SimulIDE.src.simavr.sim
         //		} else \
         //			printf("%s: %04x: " _f, __FUNCTION__, avr->pc, ## args);\
         //		}\
-        //	}
+        }
+
+
         //#define SREG() if (avr->trace && donttrace == 0) {\
         //	printf("%04x: \t\t\t\t\t\t\t\t\tSREG = ", avr->pc); \
         //	for (int _sbi = 0; _sbi < 8; _sbi++)\
@@ -236,16 +241,19 @@ namespace SimulIDE.src.simavr.sim
         //	printf("\n");\
         //}
 
-        //void crash(avr_t* avr)
-        //{
-        //	DUMP_REG();
-        //	printf("*** CYCLE %" PRI_avr_cycle_count "PC %04x\n", avr->cycle, avr->pc);
+        public static void Crash(Avr avr)
+        {
+            //	DUMP_REG();
+            Console.WriteLine("*** CYCLE: %04x PC: %04x\n", avr.cycle, avr.PC);
+            
 
-        //	for (int i = OLD_PC_SIZE-1; i > 0; i--) {
-        //		int pci = (avr->trace_data->old_pci + i) & 0xf;
-        //		printf(FONT_RED "*** %04x: %-25s RESET -%d; sp %04x\n" FONT_DEFAULT,
-        //				avr->trace_data->old[pci].pc, avr->trace_data->codeline ? avr->trace_data->codeline[avr->trace_data->old[pci].pc>>1]->symbol : "unknown", OLD_PC_SIZE-i, avr->trace_data->old[pci].sp);
-        //	}
+//        	for (int i = OLD_PC_SIZE-1; i > 0; i--) {
+//        		int pci = (avr.trace_data.old_pci + i) & 0xf;
+//                Console.WriteLine("*** %04x: %-25s RESET -%d; sp %04x\n",
+//        				avr.trace_data.old[pci].pc, avr.trace_data.codeline ? 
+//                          avr.trace_data.codeline[avr.trace_data.old[pci].pc>>1]->symbol : 
+//                          "unknown", OLD_PC_SIZE-i, avr.trace_data.old[pci].sp);
+        }
 
         //	printf("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr->ramend, avr->ramend - _avr_sp_get(avr));
         //	DUMP_STACK();
@@ -265,13 +273,10 @@ namespace SimulIDE.src.simavr.sim
         //}
         //#endif
 
-        //static inline uint16_t
-        //_avr_flash_read16le(
-        //	avr_t * avr,
-        //	avr_flashaddr_t addr)
-        //{
-        //	return(avr->flash[addr] | (avr->flash[addr + 1] << 8));
-        //}
+        protected static ushort _avr_flash_read16le(Avr avr,uint addr)
+        {
+        	return (ushort) (avr.flash[addr] | (avr.flash[addr + 1] << 8));
+        }
 
         public static void Avr_core_watch_write(Avr avr, uint addr, byte v)
         {
@@ -499,8 +504,8 @@ namespace SimulIDE.src.simavr.sim
         ///*
         // * Called when an invalid opcode is decoded
         // */
-        //static void _avr_invalid_opcode(avr_t * avr)
-        //{
+        protected static void _avr_invalid_opcode(Avr avr)
+        {
         //#if CONFIG_SIMAVR_TRACE
         //	printf( FONT_RED "*** %04x: %-25s Invalid Opcode SP=%04x O=%04x \n" FONT_DEFAULT,
         //			avr->pc, avr->trace_data->codeline[avr->pc>>1]->symbol, _avr_sp_get(avr), _avr_flash_read16le(avr, avr->pc));
@@ -508,7 +513,7 @@ namespace SimulIDE.src.simavr.sim
         //	AVR_LOG(avr, LOG_ERROR, FONT_RED "CORE: *** %04x: Invalid Opcode SP=%04x O=%04x \n" FONT_DEFAULT,
         //			avr->pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr->pc));
         //#endif
-        //}
+        }
 
         //#if CONFIG_SIMAVR_TRACE
         ///*
@@ -774,24 +779,27 @@ namespace SimulIDE.src.simavr.sim
             //run_one_again:
 
             // Ensure we don't crash simavr due to a bad instruction reading past the end of the flash.
-        //    if( unlikely(avr->pc >= avr->flashend) )
-        //    {
-        //        STATE("CRASH\n");
-        //        crash(avr);
-        //        return 0;
-        //    }
+            if(avr.PC >= avr.flashend) 
+            {
+                STATE("CRASH\n");
+                Crash(avr);
+                return 0;
+            }
 
-        //    uint32_t		opcode = _avr_flash_read16le(avr, avr->pc);
+            uint opcode = _avr_flash_read16le(avr, avr.PC);
             uint new_pc = avr.PC + 2;	// future "default" pc
-            int cycle = 1;
+            ulong cycle = 1;
 
-        //	switch (opcode & 0xf000) {
-        //		case 0x0000: {
-        //			switch (opcode) {
-        //				case 0x0000: {	// NOP
-        //					STATE("nop\n");
-        //				}	break;
-        //				default: {
+        	switch (opcode & 0xf000)
+            {
+        		case 0x0000:
+                {
+        			switch (opcode)
+                    {
+        				case 0x0000: {	// NOP
+        					STATE("nop\n");
+        				}	break;
+        				default: {
         //					switch (opcode & 0xfc00) {
         //						case 0x0400: {	// CPC -- Compare with carry -- 0000 01rd dddd rrrr
         //							get_vd5_vr5(opcode);
@@ -881,11 +889,12 @@ namespace SimulIDE.src.simavr.sim
         //								default: _avr_invalid_opcode(avr);
         //							}
         //					}
-        //				}
-        //			}
-        //		}	break;
+        				} break;
+        			} 
+        		}	break;
 
-        //		case 0x1000: {
+        		case 0x1000:
+                {
         //			switch (opcode & 0xfc00) {
         //				case 0x1800: {	// SUB -- Subtract without carry -- 0001 10rd dddd rrrr
         //					get_vd5_vr5(opcode);
@@ -928,9 +937,10 @@ namespace SimulIDE.src.simavr.sim
         //				}	break;
         //				default: _avr_invalid_opcode(avr);
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0x2000: {
+        		case 0x2000:
+                {
         //			switch (opcode & 0xfc00) {
         //				case 0x2000: {	// AND -- Logical AND -- 0010 00rd dddd rrrr
         //					get_vd5_vr5(opcode);
@@ -972,54 +982,55 @@ namespace SimulIDE.src.simavr.sim
         //				}	break;
         //				default: _avr_invalid_opcode(avr);
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0x3000: {	// CPI -- Compare Immediate -- 0011 kkkk hhhh kkkk
+        		case 0x3000:   // CPI -- Compare Immediate -- 0011 kkkk hhhh kkkk
+                { 
         //			get_vh4_k8(opcode);
         //			uint8_t res = vh - k;
         //			STATE("cpi %s[%02x], 0x%02x\n", avr_regname(h), vh, k);
         //			_avr_flags_sub_zns(avr, res, vh, k);
         //			SREG();
-        //		}	break;
+        		}	break;
 
-        //		case 0x4000: {	// SBCI -- Subtract Immediate With Carry -- 0100 kkkk hhhh kkkk
+        		case 0x4000: {	// SBCI -- Subtract Immediate With Carry -- 0100 kkkk hhhh kkkk
         //			get_vh4_k8(opcode);
         //			uint8_t res = vh - k - avr->sreg[S_C];
         //			STATE("sbci %s[%02x], 0x%02x = %02x\n", avr_regname(h), vh, k, res);
         //			_avr_set_r(avr, h, res);
         //			_avr_flags_sub_Rzns(avr, res, vh, k);
         //			SREG();
-        //		}	break;
+        		}	break;
 
-        //		case 0x5000: {	// SUBI -- Subtract Immediate -- 0101 kkkk hhhh kkkk
+        		case 0x5000: {	// SUBI -- Subtract Immediate -- 0101 kkkk hhhh kkkk
         //			get_vh4_k8(opcode);
         //			uint8_t res = vh - k;
         //			STATE("subi %s[%02x], 0x%02x = %02x\n", avr_regname(h), vh, k, res);
         //			_avr_set_r(avr, h, res);
         //			_avr_flags_sub_zns(avr, res, vh, k);
         //			SREG();
-        //		}	break;
+        		}	break;
 
-        //		case 0x6000: {	// ORI aka SBR -- Logical OR with Immediate -- 0110 kkkk hhhh kkkk
+        		case 0x6000: {	// ORI aka SBR -- Logical OR with Immediate -- 0110 kkkk hhhh kkkk
         //			get_vh4_k8(opcode);
         //			uint8_t res = vh | k;
         //			STATE("ori %s[%02x], 0x%02x\n", avr_regname(h), vh, k);
         //			_avr_set_r(avr, h, res);
         //			_avr_flags_znv0s(avr, res);
         //			SREG();
-        //		}	break;
+        		}	break;
 
-        //		case 0x7000: {	// ANDI	-- Logical AND with Immediate -- 0111 kkkk hhhh kkkk
+        		case 0x7000: {	// ANDI	-- Logical AND with Immediate -- 0111 kkkk hhhh kkkk
         //			get_vh4_k8(opcode);
         //			uint8_t res = vh & k;
         //			STATE("andi %s[%02x], 0x%02x\n", avr_regname(h), vh, k);
         //			_avr_set_r(avr, h, res);
         //			_avr_flags_znv0s(avr, res);
         //			SREG();
-        //		}	break;
+        		}	break;
 
-        //		case 0xa000:
-        //		case 0x8000: {
+        		case 0xa000:
+        		case 0x8000: {
         //			/*
         //			 * Load (LDD/STD) store instructions
         //			 *
@@ -1057,9 +1068,9 @@ namespace SimulIDE.src.simavr.sim
         //				}	break;
         //				default: _avr_invalid_opcode(avr);
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0x9000: {
+        		case 0x9000: {
         //			/* this is an annoying special case, but at least these lines handle all the SREG set/clear opcodes */
         //			if ((opcode & 0xff0f) == 0x9408) {
         //				get_sreg_bit(opcode);
@@ -1457,9 +1468,9 @@ namespace SimulIDE.src.simavr.sim
         //					}
         //				}	break;
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0xb000: {
+        		case 0xb000: {
         //			switch (opcode & 0xf800) {
         //				case 0xb800: {	// OUT A,Rr -- 1011 1AAd dddd AAAA
         //					get_d5_a6(opcode);
@@ -1473,17 +1484,17 @@ namespace SimulIDE.src.simavr.sim
         //				}	break;
         //				default: _avr_invalid_opcode(avr);
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0xc000: {	// RJMP -- 1100 kkkk kkkk kkkk
+        		case 0xc000: {	// RJMP -- 1100 kkkk kkkk kkkk
         //			get_o12(opcode);
         //			STATE("rjmp .%d [%04x]\n", o >> 1, new_pc + o);
         //			new_pc = (new_pc + o) % (avr->flashend+1);
         //			cycle++;
         //			TRACE_JUMP();
-        //		}	break;
+        		}	break;
 
-        //		case 0xd000: {	// RCALL -- 1101 kkkk kkkk kkkk
+        		case 0xd000: {	// RCALL -- 1101 kkkk kkkk kkkk
         //			get_o12(opcode);
         //			STATE("rcall .%d [%04x]\n", o >> 1, new_pc + o);
         //			cycle += _avr_push_addr(avr, new_pc);
@@ -1493,15 +1504,15 @@ namespace SimulIDE.src.simavr.sim
         //				TRACE_JUMP();
         //				STACK_FRAME_PUSH();
         //			}
-        //		}	break;
+        		}	break;
 
-        //		case 0xe000: {	// LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
+        		case 0xe000: {	// LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
         //			get_h4_k8(opcode);
         //			STATE("ldi %s, 0x%02x\n", avr_regname(h), k);
         //			_avr_set_r(avr, h, k);
-        //		}	break;
+        		}	break;
 
-        //		case 0xf000: {
+        		case 0xf000: {
         //			switch (opcode & 0xfe00) {
         //				case 0xf000:
         //				case 0xf200:
@@ -1555,23 +1566,23 @@ namespace SimulIDE.src.simavr.sim
         //				}	break;
         //				default: _avr_invalid_opcode(avr);
         //			}
-        //		}	break;
+        		}	break;
 
-        //		default: _avr_invalid_opcode(avr);
+        		default: _avr_invalid_opcode(avr); break;
 
-        //	}
-        //    avr->cyclesDone = cycle;
-        //    ////avr->cycle += cycle;
+        	}
+            avr.cyclesDone = cycle;
+            ////avr->cycle += cycle;
 
-        //    ////
-        //    /*if( (avr->state == cpu_Running)
-        //     && (avr->run_cycle_count > cycle)
-        //     && (avr->interrupt_state == 0))
-        //    {
-        //        avr->run_cycle_count -= cycle;
-        //        avr->pc = new_pc;
-        //        goto run_one_again;
-        //    }*/
+            ////
+            /*if( (avr->state == cpu_Running)
+             && (avr->run_cycle_count > cycle)
+             && (avr->interrupt_state == 0))
+            {
+                avr->run_cycle_count -= cycle;
+                avr->pc = new_pc;
+                goto run_one_again;
+            }*/
 
             return new_pc;
         }
