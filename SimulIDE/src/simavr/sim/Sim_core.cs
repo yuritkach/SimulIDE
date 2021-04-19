@@ -249,7 +249,7 @@ namespace SimulIDE.src.simavr.sim
         	return (ushort) (avr.flash[addr] | (avr.flash[addr + 1] << 8));
         }
 
-        public static void Avr_core_watch_write(Avr avr, uint addr, byte v)
+        public static void Avr_core_watch_write(Avr avr, uint addr, uint v)
         {
         //	if (addr > avr.ramend) {
         //		AVR_LOG(avr, LOG_ERROR, FONT_RED
@@ -311,7 +311,7 @@ namespace SimulIDE.src.simavr.sim
         // * if it's an IO register (> 31) also (try to) call any callback that was
         // * registered to track changes to that register.
         // */
-        public static void _avr_set_r(Avr avr, ushort r, ushort v)
+        public static void _avr_set_r(Avr avr, ushort r, uint v)
         {
         //	REG_TOUCH(avr, r);
 
@@ -368,7 +368,7 @@ namespace SimulIDE.src.simavr.sim
         ///*
         // * Set any address to a value; split between registers and SRAM
         // */
-        public static void _avr_set_ram(Avr avr, ushort addr, byte v)
+        public static void _avr_set_ram(Avr avr, ushort addr, uint v)
         {
         	if (addr < MAX_IOs + 31)
         		_avr_set_r(avr, addr, v);
@@ -425,28 +425,27 @@ namespace SimulIDE.src.simavr.sim
         //	return res;
         //}
 
-        //int _avr_push_addr(avr_t * avr, avr_flashaddr_t addr)
-        //{
-        //	uint16_t sp = _avr_sp_get(avr);
-        //	addr >>= 1;
-        //	for (int i = 0; i < avr.address_size; i++, addr >>= 8, sp--) {
-        //		_avr_set_ram(avr, sp, addr);
-        //	}
-        //	_avr_sp_set(avr, sp);
-        //	return avr.address_size;
-        //}
+        public static int _avr_push_addr(Avr avr, uint addr)
+        {
+        	ushort sp = _avr_sp_get(avr);
+        	addr >>= 1;
+        	for (int i = 0; i < avr.address_size; i++, addr >>= 8, sp--) {
+        		_avr_set_ram(avr, sp, addr);
+        	}
+        	_avr_sp_set(avr, sp);
+        	return avr.address_size;
+        }
 
-        //avr_flashaddr_t _avr_pop_addr(avr_t * avr)
-        //{
-        //	uint16_t sp = _avr_sp_get(avr) + 1;
-        //	avr_flashaddr_t res = 0;
-        //	for (int i = 0; i < avr.address_size; i++, sp++) {
-        //		res = (res << 8) | _avr_get_ram(avr, sp);
-        //	}
-        //	res <<= 1;
-        //	_avr_sp_set(avr, sp -1);
-        //	return res;
-        //}
+        public static uint _avr_pop_addr(Avr avr)
+        {
+        	ushort sp = (ushort)(_avr_sp_get(avr) + 1);
+        	uint res = 0;
+        	for (int i = 0; i < avr.address_size; i++, sp++)
+                res = (res << 8) | _avr_get_ram(avr, sp);
+        	res <<= 1;
+        	_avr_sp_set(avr, (ushort)(sp -1));
+        	return res;
+        }
 
         ///*
         // * "Pretty" register names
@@ -523,31 +522,6 @@ namespace SimulIDE.src.simavr.sim
         ///*
         // * Add a "jump" address to the jump trace buffer
         // */
-        //#if CONFIG_SIMAVR_TRACE
-        //#define TRACE_JUMP()\
-        //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
-        //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
-        //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
-
-        //#if AVR_STACK_WATCH
-        //#define STACK_FRAME_PUSH()\
-        //	avr.trace_data->stack_frame[avr.trace_data->stack_frame_index].pc = avr.pc;\
-        //	avr.trace_data->stack_frame[avr.trace_data->stack_frame_index].sp = _avr_sp_get(avr);\
-        //	avr.trace_data->stack_frame_index++;
-        //#define STACK_FRAME_POP()\
-        //	if (avr.trace_data->stack_frame_index > 0) \
-        //		avr.trace_data->stack_frame_index--;
-        //#else
-        //#define STACK_FRAME_PUSH()
-        //#define STACK_FRAME_POP()
-        //#endif
-        //#else /* CONFIG_SIMAVR_TRACE */
-
-        //#define TRACE_JUMP()
-        //#define STACK_FRAME_PUSH()
-        //#define STACK_FRAME_POP()
-
-        //#endif
 
         /****************************************************************************\
          *
@@ -1042,53 +1016,60 @@ namespace SimulIDE.src.simavr.sim
                                 avr.state = CoreStates.cpu_Sleeping;
                              }	break;
                              case 0x9598: { // BREAK -- 1001 0101 1001 1000
-                                //					STATE("break\n");
-                                //					if (avr.gdb) {
-                                //						// if gdb is on, we break here as in here
-                                //						// and we do so until gdb restores the instruction
-                                //						// that was here before
-                                //						avr.state = cpu_StepDone;
-                                //						new_pc = avr.pc;
-                                //						cycle = 0;
-                                //					}
+                                STATE(avr,"break\n");
+                                if (avr.gdb!=null)
+                                {
+                                    // if gdb is on, we break here as in here
+                                    // and we do so until gdb restores the instruction
+                                    // that was here before
+                                    avr.state = CoreStates.cpu_StepDone;
+                                    new_pc = avr.PC;
+                                    cycle = 0;
+                                }
                              }	break;
                              case 0x95a8: { // WDR -- Watchdog Reset -- 1001 0101 1010 1000
-                                //					STATE("wdr\n");
-                                //					avr_ioctl(avr, AVR_IOCTL_WATCHDOG_RESET, 0);
+                                STATE(avr,"wdr\n");
+                                Sim_io.Avr_ioctl(avr, Avr_watchdog.AVR_IOCTL_WATCHDOG_RESET, 0);
                              }	break;
                              case 0x95e8: { // SPM -- Store Program Memory -- 1001 0101 1110 1000
-                                //					STATE("spm\n");
-                                //					avr_ioctl(avr, AVR_IOCTL_FLASH_SPM, 0);
+                                STATE(avr,"spm\n");
+                                Sim_io.Avr_ioctl(avr, Avr_flash.AVR_IOCTL_FLASH_SPM, 0);
                              }	break;
                              case 0x9409:   // IJMP -- Indirect jump -- 1001 0100 0000 1001
                              case 0x9419:   // EIJMP -- Indirect jump -- 1001 0100 0001 1001   bit 4 is "indirect"
                              case 0x9509:   // ICALL -- Indirect Call to Subroutine -- 1001 0101 0000 1001
                              case 0x9519: { // EICALL -- Indirect Call to Subroutine -- 1001 0101 0001 1001   bit 8 is "push pc"
-                                //					int e = opcode & 0x10;
-                                //					int p = opcode & 0x100;
-                                //					if (e && !avr.eind)
-                                //						_avr_invalid_opcode(avr);
-                                //					uint32_t z = avr.data[R_ZL] | (avr.data[R_ZH] << 8);
-                                //					if (e)
-                                //						z |= avr.data[avr.eind] << 16;
-                                //					STATE("%si%s Z[%04x]\n", e?"e":"", p?"call":"jmp", z << 1);
-                                //					if (p)
-                                //						cycle += _avr_push_addr(avr, new_pc) - 1;
-                                //					new_pc = z << 1;
-                                //					cycle++;
-                                //					TRACE_JUMP();
-                             }	break;
+                                uint e = opcode & 0x10;
+                                uint p = opcode & 0x100;
+                                if (e!=0 && avr.eind!=0)
+                                    _avr_invalid_opcode(avr);
+                                uint z = (uint)(avr.data[R_ZL] | (avr.data[R_ZH] << 8));
+                                if (e!=0)
+                                    z |= (uint)(avr.data[avr.eind] << 16);
+                                STATE(avr,"%si%s Z[%04x]\n", e!=0?"e":"", p!=0?"call":"jmp", z << 1);
+                                if (p!=0)
+                                    cycle += (uint)(_avr_push_addr(avr, new_pc) - 1);
+                                new_pc = z << 1;
+                                cycle++;
+                                avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
+                                avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
+                                avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE-1);
+
+                             }  break;
                              case 0x9518: {  // RETI -- Return from Interrupt -- 1001 0101 0001 1000
-                                       //					avr_sreg_set(avr, S_I, 1);
-                                       //					avr_interrupt_reti(avr);
+                                avr_sreg_set(avr, S_I, true);
+                                Sim_interrupts.avr_interrupt_reti(avr);
                              } break; //!!!!! continue;
-                             case 0x9508: {	// RET -- Return -- 1001 0101 0000 1000
-                                //					new_pc = _avr_pop_addr(avr);
-                                //					cycle += 1 + avr.address_size;
-                                //					STATE("ret%s\n", opcode & 0x10 ? "i" : "");
-                                //					TRACE_JUMP();
-                                //					STACK_FRAME_POP();
-                             }	break;
+                             case 0x9508: { // RET -- Return -- 1001 0101 0000 1000
+                                new_pc = _avr_pop_addr(avr);
+                                cycle += (ulong)(1 + avr.address_size);
+                                STATE(avr,"ret%s\n", ((opcode & 0x10)!=0) ? "i" : "");
+                                avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
+                                avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
+                                avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE -1);
+                                if (avr.trace_data.stack_frame_index > 0) 
+                                    avr.trace_data.stack_frame_index--;
+                              } break;
                              case 0x95c8: {	// LPM -- Load Program Memory R0 <- (Z) -- 1001 0101 1100 1000
                                 //					uint16_t z = avr.data[R_ZL] | (avr.data[R_ZH] << 8);
                                 //					STATE("lpm %s, (Z[%04x])\n", avr_regname(0), z);
@@ -1320,27 +1301,35 @@ namespace SimulIDE.src.simavr.sim
                                 //							SREG();
                                     }	break;
                                     case 0x940c:
-                                    case 0x940d: {	// JMP -- Long Call to sub, 32 bits -- 1001 010a aaaa 110a
-                                //							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
-                                //							uint16_t x = _avr_flash_read16le(avr, new_pc);
-                                //							a = (a << 16) | x;
-                                //							STATE("jmp 0x%06x\n", a);
-                                //							new_pc = a << 1;
-                                //							cycle += 2;
-                                //							TRACE_JUMP();
-                                    }	break;
+                                    case 0x940d: {  // JMP -- Long Call to sub, 32 bits -- 1001 010a aaaa 110a
+                                                    //							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
+                                                    //							uint16_t x = _avr_flash_read16le(avr, new_pc);
+                                                    //							a = (a << 16) | x;
+                                                    //							STATE("jmp 0x%06x\n", a);
+                                                    //							new_pc = a << 1;
+                                                    //							cycle += 2;
+                                                    //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
+                                                    //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
+                                                    //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
+
+                                                }
+                                                break;
                                     case 0x940e:
-                                    case 0x940f: {	// CALL -- Long Call to sub, 32 bits -- 1001 010a aaaa 111a
-                                //							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
-                                //							uint16_t x = _avr_flash_read16le(avr, new_pc);
-                                //							a = (a << 16) | x;
-                                //							STATE("call 0x%06x\n", a);
-                                //							new_pc += 2;
-                                //							cycle += 1 + _avr_push_addr(avr, new_pc);
-                                //							new_pc = a << 1;
-                                //							TRACE_JUMP();
-                                //							STACK_FRAME_PUSH();
-                                    }	break;
+                                    case 0x940f: {  // CALL -- Long Call to sub, 32 bits -- 1001 010a aaaa 111a
+                                                    //							avr_flashaddr_t a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
+                                                    //							uint16_t x = _avr_flash_read16le(avr, new_pc);
+                                                    //							a = (a << 16) | x;
+                                                    //							STATE("call 0x%06x\n", a);
+                                                    //							new_pc += 2;
+                                                    //							cycle += 1 + _avr_push_addr(avr, new_pc);
+                                                    //							new_pc = a << 1;
+                                                    //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
+                                                    //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
+                                                    //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
+
+                                                    //							STACK_FRAME_PUSH();
+                                                }
+                                                break;
 
                                     default: {
                                         switch (opcode & 0xff00)
@@ -1463,24 +1452,32 @@ namespace SimulIDE.src.simavr.sim
                     }	break;
 
         		case 0xc000: {  // RJMP -- 1100 kkkk kkkk kkkk
-                     //   const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
-                        //			STATE("rjmp .%d [%04x]\n", o >> 1, new_pc + o);
-                        //			new_pc = (new_pc + o) % (avr.flashend+1);
-                        //			cycle++;
-                        //			TRACE_JUMP();
-                    }	break;
+                                //   const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
+                                //			STATE("rjmp .%d [%04x]\n", o >> 1, new_pc + o);
+                                //			new_pc = (new_pc + o) % (avr.flashend+1);
+                                //			cycle++;
+                                //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
+                                //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
+                                //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
+
+                    }
+                    break;
 
         		case 0xd000: {  // RCALL -- 1101 kkkk kkkk kkkk
-                      //  const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
-                        //			STATE("rcall .%d [%04x]\n", o >> 1, new_pc + o);
-                        //			cycle += _avr_push_addr(avr, new_pc);
-                        //			new_pc = (new_pc + o) % (avr.flashend+1);
-                        //			// 'rcall .1' is used as a cheap "push 16 bits of room on the stack"
-                        //			if (o != 0) {
-                        //				TRACE_JUMP();
+                                //  const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
+                                //			STATE("rcall .%d [%04x]\n", o >> 1, new_pc + o);
+                                //			cycle += _avr_push_addr(avr, new_pc);
+                                //			new_pc = (new_pc + o) % (avr.flashend+1);
+                                //			// 'rcall .1' is used as a cheap "push 16 bits of room on the stack"
+                                //			if (o != 0) {
+                                //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
+                                //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
+                                //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
+
                         //				STACK_FRAME_PUSH();
                         //			}
-                    }	break;
+                    }
+                    break;
 
         		case 0xe000: {  // LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
                        // const byte h = 16 + ((o >> 4) & 0xf); \

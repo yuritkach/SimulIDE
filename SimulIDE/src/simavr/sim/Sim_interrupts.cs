@@ -213,12 +213,9 @@ namespace SimulIDE.src.simavr.sim
         //            return NULL;
         //        }
 
-        //        /* this is called uppon RETI. */
-        //        void
-        //        avr_interrupt_reti(
-
-        //        struct avr_t * avr)
-        //{
+        /* this is called uppon RETI. */
+        public static void avr_interrupt_reti(Avr avr)
+        {
         //	avr_int_table_p table = &avr->interrupts;
         //	if (table->running_ptr) {
         //		avr_int_vector_t* vector = table->running[--table->running_ptr];
@@ -230,7 +227,7 @@ namespace SimulIDE.src.simavr.sim
         //                    table->running[table->running_ptr - 1]->vector : 0);
         //    avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
         //            avr_has_pending_interrupts(avr));
-       // }
+        }
 
         ///*
         // * check whether interrupts are pending. If so, check if the interrupt "latency" is reached,

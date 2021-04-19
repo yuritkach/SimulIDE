@@ -269,15 +269,15 @@ namespace SimulIDE.src.simavr
 	// Only used if CONFIG_SIMAVR_TRACE is defined
     public Avr_trace_data trace_data;
 
-// VALUE CHANGE DUMP file (waveforms)
-// this is the VCD file that gets allocated if the
-// firmware that is loaded explicitly asks for a trace
-// to be generated, and allocates it's own symbols
-// using AVR_MMCU_TAG_VCD_TRACE (see avr_mcu_section.h)
-    public Avr_vcd vcd;
+        // VALUE CHANGE DUMP file (waveforms)
+        // this is the VCD file that gets allocated if the
+        // firmware that is loaded explicitly asks for a trace
+        // to be generated, and allocates it's own symbols
+        // using AVR_MMCU_TAG_VCD_TRACE (see avr_mcu_section.h)
+        public Avr_vcd vcd;
 
-// gdb hooking structure. Only present when gdb server is active
-//struct avr_gdb_t * gdb;
+        // gdb hooking structure. Only present when gdb server is active
+        public Avr_gdb gdb = new Avr_gdb();
 
 // if non-zero, the gdb server will be started when the core
 // crashed even if not activated at startup
