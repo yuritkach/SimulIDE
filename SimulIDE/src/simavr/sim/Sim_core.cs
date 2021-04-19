@@ -631,7 +631,7 @@ namespace SimulIDE.src.simavr.sim
         	_avr_flags_zns(avr, res);
         }
 
-        public static int _avr_is_instruction_32_bits(Avr avr, uint pc)
+        public static bool _avr_is_instruction_32_bits(Avr avr, uint pc)
         {
         	ushort o = (ushort)(_avr_flash_read16le(avr, pc) & 0xfc0f);
             return (o == 0x9200 || // STS ! Store Direct to Data Space
@@ -639,8 +639,7 @@ namespace SimulIDE.src.simavr.sim
                     o == 0x940c || // JMP Long Jump
                     o == 0x940d || // JMP Long Jump
                     o == 0x940e ||  // CALL Long Call to sub
-                    o == 0x940f) // CALL Long Call to sub
-                    ? 1 : 0;
+                    o == 0x940f); // CALL Long Call to sub
         }
 
         ///*
@@ -789,61 +788,67 @@ namespace SimulIDE.src.simavr.sim
 
         		case 0x1000:
                 {
-                        //			switch (opcode & 0xfc00) {
-                        //				case 0x1800: {	// SUB -- Subtract without carry -- 0001 10rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd - vr;
-                        //					STATE("sub %s[%02x], %s[%02x] = %02x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                        //					_avr_set_r(avr, d, res);
-                        //					_avr_flags_sub_zns(avr, res, vd, vr);
-                        //					SREG();
-                        //				}	break;
-                        //				case 0x1000: {	// CPSE -- Compare, skip if equal -- 0001 00rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					uint16_t res = vd == vr;
-                        //					STATE("cpse %s[%02x], %s[%02x]\t; Will%s skip\n", avr_regname(d), avr.data[d], avr_regname(r), avr.data[r], res ? "":" not");
-                        //					if (res) {
-                        //						if (_avr_is_instruction_32_bits(avr, new_pc)) {
-                        //							new_pc += 4; cycle += 2;
-                        //						} else {
-                        //							new_pc += 2; cycle++;
-                        //						}
-                        //					}
-                        //				}	break;
-                        //				case 0x1400: {	// CP -- Compare -- 0001 01rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd - vr;
-                        //					STATE("cp %s[%02x], %s[%02x] = %02x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                        //					_avr_flags_sub_zns(avr, res, vd, vr);
-                        //					SREG();
-                        //				}	break;
-                        //				case 0x1c00: {	// ADD -- Add with carry -- 0001 11rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd + vr + avr.sreg[S_C];
-                        //					if (r == d) {
-                        //						STATE("rol %s[%02x] = %02x\n", avr_regname(d), avr.data[d], res);
-                        //					} else {
-                        //						STATE("addc %s[%02x], %s[%02x] = %02x\n", avr_regname(d), avr.data[d], avr_regname(r), avr.data[r], res);
-                        //					}
-                        //					_avr_set_r(avr, d, res);
-                        //					_avr_flags_add_zns(avr, res, vd, vr);
-                        //					SREG();
-                        //				}	break;
-                        //				default: _avr_invalid_opcode(avr);
-                        //			}
-                    }	break;
+                    switch (opcode & 0xfc00)
+                    {
+                        case 0x1800: {	// SUB -- Subtract without carry -- 0001 10rd dddd rrrr
+                        	byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                            byte res = (byte)(vd - vr);
+                        	STATE(avr,"sub %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                        	_avr_set_r(avr, d, res);
+                        	_avr_flags_sub_zns(avr, res, vd, vr);
+                        	SREG(avr);
+                        };	break;
+                        case 0x1000: {   // CPSE -- Compare, skip if equal -- 0001 00rd dddd rrrr
+                            byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf));
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                            ushort res = (ushort)(vd == vr?1:0);
+                            STATE(avr,"cpse %s[%02x], %s[%02x]\t; Will%s skip\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res!=0 ? "" : " not");
+                            if (res!=0)
+                            {
+                                if (_avr_is_instruction_32_bits(avr, new_pc))
+                                {
+                                    new_pc += 4;
+                                    cycle += 2;
+                                }
+                                else
+                                {
+                                    new_pc += 2;
+                                    cycle++;
+                                }
+                            }
+                        };	break;
+                        case 0x1400: {	// CP -- Compare -- 0001 01rd dddd rrrr
+                        	byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                        	byte res = (byte)(vd - vr);
+                        	STATE(avr,"cp %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                        	_avr_flags_sub_zns(avr, res, vd, vr);
+                        	SREG(avr);
+                        };	break;
+                        case 0x1c00: {	// ADD -- Add with carry -- 0001 11rd dddd rrrr
+                        	byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                        	byte res = (byte)(vd + vr + avr.sreg[S_C]);
+                        	if (r == d)
+                            	STATE(avr,"rol %s[%02x] = %02x\n", Avr_regname(d), avr.data[d], res);
+                        	else
+                            	STATE(avr,"addc %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res);
+                        	_avr_set_r(avr, d, res);
+                        	_avr_flags_add_zns(avr, res, vd, vr);
+                        	SREG(avr);
+                        };	break;
+                        default: _avr_invalid_opcode(avr);break;
+                    }
+                }	break;
 
         		case 0x2000:
                 {
