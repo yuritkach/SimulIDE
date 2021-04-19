@@ -681,10 +681,9 @@ namespace SimulIDE.src.simavr.sim
                 {
         			switch (opcode)
                     {
-        				case 0x0000:    // NOP
-                                    {
-        					            STATE(avr,"nop\n");
-        				            }	break;
+        				case 0x0000: {    // NOP
+                            STATE(avr,"nop\n");
+        				}	break;
         				default: {
         					switch (opcode & 0xfc00)
                             {
@@ -852,111 +851,102 @@ namespace SimulIDE.src.simavr.sim
 
         		case 0x2000:
                 {
-                        //			switch (opcode & 0xfc00) {
-                        //				case 0x2000: {	// AND -- Logical AND -- 0010 00rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd & vr;
-                        //					if (r == d) {
-                        //						STATE("tst %s[%02x]\n", avr_regname(d), avr.data[d]);
-                        //					} else {
-                        //						STATE("and %s[%02x], %s[%02x] = %02x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                        //					}
-                        //					_avr_set_r(avr, d, res);
-                        //					_avr_flags_znv0s(avr, res);
-                        //					SREG();
-                        //				}	break;
-                        //				case 0x2400: {	// EOR -- Logical Exclusive OR -- 0010 01rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd ^ vr;
-                        //					if (r==d) {
-                        //						STATE("clr %s[%02x]\n", avr_regname(d), avr.data[d]);
-                        //					} else {
-                        //						STATE("eor %s[%02x], %s[%02x] = %02x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                        //					}
-                        //					_avr_set_r(avr, d, res);
-                        //					_avr_flags_znv0s(avr, res);
-                        //					SREG();
-                        //				}	break;
-                        //				case 0x2800: {	// OR -- Logical OR -- 0010 10rd dddd rrrr
-                        //					byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                        //byte d = (opcode >> 4) & 0x1f;
-                        //byte vd = avr.data[d];
-                        //byte vr = avr.data[r];
-                        //					byte res = vd | vr;
-                        //					STATE("or %s[%02x], %s[%02x] = %02x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                        //					_avr_set_r(avr, d, res);
-                        //					_avr_flags_znv0s(avr, res);
-                        //					SREG();
-                        //				}	break;
-                        //				case 0x2c00: {	// MOV -- 0010 11rd dddd rrrr
-                        //					byte d = (opcode >> 4) & 0x1f; 
-                        //byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf);
-                        //byte vr = avr.data[r];
-                        //					byte res = vr;
-                        //					STATE("mov %s, %s[%02x] = %02x\n", avr_regname(d), avr_regname(r), vr, res);
-                        //					_avr_set_r(avr, d, res);
-                        //				}	break;
-                        //				default: _avr_invalid_opcode(avr);
-                        //			}
-                    }	break;
-
-        		case 0x3000:   // CPI -- Compare Immediate -- 0011 kkkk hhhh kkkk
-                {
-                        //const byte h = 16 + ((o >> 4) & 0xf); \
-        		//const byte k = ((o & 0x0f00) >> 4) | (o & 0xf);
-                        //const byte vh = avr.data[h];
-
-                        //			byte res = vh - k;
-                        //			STATE("cpi %s[%02x], 0x%02x\n", avr_regname(h), vh, k);
-                        //			_avr_flags_sub_zns(avr, res, vh, k);
-                        //			SREG();
+                    switch (opcode & 0xfc00)
+                    {
+                        case 0x2000: {	// AND -- Logical AND -- 0010 00rd dddd rrrr
+                            byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                            byte res = (byte)(vd & vr);
+                            if (r == d) 
+                                STATE(avr,"tst %s[%02x]\n", Avr_regname(d), avr.data[d]);
+                            else 
+                        		STATE(avr,"and %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                        	_avr_set_r(avr, d, res);
+                        	_avr_flags_znv0s(avr, res);
+                        	SREG(avr);
+                        }	break;
+                        case 0x2400: {	// EOR -- Logical Exclusive OR -- 0010 01rd dddd rrrr
+                            byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                            byte res = (byte)(vd ^ vr);
+                            if (r==d) 
+                            	STATE(avr,"clr %s[%02x]\n", Avr_regname(d), avr.data[d]);
+                            else 
+                        		STATE(avr,"eor %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                            _avr_set_r(avr, d, res);
+                            _avr_flags_znv0s(avr, res);
+                        	SREG(avr);
+                        }	break;
+                        case 0x2800: {   // OR -- Logical OR -- 0010 10rd dddd rrrr
+                            byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf));
+                            byte d = (byte)((opcode >> 4) & 0x1f);
+                            byte vd = avr.data[d];
+                            byte vr = avr.data[r];
+                            byte res = (byte)(vd | vr);
+                            STATE(avr,"or %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                            _avr_set_r(avr, d, res);
+                            _avr_flags_znv0s(avr, res);
+                            SREG(avr);
+                        }	break;
+                        case 0x2c00: {	// MOV -- 0010 11rd dddd rrrr
+                        	byte d = (byte)((opcode >> 4) & 0x1f); 
+                            byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf));
+                            byte vr = avr.data[r];
+                       		byte res = vr;
+                        	STATE(avr,"mov %s, %s[%02x] = %02x\n", Avr_regname(d), Avr_regname(r), vr, res);
+                        	_avr_set_r(avr, d, res);
+                        }	break;
+                        default: _avr_invalid_opcode(avr); break;
                     }
-                    break;
+                }	break;
+
+        		case 0x3000: {  // CPI -- Compare Immediate -- 0011 kkkk hhhh kkkk
+                    byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
+        		    byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
+                    byte vh = avr.data[h];
+                    byte res = (byte)(vh - k);
+                    STATE(avr,"cpi %s[%02x], 0x%02x\n", Avr_regname(h), vh, k);
+                    _avr_flags_sub_zns(avr, res, vh, k);
+                    SREG(avr);
+                }   break;
 
         		case 0x4000: {  // SBCI -- Subtract Immediate With Carry -- 0100 kkkk hhhh kkkk
-                        //const byte h = 16 + ((o >> 4) & 0xf); \
-        		//const byte k = ((o & 0x0f00) >> 4) | (o & 0xf);
-                  //      const byte vh = avr.data[h];
-
-                        //			byte res = vh - k - avr.sreg[S_C];
-                        //			STATE("sbci %s[%02x], 0x%02x = %02x\n", avr_regname(h), vh, k, res);
-                        //			_avr_set_r(avr, h, res);
-                        //			_avr_flags_sub_Rzns(avr, res, vh, k);
-                        //			SREG();
-                    }
-                    break;
+                    byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
+        		    byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
+                    byte vh = avr.data[h];
+                    byte res = (byte)(vh - k - avr.sreg[S_C]);
+                    STATE(avr,"sbci %s[%02x], 0x%02x = %02x\n", Avr_regname(h), vh, k, res);
+                    _avr_set_r(avr, h, res);
+                    _avr_flags_sub_Rzns(avr, res, vh, k);
+                    SREG(avr);
+                }   break;
 
         		case 0x5000: {  // SUBI -- Subtract Immediate -- 0101 kkkk hhhh kkkk
-                    //    const byte h = 16 + ((o >> 4) & 0xf); \
-        		//const byte k = ((o & 0x0f00) >> 4) | (o & 0xf);
-                  //      const byte vh = avr.data[h];
-
-                        //			byte res = vh - k;
-                        //			STATE("subi %s[%02x], 0x%02x = %02x\n", avr_regname(h), vh, k, res);
-                        //			_avr_set_r(avr, h, res);
-                        //			_avr_flags_sub_zns(avr, res, vh, k);
-                        //			SREG();
-                    }
-                    break;
+                    byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
+        		    byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
+                    byte vh = avr.data[h];
+                    byte res = (byte)(vh - k);
+                    STATE(avr,"subi %s[%02x], 0x%02x = %02x\n", Avr_regname(h), vh, k, res);
+                    _avr_set_r(avr, h, res);
+                    _avr_flags_sub_zns(avr, res, vh, k);
+                    SREG(avr);
+                }   break;
 
         		case 0x6000: {  // ORI aka SBR -- Logical OR with Immediate -- 0110 kkkk hhhh kkkk
-                    //    const byte h = 16 + ((o >> 4) & 0xf); \
-        		//const byte k = ((o & 0x0f00) >> 4) | (o & 0xf);
-                  //      const byte vh = avr.data[h];
+                    byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
+        		    byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
+                    byte vh = avr.data[h];
 
-                        //			byte res = vh | k;
-                        //			STATE("ori %s[%02x], 0x%02x\n", avr_regname(h), vh, k);
-                        //			_avr_set_r(avr, h, res);
-                        //			_avr_flags_znv0s(avr, res);
-                        //			SREG();
-                    }
-                    break;
+                    byte res = (byte)(vh | k);
+                    STATE(avr,"ori %s[%02x], 0x%02x\n", Avr_regname(h), vh, k);
+                    _avr_set_r(avr, h, res);
+                    _avr_flags_znv0s(avr, res);
+                    SREG(avr);
+                }   break;
 
         		case 0x7000: {  // ANDI	-- Logical AND with Immediate -- 0111 kkkk hhhh kkkk
                         //const byte h = 16 + ((o >> 4) & 0xf); \
