@@ -217,7 +217,7 @@ namespace SimulIDE.src.simavr
     public Avr_int_table Interrupts= new Avr_int_table();
 
 // DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
-        byte trace = 1,
+    public byte trace = 1,
 			log = 4; // log level, default to 1
 
 	// Only used if CONFIG_SIMAVR_TRACE is defined
