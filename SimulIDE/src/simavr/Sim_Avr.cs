@@ -28,11 +28,11 @@ namespace SimulIDE.src.simavr
         public uint addr;
         public string symbol;
     }
-    
+
 
     public class Avr_trace_data
     {
-        public Avr_symbol codeline;
+        public Avr_symbol[] codeline = new Avr_symbol[0];
 
         /* DEBUG ONLY
     	 * this keeps track of "jumps" ie, call,jmp,ret,reti and so on
@@ -44,6 +44,14 @@ namespace SimulIDE.src.simavr
         public pcsp[] old = new pcsp[OLD_PC_SIZE]; // catches reset..
         public int old_pci;
 
+        public Avr_trace_data()
+        {
+            for (int i = 0; i < OLD_PC_SIZE; i++)
+            {
+                old[i] = new pcsp();
+            }
+
+        }
 
         public static int STACK_FRAME_SIZE = 32;
         // this records the call/ret pairs, to try to catch
@@ -267,7 +275,7 @@ namespace SimulIDE.src.simavr
 			log = 4; // log level, default to 1
 
 	// Only used if CONFIG_SIMAVR_TRACE is defined
-    public Avr_trace_data trace_data;
+    public Avr_trace_data trace_data= new Avr_trace_data();
 
         // VALUE CHANGE DUMP file (waveforms)
         // this is the VCD file that gets allocated if the
@@ -412,17 +420,19 @@ namespace SimulIDE.src.simavr
   //          }
         }
 
-        //        void avr_sadly_crashed(avr_t* avr, uint8_t signal)
-        //        {
-        //            AVR_LOG(avr, LOG_ERROR, "%s\n", __FUNCTION__);
-        //            avr->state = cpu_Stopped;
-        //            if (avr->gdb_port)
-        //            {
-        //                // enable gdb server, and wait
-        //                if (!avr->gdb) avr_gdb_init(avr);
-        //            }
-        //            if (!avr->gdb) avr->state = cpu_Crashed;
-        //        }
+        public static void Avr_sadly_crashed(Avr avr, byte signal)
+        {
+            //            AVR_LOG(avr, LOG_ERROR, "%s\n", __FUNCTION__);
+            avr.state = CoreStates.cpu_Stopped;
+            if (avr.gdb_port!=0)
+            {
+                // enable gdb server, and wait
+                if (avr.gdb==null)
+                    Sim_gdb.avr_gdb_init(avr);
+            }
+            if (avr.gdb==null)
+                avr.state = CoreStates.cpu_Crashed;
+        }
 
         public static void Avr_set_command_register(Avr avr, UInt16 addr)
         {

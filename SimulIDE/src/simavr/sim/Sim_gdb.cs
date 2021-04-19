@@ -680,60 +680,57 @@ namespace SimulIDE.src.simavr.sim
 //}
 
 
-//int
-//avr_gdb_init(
-//		avr_t * avr )
-//{
-//	if (avr->gdb)
-//		return 0; // GDB server already is active
+    public static int avr_gdb_init(Avr avr )
+    {
+    //	if (avr->gdb)
+    //		return 0; // GDB server already is active
 
-//	avr_gdb_t * g = malloc(sizeof(avr_gdb_t));
-//	memset(g, 0, sizeof(avr_gdb_t));
+    //	avr_gdb_t * g = malloc(sizeof(avr_gdb_t));
+    //	memset(g, 0, sizeof(avr_gdb_t));
 
-//	avr->gdb = NULL;
+    //	avr->gdb = NULL;
 
-//	if ( network_init() ) {
-//		AVR_LOG(avr, LOG_ERROR, "GDB: Can't initialize network");
-//		goto error;
-//	}
+    //	if ( network_init() ) {
+    //		AVR_LOG(avr, LOG_ERROR, "GDB: Can't initialize network");
+    //		goto error;
+    //	}
 
-//	if ((g->listen = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-//		AVR_LOG(avr, LOG_ERROR, "GDB: Can't create socket: %s", strerror(errno));
-//		goto error;
-//	}
+    //	if ((g->listen = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+    //		AVR_LOG(avr, LOG_ERROR, "GDB: Can't create socket: %s", strerror(errno));
+    //		goto error;
+    //	}
 
-//	int optval = 1;
-//	setsockopt(g->listen, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+    //	int optval = 1;
+    //	setsockopt(g->listen, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
-//	struct sockaddr_in address = { 0 };
-//	address.sin_family = AF_INET;
-//	address.sin_port = htons (avr->gdb_port);
+    //	struct sockaddr_in address = { 0 };
+    //	address.sin_family = AF_INET;
+    //	address.sin_port = htons (avr->gdb_port);
 
-//	if (bind(g->listen, (struct sockaddr *) &address, sizeof(address))) {
-//		AVR_LOG(avr, LOG_ERROR, "GDB: Can not bind socket: %s", strerror(errno));
-//		goto error;
-//	}
-//	if (listen(g->listen, 1)) {
-//		perror("listen");
-//		goto error;
-//	}
-//	printf("avr_gdb_init listening on port %d\n", avr->gdb_port);
-//	g->avr = avr;
-//	g->s = -1;
-//	avr->gdb = g;
-//	// change default run behaviour to use the slightly slower versions
-//	avr->run = avr_callback_run_gdb;
-//	avr->sleep = avr_callback_sleep_gdb;
+    //	if (bind(g->listen, (struct sockaddr *) &address, sizeof(address))) {
+    //		AVR_LOG(avr, LOG_ERROR, "GDB: Can not bind socket: %s", strerror(errno));
+    //		goto error;
+    //	}
+    //	if (listen(g->listen, 1)) {
+    //		perror("listen");
+    //		goto error;
+    //	}
+    //	printf("avr_gdb_init listening on port %d\n", avr->gdb_port);
+    //	g->avr = avr;
+    //	g->s = -1;
+    //	avr->gdb = g;
+    //	// change default run behaviour to use the slightly slower versions
+    //	avr->run = avr_callback_run_gdb;
+    //	avr->sleep = avr_callback_sleep_gdb;
 
-//	return 0;
+    //	return 0;
 
-//error:
-//	if (g->listen >= 0)
-//		close(g->listen);
-//	free(g);
-
-//	return -1;
-//}
+    //error:
+    //	if (g->listen >= 0)
+    //		close(g->listen);
+    //	free(g);
+    	return -1;
+    }
 
 //void
 //avr_deinit_gdb(

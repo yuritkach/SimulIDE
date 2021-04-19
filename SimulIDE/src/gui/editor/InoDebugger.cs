@@ -245,8 +245,8 @@ namespace SimulIDE.src.gui.editor
             Process compIno_ = new Process();
             compIno_.StartInfo.WorkingDirectory = fileDir;
             compIno_.StartInfo.FileName = objdump;
-          //  compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
-            compIno_.StartInfo.Arguments = " -S -x -m -d " + elfPath;
+            compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
+          //  compIno_.StartInfo.Arguments = " -S -x -m -d " + elfPath;
 
             compIno_.StartInfo.UseShellExecute = false;
             compIno_.StartInfo.CreateNoWindow = true;

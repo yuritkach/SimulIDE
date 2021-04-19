@@ -17,56 +17,30 @@ namespace SimulIDE.src.simavr.sim
             reg_names[R_SREG] = "SREG";
         }
 
+        public static void DUMP_REG(Avr avr)
+        { 
+            for (int i = 0; i < 32; i++)
+                Console.WriteLine("%s=%02x%c", Avr_regname((byte)i), avr.data[i],i==15?'\n':' ');
+            Console.WriteLine("\n");
+        	ushort y = (ushort)(avr.data[R_YL] | (avr.data[R_YH]<<8));
+        	for (int i = 0; i < 20; i++)
+                Console.WriteLine("Y+%02d=%02x ", i, avr.data[y+i]);
+        	Console.WriteLine("\n");
+        }
 
-        //#ifdef NO_COLOR
-        //	#define FONT_GREEN
-        //	#define FONT_RED
-        //	#define FONT_DEFAULT
-        //#else
-        //	#define FONT_GREEN		"\e[32m"
-        //	#define FONT_RED		"\e[31m"
-        //	#define FONT_DEFAULT	"\e[0m"
-        //#endif
-
-        ///*
-        // * Get a "pretty" register name
-        // */
-        //const char * avr_regname(byte reg);
-
-        ///*
-        // * DEBUG bits follow
-        // * These will disappear when gdb arrives
-        // */
-        //void avr_dump_state(avr_t * avr);
-
-        //#define DUMP_REG() { \
-        //				for (int i = 0; i < 32; i++) printf("%s=%02x%c", avr_regname(i), avr.data[i],i==15?'\n':' ');\
-        //				printf("\n");\
-        //				uint16_t y = avr.data[R_YL] | (avr.data[R_YH]<<8);\
-        //				for (int i = 0; i < 20; i++) printf("Y+%02d=%02x ", i, avr.data[y+i]);\
-        //				printf("\n");\
-        //		}
-
-
-        //#if AVR_STACK_WATCH
-        //#define DUMP_STACK() \
-        //		for (int i = avr.trace_data->stack_frame_index; i; i--) {\
-        //			int pci = i-1;\
-        //			printf(FONT_RED "*** %04x: %-25s sp %04x\n" FONT_DEFAULT,\
-        //					avr.trace_data->stack_frame[pci].pc, \
-        //					avr.trace_data->codeline ? avr.trace_data->codeline[avr.trace_data->stack_frame[pci].pc>>1]->symbol : "unknown", \
-        //							avr.trace_data->stack_frame[pci].sp);\
-        //		}
-        //#else
-        //#define DUMP_STACK()
-        //#endif
-
-        //#else /* CONFIG_SIMAVR_TRACE */
-
-        //#define DUMP_STACK()
-        //#define DUMP_REG();
-
-        //#endif
+        public static void DUMP_STACK(Avr avr)
+        {
+            for (int i = avr.trace_data.stack_frame_index; i==0; i--)
+            {
+            	int pci = i-1;
+                var oldColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+            	Console.WriteLine("*** %04x: %-25s sp %04x\n",avr.trace_data.stack_frame[pci].pc, 
+            		(avr.trace_data.codeline.Length!=0)?avr.trace_data.codeline[avr.trace_data.stack_frame[pci].pc>>1].symbol : "unknown",
+                    avr.trace_data.stack_frame[pci].sp);
+                Console.ForegroundColor = oldColor;
+            }
+        }
 
         ///**
         // * Reconstructs the SREG value from avr.sreg into dst.
@@ -127,42 +101,47 @@ namespace SimulIDE.src.simavr.sim
             avr.trace_data.touched[(r) >> 5] |= (ushort)(1 << ((r) & 0x1f));
         }
 
-        //#define REG_ISTOUCHED(a, r) ((a)->trace_data->touched[(r) >> 5] & (1 << ((r) & 0x1f)))
+        public static bool REG_ISTOUCHED(Avr avr, ushort r)
+        {
+            return (avr.trace_data.touched[(r) >> 5] & (1 << ((r) & 0x1f)))!=0;
+        }
 
         ///*
         // * This allows a "special case" to skip instruction tracing when in these
         // * symbols since printf() is useful to have, but generates a lot of cycles.
         // */
-        //int dont_trace(const char * name)
-        //{
-        //	return (
-        //		!strcmp(name, "uart_putchar") ||
-        //		!strcmp(name, "fputc") ||
-        //		!strcmp(name, "printf") ||
-        //		!strcmp(name, "vfprintf") ||
-        //		!strcmp(name, "__ultoa_invert") ||
-        //		!strcmp(name, "__prologue_saves__") ||
-        //		!strcmp(name, "__epilogue_restores__"));
-        //}
+        public static bool dont_trace(string name)
+        {
+        	return 
+        		!(name=="uart_putchar") ||
+        		!(name=="fputc") ||
+        		!(name=="printf") ||
+        		!(name=="vfprintf") ||
+        		!(name=="__ultoa_invert") ||
+        		!(name=="__prologue_saves__") ||
+        		!(name=="__epilogue_restores__");
+        }
 
-        //int donttrace = 0;
+        public static bool donttrace = false;
 
         public static void STATE(Avr avr, params object[] param)
         {
             if (avr.trace != 0)
             {
-                //        		if (avr.trace_data.codeline && avr.trace_data.codeline[avr.PC>>1])
-                //                {
-                //        			const char * symn = avr.trace_data->codeline[avr.pc>>1]->symbol; \
-                //        			int dont = 0 && dont_trace(symn);\
-                //        			if (dont!=donttrace) { \
-                //        				donttrace = dont;\
-                //        				DUMP_REG();\
-                //        			}\
-                //        			if (donttrace==0)\
-                //        				printf("%04x: %-25s " _f, avr.pc, symn, ## args);\
-                //        		} else \
-                //        			printf("%s: %04x: " _f, __FUNCTION__, avr.pc, ## args);\
+                if ((avr.trace_data.codeline.Length>0) && (avr.trace_data.codeline[avr.PC>>1]!=null))
+                {
+                	string symn = avr.trace_data.codeline[avr.PC>>1].symbol; 
+                    bool dont = dont_trace(symn);
+                    if (dont!=donttrace)
+                    { 
+                        donttrace = dont;
+                        DUMP_REG(avr);
+                    }
+                    if (!donttrace)
+                        Console.WriteLine("%04x: %-25s ", avr.PC, symn);
+                }
+                else
+                    Console.WriteLine("%s: %04x: ", avr.PC);
             }
         }
 
@@ -178,29 +157,22 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Crash(Avr avr)
         {
-            //	DUMP_REG();
+            DUMP_REG(avr);
             Console.WriteLine("*** CYCLE: %04x PC: %04x\n", avr.cycle, avr.PC);
+            for (int i = Avr_trace_data.OLD_PC_SIZE-1; i > 0; i--)
+            {
+                int pci = (avr.trace_data.old_pci + i) & 0xf;
+                Console.WriteLine("*** %04x: %-25s RESET -%d; sp %04x\n",
+                    avr.trace_data.old[pci].pc, avr.trace_data.codeline.Length!=0 ? 
+                    avr.trace_data.codeline[avr.trace_data.old[pci].pc>>1].symbol : 
+                    "unknown",Avr_trace_data.OLD_PC_SIZE-i, avr.trace_data.old[pci].sp);
+            }
 
+        	Console.WriteLine("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr));
+        	DUMP_STACK(avr);
 
-            //        	for (int i = OLD_PC_SIZE-1; i > 0; i--) {
-            //        		int pci = (avr.trace_data.old_pci + i) & 0xf;
-            //                Console.WriteLine("*** %04x: %-25s RESET -%d; sp %04x\n",
-            //        				avr.trace_data.old[pci].pc, avr.trace_data.codeline ? 
-            //                          avr.trace_data.codeline[avr.trace_data.old[pci].pc>>1]->symbol : 
-            //                          "unknown", OLD_PC_SIZE-i, avr.trace_data.old[pci].sp);
+        	Sim_Avr.Avr_sadly_crashed(avr, 0);
         }
-
-        //	printf("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr));
-        //	DUMP_STACK();
-
-        //	avr_sadly_crashed(avr, 0);
-        //}
-
-        //void crash(avr_t* avr)
-        //{
-        //	avr_sadly_crashed(avr, 0);
-
-        //}
 
         protected static ushort _avr_flash_read16le(Avr avr, uint addr)
         {
@@ -209,39 +181,43 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_core_watch_write(Avr avr, uint addr, uint v)
         {
-            //	if (addr > avr.ramend) {
+            if (addr > avr.ramend)
+            {
             //		AVR_LOG(avr, LOG_ERROR, FONT_RED
             //				"CORE: *** Invalid write address "
             //				"PC=%04x SP=%04x O=%04x Address %04x=%02x out of ram\n"
             //				FONT_DEFAULT,
             //				avr.pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr.pc), addr, v);
-            //		crash(avr);
-            //	}
-            //	if (addr < 32) {
+                Crash(avr);
+            }
+            if (addr < 32)
+            {
             //		AVR_LOG(avr, LOG_ERROR, FONT_RED
             //				"CORE: *** Invalid write address PC=%04x SP=%04x O=%04x Address %04x=%02x low registers\n"
             //				FONT_DEFAULT,
             //				avr.pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr.pc), addr, v);
-            //		crash(avr);
-            //	}
-            //#if AVR_STACK_WATCH
-            //	/*
-            //	 * this checks that the current "function" is not doctoring the stack frame that is located
-            //	 * higher on the stack than it should be. It's a sign of code that has overrun it's stack
-            //	 * frame and is munching on it's own return address.
-            //	 */
-            //	if (avr.trace_data->stack_frame_index > 1 && addr > avr.trace_data->stack_frame[avr.trace_data->stack_frame_index-2].sp) {
-            //		printf( FONT_RED "%04x : munching stack "
-            //				"SP %04x, A=%04x <= %02x\n" FONT_DEFAULT,
-            //				avr.pc, _avr_sp_get(avr), addr, v);
-            //	}
-            //#endif
+            	Crash(avr);
+            }
+            /*
+            * this checks that the current "function" is not doctoring the stack frame that is located
+            * higher on the stack than it should be. It's a sign of code that has overrun it's stack
+            * frame and is munching on it's own return address.
+            */
+            if (avr.trace_data.stack_frame_index > 1 && addr > avr.trace_data.stack_frame[avr.trace_data.stack_frame_index-2].sp)
+            {
+                var oldColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine( "%04x : munching stack  SP %04x, A=%04x <= %02x\n",
+            				avr.PC, _avr_sp_get(avr), addr, v);
+                Console.ForegroundColor = oldColor;
+            }
 
-            //	if (avr.gdb) {
-            //		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_WRITE);
-            //	}
+            if (avr.gdb!=null)
+            {
+            //    avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_WRITE);
+            }
 
-            //	avr.data[addr] = v;
+            avr.data[addr] = (byte) v;
         }
 
         public static byte Avr_core_watch_read(Avr avr, uint addr)
@@ -271,7 +247,7 @@ namespace SimulIDE.src.simavr.sim
         // */
         public static void _avr_set_r(Avr avr, ushort r, uint v)
         {
-            //	REG_TOUCH(avr, r);
+            REG_TOUCH(avr, r);
 
             if (r == R_SREG)
             {
@@ -283,16 +259,17 @@ namespace SimulIDE.src.simavr.sim
             else
             if (r > 31)
             {
-                //		avr_io_addr_t io = AVR_DATA_TO_IO(r);
-                //		if (avr.io[io].w.c)
-                //			avr.io[io].w.c(avr, r, v, avr.io[io].w.param);
-                //		else
-                //			avr.data[r] = v;
-                //		if (avr.io[io].irq) {
-                //			avr_raise_irq(avr.io[io].irq + AVR_IOMEM_IRQ_ALL, v);
-                //			for (int i = 0; i < 8; i++)
-                //				avr_raise_irq(avr.io[io].irq + i, (v >> i) & 1);
-                //		}
+                ushort io = (ushort)AVR_DATA_TO_IO(r);
+                if (avr.io[io].w.c!=null)
+                    avr.io[io].w.c(avr, r, (byte) v, new object[1] { avr.io[io].w.param });
+                else
+                    avr.data[r] = (byte) v;
+                if (avr.io[io].irq.Length!=0)
+                {
+                    Sim_irq.Avr_raise_irq(avr.io[io].irq[Sim_io.AVR_IOMEM_IRQ_ALL], v);
+                    for (int i = 0; i < 8; i++)
+                        Sim_irq.Avr_raise_irq(avr.io[io].irq[i], (v >> i) & 1);
+                }
             }
             else
                 avr.data[r] = (byte)v;
@@ -440,49 +417,39 @@ namespace SimulIDE.src.simavr.sim
             //			avr.pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr.pc));
             //#endif
         }
-
-        //#if CONFIG_SIMAVR_TRACE
+        
         ///*
         // * Dump changed registers when tracing
         // */
-        //void avr_dump_state(avr_t * avr)
-        //{
-        //	if (!avr.trace || donttrace)
-        //		return;
+        
+        public static void avr_dump_state(Avr avr)
+        {
+        	if (avr.trace==0 || donttrace)
+        		return;
 
-        //	int doit = 0;
+        	int doit = 0;
 
-        //	for (int r = 0; r < 3 && !doit; r++)
-        //		if (avr.trace_data->touched[r])
-        //			doit = 1;
-        //	if (!doit)
-        //		return;
-        //	printf("                                       ->> ");
-        //	const int r16[] = { R_SPL, R_XL, R_YL, R_ZL };
-        //	for (int i = 0; i < 4; i++)
-        //		if (REG_ISTOUCHED(avr, r16[i]) || REG_ISTOUCHED(avr, r16[i]+1)) {
-        //			REG_TOUCH(avr, r16[i]);
-        //			REG_TOUCH(avr, r16[i]+1);
-        //		}
-
-        //	for (int i = 0; i < 3*32; i++)
-        //		if (REG_ISTOUCHED(avr, i)) {
-        //			printf("%s=%02x ", avr_regname(i), avr.data[i]);
-        //		}
-        //	printf("\n");
-        //}
-        //#endif
-
-        //#define get_io5_b3(o) \
-        //        const byte io = ((o >> 3) & 0x1f) + 32;
-        // 		const byte b = o & 0x7;
-
-        ////	const int16_t o = ((int16_t)(op << 4)) >> 3; // CLANG BUG!
-
-        ///*
-        // * Add a "jump" address to the jump trace buffer
-        // */
-
+        	for (int r = 0; r < 3 && doit==0; r++)
+        		if (avr.trace_data.touched[r]!=0)
+        			doit = 1;
+        	if (doit==0)
+        		return;
+        	Console.WriteLine("                                       ->> ");
+        	ushort[] r16 = new ushort[4] { R_SPL, R_XL, R_YL, R_ZL };
+        	for (int i = 0; i < 4; i++)
+        		if (REG_ISTOUCHED(avr, r16[i]) || REG_ISTOUCHED(avr, r16[i+1]))
+                {
+        			REG_TOUCH(avr, (ushort)r16[i]);
+        			REG_TOUCH(avr, (ushort)r16[i+1]);
+        		}
+        	for (int i = 0; i < 3*32; i++)
+        		if (REG_ISTOUCHED(avr,(ushort) i)) {
+                    Console.WriteLine("%s=%02x ", Avr_regname((byte)i), avr.data[i]);
+        		}
+            Console.WriteLine("\n");
+        }
+        
+        
         /****************************************************************************\
          *
          * Helper functions for calculating the status register bit values.
