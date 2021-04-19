@@ -257,34 +257,32 @@ namespace SimulIDE.src.simavr.sim
             return io.irq;
         }
 
-//static void
-//avr_deallocate_io(
-//        avr_io_t* io)
-//{
-//    if (io->dealloc)
-//        io->dealloc(io);
-//    avr_free_irq(io->irq, io->irq_count);
-//    io->irq_count = 0;
-//    io->irq_ioctl_get = 0;
-//    io->avr = NULL;
-//    io->next = NULL;
-//}
+        //static void
+        //avr_deallocate_io(
+        //        avr_io_t* io)
+        //{
+        //    if (io->dealloc)
+        //        io->dealloc(io);
+        //    avr_free_irq(io->irq, io->irq_count);
+        //    io->irq_count = 0;
+        //    io->irq_ioctl_get = 0;
+        //    io->avr = NULL;
+        //    io->next = NULL;
+        //}
 
-//void
-//avr_deallocate_ios(
-//        avr_t* avr)
-//{
-//    avr_io_t* port = avr->io_port;
-//    while (port)
-//    {
-//        avr_io_t* next = port->next;
-//        avr_deallocate_io(port);
-//        port = next;
-//    }
-//    avr->io_port = NULL;
-//}
-
-
+        //void
+        //avr_deallocate_ios(
+        //        avr_t* avr)
+        //{
+        //    avr_io_t* port = avr->io_port;
+        //    while (port)
+        //    {
+        //        avr_io_t* next = port->next;
+        //        avr_deallocate_io(port);
+        //        port = next;
+        //    }
+        //    avr->io_port = NULL;
+        //}
 
 
 
@@ -295,103 +293,105 @@ namespace SimulIDE.src.simavr.sim
 
 
 
-//        /*
-//	sim_io.h
 
-//	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
 
-// 	This file is part of simavr.
+        //        /*
+        //	sim_io.h
 
-//	simavr is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, either version 3 of the License, or
-//	(at your option) any later version.
+        //	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
 
-//	simavr is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+        // 	This file is part of simavr.
 
-//	You should have received a copy of the GNU General Public License
-//	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
-// */
+        //	simavr is free software: you can redistribute it and/or modify
+        //	it under the terms of the GNU General Public License as published by
+        //	the Free Software Foundation, either version 3 of the License, or
+        //	(at your option) any later version.
 
-//# ifndef __SIM_IO_H__
-//#define __SIM_IO_H__
+        //	simavr is distributed in the hope that it will be useful,
+        //	but WITHOUT ANY WARRANTY; without even the implied warranty of
+        //	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        //	GNU General Public License for more details.
 
-//# include "sim_avr.h"
+        //	You should have received a copy of the GNU General Public License
+        //	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
+        // */
 
-//# ifdef __cplusplus
-//        extern "C" {
-//#endif
+        //# ifndef __SIM_IO_H__
+        //#define __SIM_IO_H__
 
-///*
-// * used by the ioports to implement their own features
-// * see avr_eeprom.* for an example, and avr_ioctl().
-// */
-//#define AVR_IOCTL_DEF(_a,_b,_c,_d) \
-//	(((_a) << 24)|((_b) << 16)|((_c) << 8)|((_d)))
+        //# include "sim_avr.h"
 
-///*
-// * IO module base struct
-// * Modules uses that as their first member in their own struct
-// */
+        //# ifdef __cplusplus
+        //        extern "C" {
+        //#endif
 
-///*
-// * IO modules helper functions
-// */
+        ///*
+        // * used by the ioports to implement their own features
+        // * see avr_eeprom.* for an example, and avr_ioctl().
+        // */
+        //#define AVR_IOCTL_DEF(_a,_b,_c,_d) \
+        //	(((_a) << 24)|((_b) << 16)|((_c) << 8)|((_d)))
 
-//// registers an IO module, so it's run(), reset() etc are called
-//// this is called by the AVR core init functions, you /could/ register an external
-//// one after instantiation, for whatever purpose...
-//void
-//avr_register_io(
-//        avr_t* avr,
-//        avr_io_t* io);
-//        // Sets an IO module "official" IRQs and the ioctl used to get to them. if 'irqs' is NULL,
-//        // 'count' will be allocated
-//        avr_irq_t*
-//        avr_io_setirqs(
-//                avr_io_t* io,
-//                uint32_t ctl,
-//                int count,
-//                avr_irq_t* irqs);
+        ///*
+        // * IO module base struct
+        // * Modules uses that as their first member in their own struct
+        // */
 
-//        // register a callback for when IO register "addr" is read
-//        void
-//        avr_register_io_read(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
-//                avr_io_read_t read,
-//                void* param);
-//        // register a callback for when the IO register is written. callback has to set the memory itself
-//        void
-//        avr_register_io_write(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
-//                avr_io_write_t write,
-//                void* param);
-//        // call every IO modules until one responds to this
-//        int
-//        avr_ioctl(
-//                avr_t* avr,
-//                uint32_t ctl,
-//                void* io_param);
-//        // get the specific irq for a module, check AVR_IOCTL_IOPORT_GETIRQ for example
-//        struct avr_irq_t *
-//avr_io_getirq(
-//        avr_t* avr,
-//        uint32_t ctl,
-//        int index);
+        ///*
+        // * IO modules helper functions
+        // */
 
-//        // get the IRQ for an absolute IO address
-//        // this allows any code to hook an IRQ in any io address, for example
-//        // tracing changes of values into a register
-//        // Note that the values do not "magically" change, they change only
-//        // when the AVR code attempt to read and write at that address
-//        //
-//        // the "index" is a bit number, or ALL bits if index == 8
-//#define AVR_IOMEM_IRQ_ALL 8
+        //// registers an IO module, so it's run(), reset() etc are called
+        //// this is called by the AVR core init functions, you /could/ register an external
+        //// one after instantiation, for whatever purpose...
+        //void
+        //avr_register_io(
+        //        avr_t* avr,
+        //        avr_io_t* io);
+        //        // Sets an IO module "official" IRQs and the ioctl used to get to them. if 'irqs' is NULL,
+        //        // 'count' will be allocated
+        //        avr_irq_t*
+        //        avr_io_setirqs(
+        //                avr_io_t* io,
+        //                uint32_t ctl,
+        //                int count,
+        //                avr_irq_t* irqs);
+
+        //        // register a callback for when IO register "addr" is read
+        //        void
+        //        avr_register_io_read(
+        //                avr_t* avr,
+        //                avr_io_addr_t addr,
+        //                avr_io_read_t read,
+        //                void* param);
+        //        // register a callback for when the IO register is written. callback has to set the memory itself
+        //        void
+        //        avr_register_io_write(
+        //                avr_t* avr,
+        //                avr_io_addr_t addr,
+        //                avr_io_write_t write,
+        //                void* param);
+        //        // call every IO modules until one responds to this
+        //        int
+        //        avr_ioctl(
+        //                avr_t* avr,
+        //                uint32_t ctl,
+        //                void* io_param);
+        //        // get the specific irq for a module, check AVR_IOCTL_IOPORT_GETIRQ for example
+        //        struct avr_irq_t *
+        //avr_io_getirq(
+        //        avr_t* avr,
+        //        uint32_t ctl,
+        //        int index);
+
+        //        // get the IRQ for an absolute IO address
+        //        // this allows any code to hook an IRQ in any io address, for example
+        //        // tracing changes of values into a register
+        //        // Note that the values do not "magically" change, they change only
+        //        // when the AVR code attempt to read and write at that address
+        //        //
+        //        // the "index" is a bit number, or ALL bits if index == 8
+        public static int AVR_IOMEM_IRQ_ALL = 8;
 //        avr_irq_t*
 //        avr_iomem_getirq(
 //                avr_t* avr,

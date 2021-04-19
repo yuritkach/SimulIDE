@@ -27,7 +27,7 @@ namespace SimulIDE.src.simavr.sim
         public Avr_int_vector[] vector = new Avr_int_vector[64];
         public byte vector_count;
         //public Avr_int_pending pending;
-        public byte pending;
+        public byte[] pending = new byte[0]; 
         public byte running_ptr;
         public Avr_int_vector[] running = new Avr_int_vector[64]; // stack of nested interrupts
         // global status for pending + running in interrupt context
@@ -85,15 +85,13 @@ namespace SimulIDE.src.simavr.sim
         //            if (!vector->enable.reg)
         //                AVR_LOG(avr, LOG_WARNING, "IRQ%d No 'enable' bit !\n",
         //                    vector->vector);
-        //        }
+        }
 
-        //        int
-        //        avr_has_pending_interrupts(
-        //                avr_t* avr)
-        //        {
-        //            avr_int_table_p table = &avr->interrupts;
-        //            return !avr_int_pending_isempty(&table->pending);
-        //        }
+        public static bool Avr_has_pending_interrupts(Avr avr)
+        {
+                    Avr_int_table table = avr.Interrupts;
+                    return table.pending.Length!=0;
+        }
 
         //        int
         //        avr_is_interrupt_pending(
@@ -232,7 +230,7 @@ namespace SimulIDE.src.simavr.sim
         //                    table->running[table->running_ptr - 1]->vector : 0);
         //    avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
         //            avr_has_pending_interrupts(avr));
-        }
+       // }
 
         ///*
         // * check whether interrupts are pending. If so, check if the interrupt "latency" is reached,

@@ -12,6 +12,52 @@ using SimulIDE.src.simavr.cores;
 namespace SimulIDE.src.simavr
 {
 
+
+    // this is only ever used if CONFIG_SIMAVR_TRACE is defined
+
+    public class pcsp
+    {
+        public uint pc;
+        public ushort sp;
+    }
+
+
+    // a symbol loaded from the .elf file
+    public class Avr_symbol
+    {
+        public uint addr;
+        public string symbol;
+    }
+    
+
+    public class Avr_trace_data
+    {
+        public Avr_symbol codeline;
+
+        /* DEBUG ONLY
+    	 * this keeps track of "jumps" ie, call,jmp,ret,reti and so on
+    	 * allows dumping of a meaningful data even if the stack is
+    	 * munched and so on
+    	 */
+
+        public static int OLD_PC_SIZE = 32;
+        public pcsp[] old = new pcsp[OLD_PC_SIZE]; // catches reset..
+        public int old_pci;
+
+
+        public static int STACK_FRAME_SIZE = 32;
+        // this records the call/ret pairs, to try to catch
+        // code that munches the stack -under- their own frame
+        public pcsp[] stack_frame = new pcsp[STACK_FRAME_SIZE];
+        public int	stack_frame_index;
+        // DEBUG ONLY
+        // keeps track of which registers gets touched by instructions
+        // reset before each new instructions. Allows meaningful traces
+        public uint[] touched = new uint[256 / 32];	// debug
+    }
+
+
+
     public delegate void InitDelegate(Avr avr);
     public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object[] param);
     public delegate byte Avr_io_read_function(Avr avr, uint addr,object[] param); 
@@ -55,7 +101,7 @@ namespace SimulIDE.src.simavr
 
     public class IO
     {
-        public  Avr_irq irq = new Avr_irq(); // optional, used only if asked for with avr_iomem_getirq()
+        public  Avr_irq[] irq = new Avr_irq[0]; // optional, used only if asked for with avr_iomem_getirq()
         public ReadIO r = new ReadIO();
         public WriteIO w = new WriteIO();
     }
@@ -214,14 +260,14 @@ namespace SimulIDE.src.simavr
 // cycle timers tracking & delivery
     public Avr_cycle_timer_pool cycle_timers = new Avr_cycle_timer_pool();
 // interrupt vectors and delivery fifo
-    public Avr_int_table Interrupts= new Avr_int_table();
+    public Avr_int_table Interrupts = new Avr_int_table();
 
 // DEBUG ONLY -- value ignored if CONFIG_SIMAVR_TRACE = 0
     public byte trace = 1,
 			log = 4; // log level, default to 1
 
 	// Only used if CONFIG_SIMAVR_TRACE is defined
-//	struct avr_trace_data_t * trace_data;
+    public Avr_trace_data trace_data;
 
 // VALUE CHANGE DUMP file (waveforms)
 // this is the VCD file that gets allocated if the
@@ -677,41 +723,6 @@ namespace SimulIDE.src.simavr
         cpu_Crashed,    // avr software crashed (watchdog fired)
     };
 
-//    // this is only ever used if CONFIG_SIMAVR_TRACE is defined
-//    struct avr_trace_data_t
-//    {
-//        struct avr_symbol_t ** codeline;
-
-//	/* DEBUG ONLY
-//	 * this keeps track of "jumps" ie, call,jmp,ret,reti and so on
-//	 * allows dumping of a meaningful data even if the stack is
-//	 * munched and so on
-//	 */
-//	#define OLD_PC_SIZE	32
-//	struct {
-
-//        uint32_t pc;
-//        uint16_t sp;
-//    }
-//    old[OLD_PC_SIZE]; // catches reset..
-//	int old_pci;
-
-//#if AVR_STACK_WATCH
-//#define STACK_FRAME_SIZE	32
-//	// this records the call/ret pairs, to try to catch
-//	// code that munches the stack -under- their own frame
-//	struct {
-//		uint32_t	pc;
-//		uint16_t 	sp;
-//	} stack_frame[STACK_FRAME_SIZE];
-//	int			stack_frame_index;
-//#endif
-
-//    // DEBUG ONLY
-//    // keeps track of which registers gets touched by instructions
-//    // reset before each new instructions. Allows meaningful traces
-//    uint32_t touched[256 / 32];	// debug
-//};
 
 //typedef void (* avr_run_t) ( struct avr_t* avr);
 
@@ -906,13 +917,6 @@ namespace SimulIDE.src.simavr
 
 //// this is a static constructor for each of the AVR devices
 
-//// a symbol loaded from the .elf file
-//typedef struct avr_symbol_t
-//{
-//    uint32_t addr;
-//    const char symbol[0];
-//}
-//avr_symbol_t;
 
 //// locate the maker for mcu "name" and allocates a new avr instance
 //avr_t*
