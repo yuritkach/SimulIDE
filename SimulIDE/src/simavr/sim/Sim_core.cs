@@ -113,17 +113,6 @@ namespace SimulIDE.src.simavr.sim
                 avr_sreg_set(avr, i, (src & (1 << i)) != 0);
         }
 
-        //#ifdef __cplusplus
-        //};
-        //#endif
-
-        //#endif /*__SIM_CORE_H__*/
-
-
-
-
-
-
         //// SREG bit names
         public static string _sreg_bit_name = "cznvshti";
 
@@ -132,17 +121,11 @@ namespace SimulIDE.src.simavr.sim
         // * This is used only for debugging purposes to be able to
         // * print the effects of each instructions on registers
         // */
-        //#if CONFIG_SIMAVR_TRACE
-
-        //#define T(w) w
 
         public static void REG_TOUCH(Avr avr, ushort r)
         {
             avr.trace_data.touched[(r) >> 5] |= (ushort)(1 << ((r) & 0x1f));
         }
-
-
-
 
         //#define REG_ISTOUCHED(a, r) ((a)->trace_data->touched[(r) >> 5] & (1 << ((r) & 0x1f)))
 
@@ -212,18 +195,12 @@ namespace SimulIDE.src.simavr.sim
 
         //	avr_sadly_crashed(avr, 0);
         //}
-        //#else
-        //#define T(w)
-        //#define REG_TOUCH(a, r)
-        //#define STATE(_f, args...)
-        //#define SREG()
 
         //void crash(avr_t* avr)
         //{
         //	avr_sadly_crashed(avr, 0);
 
         //}
-        //#endif
 
         protected static ushort _avr_flash_read16le(Avr avr, uint addr)
         {
@@ -1453,87 +1430,95 @@ namespace SimulIDE.src.simavr.sim
                                                     {
                                                         case 0x9600:
                                                             {   // ADIW -- Add Immediate to Word -- 1001 0110 KKpp KKKK
-                                                                //    const byte p = 24 + ((o >> 3) & 0x6); \
-                                                                //const byte k = ((o & 0x00c0) >> 2) | (o & 0xf); \
-                                                                //const uint16_t vp = avr.data[p] | (avr.data[p + 1] << 8);
-                                                                //									uint16_t res = vp + k;
-                                                                //									STATE("adiw %s:%s[%04x], 0x%02x\n", avr_regname(p), avr_regname(p + 1), vp, k);
-                                                                //									_avr_set_r16le_hl(avr, p, res);
-                                                                //									avr.sreg[S_V] = ((~vp & res) >> 15) & 1;
-                                                                //									avr.sreg[S_C] = ((~res & vp) >> 15) & 1;
-                                                                //									_avr_flags_zns16(avr, res);
-                                                                //									SREG();
-                                                                //									cycle++;
+                                                                byte p = (byte)(24 + ((opcode >> 3) & 0x6)); 
+                                                                byte k = (byte)(((opcode & 0x00c0) >> 2) | (opcode & 0xf)); 
+                                                                ushort vp = (ushort) (avr.data[p] | (avr.data[p + 1] << 8));
+                                                                ushort res = (ushort)(vp + k);
+                                                                STATE(avr,"adiw %s:%s[%04x], 0x%02x\n", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
+                                                                _avr_set_r16le_hl(avr, p, res);
+                                                                avr.sreg[S_V] = (byte)(((~vp & res) >> 15) & 1);
+                                                                avr.sreg[S_C] = (byte)(((~res & vp) >> 15) & 1);
+                                                                _avr_flags_zns16(avr, res);
+                                                                SREG(avr);
+                                                                cycle++;
                                                             }
                                                             break;
                                                         case 0x9700:
                                                             {   // SBIW -- Subtract Immediate from Word -- 1001 0111 KKpp KKKK
-                                                                //      const byte p = 24 + ((o >> 3) & 0x6); \
-                                                                //const byte k = ((o & 0x00c0) >> 2) | (o & 0xf); \
-                                                                //const uint16_t vp = avr.data[p] | (avr.data[p + 1] << 8);
-
-                                                                //									uint16_t res = vp - k;
-                                                                //									STATE("sbiw %s:%s[%04x], 0x%02x\n", avr_regname(p), avr_regname(p + 1), vp, k);
-                                                                //									_avr_set_r16le_hl(avr, p, res);
-                                                                //									avr.sreg[S_V] = ((vp & ~res) >> 15) & 1;
-                                                                //									avr.sreg[S_C] = ((res & ~vp) >> 15) & 1;
-                                                                //									_avr_flags_zns16(avr, res);
-                                                                //									SREG();
-                                                                //									cycle++;
+                                                                byte p = (byte)(24 + ((opcode >> 3) & 0x6)); 
+                                                                byte k = (byte)(((opcode & 0x00c0) >> 2) | (opcode & 0xf)); 
+                                                                ushort vp = (ushort)(avr.data[p] | (avr.data[p + 1] << 8));
+                                                                ushort res = (ushort)(vp - k);
+                                                                STATE(avr,"sbiw %s:%s[%04x], 0x%02x\n", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
+                                                                _avr_set_r16le_hl(avr, p, res);
+                                                                avr.sreg[S_V] = (byte)(((vp & ~res) >> 15) & 1);
+                                                                avr.sreg[S_C] = (byte)(((res & ~vp) >> 15) & 1);
+                                                                _avr_flags_zns16(avr, res);
+                                                                SREG(avr);
+                                                                cycle++;
                                                             }
                                                             break;
                                                         case 0x9800:
                                                             {   // CBI -- Clear Bit in I/O Register -- 1001 1000 AAAA Abbb
-                                                                //      const byte io = ((o >> 3) & 0x1f) + 32;
-                                                                //    const byte mask = 1 << (o & 0x7);
-
-                                                                //									byte res = _avr_get_ram(avr, io) & ~mask;
-                                                                //									STATE("cbi %s[%04x], 0x%02x = %02x\n", avr_regname(io), avr.data[io], mask, res);
-                                                                //									_avr_set_ram(avr, io, res);
-                                                                //									cycle++;
+                                                                byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
+                                                                byte mask = (byte)(1 << (byte)(opcode & 0x7));
+                                                                byte res = (byte)(_avr_get_ram(avr, io) & ~mask);
+                                                                STATE(avr,"cbi %s[%04x], 0x%02x = %02x\n", Avr_regname(io), avr.data[io], mask, res);
+                                                                _avr_set_ram(avr, io, res);
+                                                                cycle++;
                                                             }
                                                             break;
                                                         case 0x9900:
                                                             {   // SBIC -- Skip if Bit in I/O Register is Cleared -- 1001 1001 AAAA Abbb
-                                                                //  const byte io = ((o >> 3) & 0x1f) + 32;
-                                                                //  const byte mask = 1 << (o & 0x7);
-
-                                                                //									byte res = _avr_get_ram(avr, io) & mask;
-                                                                //									STATE("sbic %s[%04x], 0x%02x\t; Will%s branch\n", avr_regname(io), avr.data[io], mask, !res?"":" not");
-                                                                //									if (!res) {
-                                                                //										if (_avr_is_instruction_32_bits(avr, new_pc)) {
-                                                                //											new_pc += 4; cycle += 2;
-                                                                //										} else {
-                                                                //											new_pc += 2; cycle++;
-                                                                //										}
-                                                                //									}
+                                                                byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
+                                                                byte mask = (byte)(1 << (byte)(opcode & 0x7));
+                                                                byte res = (byte)(_avr_get_ram(avr, io) & mask);
+                                                                STATE(avr,"sbic %s[%04x], 0x%02x\t; Will%s branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
+                                                                if (res!=0)
+                                                                {
+                                                                    if (_avr_is_instruction_32_bits(avr, new_pc))
+                                                                    {
+                                                                        new_pc += 4;
+                                                                        cycle += 2;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        new_pc += 2;
+                                                                        cycle++;
+                                                                    }
+                                                                }
                                                             }
                                                             break;
                                                         case 0x9a00:
                                                             {   // SBI -- Set Bit in I/O Register -- 1001 1010 AAAA Abbb
-                                                                //   const byte io = ((o >> 3) & 0x1f) + 32;
-                                                                //   const byte mask = 1 << (o & 0x7);
+                                                                byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
+                                                                byte mask = (byte)(1 << (byte)(opcode & 0x7));
 
-                                                                //									byte res = _avr_get_ram(avr, io) | mask;
-                                                                //									STATE("sbi %s[%04x], 0x%02x = %02x\n", avr_regname(io), avr.data[io], mask, res);
-                                                                //									_avr_set_ram(avr, io, res);
-                                                                //									cycle++;
+                                                                byte res = (byte)(_avr_get_ram(avr, io) | mask);
+                                                                STATE(avr,"sbi %s[%04x], 0x%02x = %02x\n", Avr_regname(io), avr.data[io], mask, res);
+                                                                _avr_set_ram(avr, io, res);
+                                                                cycle++;
                                                             }
                                                             break;
                                                         case 0x9b00:
                                                             {   // SBIS -- Skip if Bit in I/O Register is Set -- 1001 1011 AAAA Abbb
-                                                                //   const byte io = ((o >> 3) & 0x1f) + 32;
-                                                                //   const byte mask = 1 << (o & 0x7);
-
-                                                                //									byte res = _avr_get_ram(avr, io) & mask;
-                                                                //									STATE("sbis %s[%04x], 0x%02x\t; Will%s branch\n", avr_regname(io), avr.data[io], mask, res?"":" not");
-                                                                //									if (res) {
-                                                                //										if (_avr_is_instruction_32_bits(avr, new_pc)) {
-                                                                //											new_pc += 4; cycle += 2;
-                                                                //										} else {
-                                                                //											new_pc += 2; cycle++;
-                                                                //										}
-                                                                //									}
+                                                                byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
+                                                                byte mask = (byte)(1 << (byte)(opcode & 0x7));
+                                                                byte res = (byte)(_avr_get_ram(avr, io) & mask);
+                                                                STATE(avr,"sbis %s[%04x], 0x%02x\t; Will%s branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
+                                                                if (res!=0)
+                                                                {
+                                                                    if (_avr_is_instruction_32_bits(avr, new_pc))
+                                                                    {
+                                                                        new_pc += 4;
+                                                                        cycle += 2;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        new_pc += 2;
+                                                                        cycle++;
+                                                                    }
+                                                                }
                                                             }
                                                             break;
                                                         default:
@@ -1541,17 +1526,17 @@ namespace SimulIDE.src.simavr.sim
                                                             {
                                                                 case 0x9c00:
                                                                     {   // MUL -- Multiply Unsigned -- 1001 11rd dddd rrrr
-                                                                        //											byte r = ((opcode >> 5) & 0x10) | (opcode & 0xf); 
-                                                                        //    byte d = (opcode >> 4) & 0x1f;
-                                                                        //    byte vd = avr.data[d];
-                                                                        //   byte vr = avr.data[r];
-                                                                        //											uint16_t res = vd * vr;
-                                                                        //											STATE("mul %s[%02x], %s[%02x] = %04x\n", avr_regname(d), vd, avr_regname(r), vr, res);
-                                                                        //											cycle++;
-                                                                        //											_avr_set_r16le(avr, 0, res);
-                                                                        //											avr.sreg[S_Z] = res == 0;
-                                                                        //											avr.sreg[S_C] = (res >> 15) & 1;
-                                                                        //											SREG();
+                                                                        byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf)); 
+                                                                        byte d = (byte)((opcode >> 4) & 0x1f);
+                                                                        byte vd = avr.data[d];
+                                                                        byte vr = avr.data[r];
+                                                                        ushort res = (ushort)(vd * vr);
+                                                                        STATE(avr,"mul %s[%02x], %s[%02x] = %04x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                                                        cycle++;
+                                                                        _avr_set_r16le(avr, 0, res);
+                                                                        avr.sreg[S_Z] = (byte)(res == 0?1:0);
+                                                                        avr.sreg[S_C] = (byte)((res >> 15) & 1);
+                                                                        SREG(avr);
                                                                     }
                                                                     break;
                                                                 default: _avr_invalid_opcode(avr); break;
@@ -1569,128 +1554,136 @@ namespace SimulIDE.src.simavr.sim
 
                 case 0xb000:
                     {
-                        //			switch (opcode & 0xf800) {
-                        //				case 0xb800: {	// OUT A,Rr -- 1011 1AAd dddd AAAA
-                        //					byte d = (opcode >> 4) & 0x1f; \
-                        //   byte A = ((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32;
-                        //					STATE("out %s, %s[%02x]\n", avr_regname(A), avr_regname(d), avr.data[d]);
-                        //					_avr_set_ram(avr, A, avr.data[d]);
-                        //				}	break;
-                        //				case 0xb000: {	// IN Rd,A -- 1011 0AAd dddd AAAA
-                        //					byte d = (opcode >> 4) & 0x1f; \
-                        //   byte A = ((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32;
-                        //					STATE("in %s, %s[%02x]\n", avr_regname(d), avr_regname(A), avr.data[A]);
-                        //					_avr_set_r(avr, d, _avr_get_ram(avr, A));
-                        //				}	break;
-                        //				default: _avr_invalid_opcode(avr);
-                        //			}
+                        switch (opcode & 0xf800)
+                        {
+                            case 0xb800: {	// OUT A,Rr -- 1011 1AAd dddd AAAA
+                                byte d = (byte)((opcode >> 4) & 0x1f); 
+                                byte A = (byte)(((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32);
+                        		STATE(avr,"out %s, %s[%02x]\n", Avr_regname(A), Avr_regname(d), avr.data[d]);
+                        		_avr_set_ram(avr, A, avr.data[d]);
+                        	}	break;
+                            case 0xb000: {	// IN Rd,A -- 1011 0AAd dddd AAAA
+                        	    byte d = (byte)((opcode >> 4) & 0x1f); 
+                                byte A = (byte)(((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32);
+                                STATE(avr,"in %s, %s[%02x]\n", Avr_regname(d), Avr_regname(A), avr.data[A]);
+                                _avr_set_r(avr, d, _avr_get_ram(avr, A));
+                            }	break;
+                            default: _avr_invalid_opcode(avr);break;
+                        }
                     }
                     break;
 
                 case 0xc000:
                     {  // RJMP -- 1100 kkkk kkkk kkkk
-                       //   const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
-                       //			STATE("rjmp .%d [%04x]\n", o >> 1, new_pc + o);
-                       //			new_pc = (new_pc + o) % (avr.flashend+1);
-                       //			cycle++;
-                       //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
-                       //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
-                       //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
-
+                       ushort o = (ushort)(((ushort)((opcode << 4) & 0xffff)) >> 3);
+                       STATE(avr,"rjmp .%d [%04x]\n", o >> 1, new_pc + o);
+                       new_pc = (new_pc + o) % (avr.flashend+1);
+                       cycle++;
+                       avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
+                       avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
+                       avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE-1);
                     }
                     break;
 
                 case 0xd000:
                     {  // RCALL -- 1101 kkkk kkkk kkkk
-                       //  const int16_t o = ((int16_t)((op << 4) & 0xffff)) >> 3;
-                       //			STATE("rcall .%d [%04x]\n", o >> 1, new_pc + o);
-                       //			cycle += _avr_push_addr(avr, new_pc);
-                       //			new_pc = (new_pc + o) % (avr.flashend+1);
-                       //			// 'rcall .1' is used as a cheap "push 16 bits of room on the stack"
-                       //			if (o != 0) {
-                       //	avr.trace_data->old[avr.trace_data->old_pci].pc = avr.pc;\
-                       //	avr.trace_data->old[avr.trace_data->old_pci].sp = _avr_sp_get(avr);\
-                       //	avr.trace_data->old_pci = (avr.trace_data->old_pci + 1) & (OLD_PC_SIZE-1);\
+                        ushort o = (ushort)(((ushort)((opcode << 4) & 0xffff)) >> 3);
+                        STATE(avr,"rcall .%d [%04x]\n", o >> 1, new_pc + o);
+                        cycle += (ulong)_avr_push_addr(avr, new_pc);
+                        new_pc = (new_pc + o) % (avr.flashend+1);
+                        // 'rcall .1' is used as a cheap "push 16 bits of room on the stack"
+                        if (o != 0)
+                        {
+                            avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
+                            avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
+                            avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE -1);
 
-                        avr->trace_data->stack_frame[avr->trace_data->stack_frame_index].pc = avr->pc;\
-	avr->trace_data->stack_frame[avr->trace_data->stack_frame_index].sp = _avr_sp_get(avr);\
-	avr->trace_data->stack_frame_index++;
-                        //			}
+                            avr.trace_data.stack_frame[avr.trace_data.stack_frame_index].pc = avr.PC;
+	                        avr.trace_data.stack_frame[avr.trace_data.stack_frame_index].sp = _avr_sp_get(avr);
+	                        avr.trace_data.stack_frame_index++;
+                        }
                     }
                     break;
 
                 case 0xe000:
                     {  // LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
-                       // const byte h = 16 + ((o >> 4) & 0xf); \
-                       // const byte k = ((o & 0x0f00) >> 4) | (o & 0xf);
-                       //			STATE("ldi %s, 0x%02x\n", avr_regname(h), k);
-                       //			_avr_set_r(avr, h, k);
+                       byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
+                       byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
+                       STATE(avr,"ldi %s, 0x%02x\n", Avr_regname(h), k);
+                       _avr_set_r(avr, h, k);
                     }
                     break;
 
                 case 0xf000:
                     {
-                        //			switch (opcode & 0xfe00) {
-                        //				case 0xf000:
-                        //				case 0xf200:
-                        //				case 0xf400:
-                        //				case 0xf600: {	// BRXC/BRXS -- All the SREG branches -- 1111 0Boo oooo osss
-                        //					int16_t o = ((int16_t)(opcode << 6)) >> 9; // offset
-                        //					byte s = opcode & 7;
-                        //					int set = (opcode & 0x0400) == 0;		// this bit means BRXC otherwise BRXS
-                        //					int branch = (avr.sreg[s] && set) || (!avr.sreg[s] && !set);
-                        //					const char *names[2][8] = {
-                        //							{ "brcc", "brne", "brpl", "brvc", NULL, "brhc", "brtc", "brid"},
-                        //							{ "brcs", "breq", "brmi", "brvs", NULL, "brhs", "brts", "brie"},
-                        //					};
-                        //					if (names[set][s]) {
-                        //						STATE("%s .%d [%04x]\t; Will%s branch\n", names[set][s], o, new_pc + (o << 1), branch ? "":" not");
-                        //					} else {
-                        //						STATE("%s%c .%d [%04x]\t; Will%s branch\n", set ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch ? "":" not");
-                        //					}
-                        //					if (branch) {
-                        //						cycle++; // 2 cycles if taken, 1 otherwise
-                        //						new_pc = new_pc + (o << 1);
-                        //					}
-                        //				}	break;
-                        //				case 0xf800:
-                        //				case 0xf900: {	// BLD -- Bit Store from T into a Bit in Register -- 1111 100d dddd 0bbb
-                        //					byte d = (opcode >> 4) & 0x1f; \
-                        // byte vd = avr.data[d];
-                        // byte s = opcode & 7;
-                        // byte mask = 1 << s;
-                        //					byte v = (vd & ~mask) | (avr.sreg[S_T] ? mask : 0);
-                        //					STATE("bld %s[%02x], 0x%02x = %02x\n", avr_regname(d), vd, mask, v);
-                        //					_avr_set_r(avr, d, v);
-                        //				}	break;
-                        //				case 0xfa00:
-                        //				case 0xfb00:{	// BST -- Bit Store into T from bit in Register -- 1111 101d dddd 0bbb
-                        //					byte d = (opcode >> 4) & 0x1f; \
-                        // byte vd = avr.data[d];
-                        // byte s = opcode & 7;
-                        //					STATE("bst %s[%02x], 0x%02x\n", avr_regname(d), vd, 1 << s);
-                        //					avr.sreg[S_T] = (vd >> s) & 1;
-                        //					SREG();
-                        //				}	break;
-                        //				case 0xfc00:
-                        //				case 0xfe00: {	// SBRS/SBRC -- Skip if Bit in Register is Set/Clear -- 1111 11sd dddd 0bbb
-                        //					byte d = (opcode >> 4) & 0x1f; \
-                        //byte vd = avr.data[d];
-                        //byte s = opcode & 7;
-                        //byte mask = 1 << s;
-                        //					int set = (opcode & 0x0200) != 0;
-                        //					int branch = ((vd & mask) && set) || (!(vd & mask) && !set);
-                        //					STATE("%s %s[%02x], 0x%02x\t; Will%s branch\n", set ? "sbrs" : "sbrc", avr_regname(d), vd, mask, branch ? "":" not");
-                        //					if (branch) {
-                        //						if (_avr_is_instruction_32_bits(avr, new_pc)) {
-                        //							new_pc += 4; cycle += 2;
-                        //						} else {
-                        //							new_pc += 2; cycle++;
-                        //						}
-                        //					}
-                        //				}	break;
-                        //				default: _avr_invalid_opcode(avr);
-                        //			}
+                        switch (opcode & 0xfe00)
+                        {
+                            case 0xf000:
+                            case 0xf200:
+                            case 0xf400:
+                            case 0xf600: {	// BRXC/BRXS -- All the SREG branches -- 1111 0Boo oooo osss
+                                ushort o = (ushort)(((ushort)(opcode << 6)) >> 9); // offset
+                                byte s = (byte)(opcode & 7);
+                                int set = (int)((opcode & 0x0400) == 0?1:0);		// this bit means BRXC otherwise BRXS
+                                int branch = (int)((((avr.sreg[s]==1) && (set!=0)) || (avr.sreg[s]!=1 && set==0))?1:0);
+                                string[,] names = new string[2,8]{
+                                    { "brcc", "brne", "brpl", "brvc", null, "brhc", "brtc", "brid"},
+                                    { "brcs", "breq", "brmi", "brvs", null, "brhs", "brts", "brie"}};
+                                if (names[set,s]!=null) 
+                                    STATE(avr,"%s .%d [%04x]\t; Will%s branch\n", names[set,s], o, new_pc + (o << 1), branch!=0 ? "":" not");
+                                else 
+                                    STATE(avr,"%s%c .%d [%04x]\t; Will%s branch\n", set!=0 ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch!=0 ? "":" not");
+                                
+                                if (branch!=0) 
+                                {
+                                    cycle++; // 2 cycles if taken, 1 otherwise
+                                    new_pc = (uint)(new_pc + (o << 1));
+                                }
+                            }	break;
+                            case 0xf800:
+                            case 0xf900: {	// BLD -- Bit Store from T into a Bit in Register -- 1111 100d dddd 0bbb
+                                byte d = (byte)((opcode >> 4) & 0x1f); 
+                                byte vd = avr.data[d];
+                                byte s = (byte)(opcode & 7);
+                                byte mask = (byte)(1 << s);
+                                byte v = (byte)((vd & ~mask) | (avr.sreg[S_T]!=0 ? mask : 0));
+                                STATE(avr,"bld %s[%02x], 0x%02x = %02x\n", Avr_regname(d), vd, mask, v);
+                                _avr_set_r(avr, d, v);
+                            }	break;
+                            case 0xfa00:
+                            case 0xfb00:{	// BST -- Bit Store into T from bit in Register -- 1111 101d dddd 0bbb
+                                byte d = (byte)((opcode >> 4) & 0x1f); 
+                                byte vd = avr.data[d];
+                                byte s = (byte)(opcode & 7);
+                                STATE(avr,"bst %s[%02x], 0x%02x\n", Avr_regname(d), vd, 1 << s);
+                                avr.sreg[S_T] = (byte)((vd >> s) & 1);
+                                SREG(avr);
+                            }	break;
+                            case 0xfc00:
+                            case 0xfe00: {	// SBRS/SBRC -- Skip if Bit in Register is Set/Clear -- 1111 11sd dddd 0bbb
+                                byte d = (byte)((opcode >> 4) & 0x1f); 
+                                byte vd = avr.data[d];
+                                byte s = (byte)(opcode & 7);
+                                byte mask = (byte)(1 << s);
+                                int set = (opcode & 0x0200) != 0?1:0;
+                                int branch = (((vd & mask)!=0 && set!=0) || ((vd & mask)==0 && set==0))?1:0;
+                                STATE(avr,"%s %s[%02x], 0x%02x\t; Will%s branch\n", set!=0 ? "sbrs" : "sbrc", Avr_regname(d), vd, mask, branch!=0 ? "":" not");
+                                if (branch!=0)
+                                {
+                                    if (_avr_is_instruction_32_bits(avr, new_pc))
+                                    {
+                                        new_pc += 4;
+                                        cycle += 2;
+                                    }
+                                    else
+                                    {
+                                        new_pc += 2;
+                                        cycle++;
+                                    }
+                                }
+                            }	break;
+                            default: _avr_invalid_opcode(avr); break;
+                        }
                     }
                     break;
 
