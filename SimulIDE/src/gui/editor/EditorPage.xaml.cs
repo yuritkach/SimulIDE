@@ -347,7 +347,10 @@ namespace SimulIDE.src.gui.editor
         {
             SetStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(step()));
-             GetCodeEditor().Step( false ); 
+            GetCodeEditor().Step( false );
+
+            Pause(); // Добавлено TYV
+
         }
 
         protected void StepOver()

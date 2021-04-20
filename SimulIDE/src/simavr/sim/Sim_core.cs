@@ -20,12 +20,12 @@ namespace SimulIDE.src.simavr.sim
         public static void DUMP_REG(Avr avr)
         { 
             for (int i = 0; i < 32; i++)
-                Console.WriteLine("%s=%02x%c", Avr_regname((byte)i), avr.data[i],i==15?'\n':' ');
-            Console.WriteLine("\n");
+                Console.Write("%s=%02x%c", Avr_regname((byte)i), avr.data[i],i==15?'\n':' ');
+            Console.Write("\n");
         	ushort y = (ushort)(avr.data[R_YL] | (avr.data[R_YH]<<8));
         	for (int i = 0; i < 20; i++)
-                Console.WriteLine("Y+%02d=%02x ", i, avr.data[y+i]);
-        	Console.WriteLine("\n");
+                Console.Write("Y+%02d=%02x ", i, avr.data[y+i]);
+        	Console.Write("\n");
         }
 
         public static void DUMP_STACK(Avr avr)
@@ -35,7 +35,7 @@ namespace SimulIDE.src.simavr.sim
             	int pci = i-1;
                 var oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
-            	Console.WriteLine("*** %04x: %-25s sp %04x\n",avr.trace_data.stack_frame[pci].pc, 
+            	Console.Write("*** %04x: %-25s sp %04x\n",avr.trace_data.stack_frame[pci].pc, 
             		(avr.trace_data.codeline.Length!=0)?avr.trace_data.codeline[avr.trace_data.stack_frame[pci].pc>>1].symbol : "unknown",
                     avr.trace_data.stack_frame[pci].sp);
                 Console.ForegroundColor = oldColor;
@@ -50,7 +50,7 @@ namespace SimulIDE.src.simavr.sim
             dst = 0;
             for (int i = 0; i < 8; i++)
                 if (avr.sreg[i] > 1)
-                    Console.WriteLine("** Invalid SREG!!\n");
+                    Console.Write("** Invalid SREG!!\n");
                 else
                 if (avr.sreg[i] != 0)
                     dst |= (byte)(1 << i);
@@ -124,24 +124,28 @@ namespace SimulIDE.src.simavr.sim
 
         public static bool donttrace = false;
 
-        public static void STATE(Avr avr, params object[] param)
+        public static void STATE(Avr avr,string command, params object[] param)
         {
             if (avr.trace != 0)
             {
-                if ((avr.trace_data.codeline.Length>0) && (avr.trace_data.codeline[avr.PC>>1]!=null))
+                if ((avr.trace_data.codeline.Length > 0) && (avr.trace_data.codeline[avr.PC >> 1] != null))
                 {
-                	string symn = avr.trace_data.codeline[avr.PC>>1].symbol; 
+                    string symn = avr.trace_data.codeline[avr.PC >> 1].symbol;
                     bool dont = dont_trace(symn);
-                    if (dont!=donttrace)
-                    { 
+                    if (dont != donttrace)
+                    {
                         donttrace = dont;
                         DUMP_REG(avr);
                     }
                     if (!donttrace)
-                        Console.WriteLine("%04x: %-25s ", avr.PC, symn);
+                        Console.Write("%04x: %-25s ", avr.PC, symn);
                 }
                 else
-                    Console.WriteLine("%s: %04x: ", avr.PC);
+                {
+                    Console.Write("0x"+avr.PC.ToString("X4")+" : ");
+                    Console.Write(command, param);
+                }
+                //Console.WriteLine("%s: %04x: ", avr.PC);
             }
         }
 
@@ -149,26 +153,26 @@ namespace SimulIDE.src.simavr.sim
         public static void SREG(Avr avr)
         {
             if (avr.trace != 0/* && donttrace == 0*/)
-                Console.WriteLine("%04x: \t\t\t\t\t\t\t\t\tSREG = ", avr.PC);
+                Console.Write("\t\t\t\t\t\t\t\t\tSREG = ");
             for (int _sbi = 0; _sbi < 8; _sbi++)
-                Console.WriteLine(avr.sreg[_sbi] != 0 ? _sreg_bit_name[_sbi].ToString().ToUpper() : ".");
-            Console.WriteLine("\n");
+                Console.Write(avr.sreg[_sbi] != 0 ? _sreg_bit_name[_sbi].ToString().ToUpper() : ".");
+            Console.Write("\n");
         }
 
         public static void Crash(Avr avr)
         {
             DUMP_REG(avr);
-            Console.WriteLine("*** CYCLE: %04x PC: %04x\n", avr.cycle, avr.PC);
+            Console.Write("*** CYCLE: %04x PC: %04x\n", avr.cycle, avr.PC);
             for (int i = Avr_trace_data.OLD_PC_SIZE-1; i > 0; i--)
             {
                 int pci = (avr.trace_data.old_pci + i) & 0xf;
-                Console.WriteLine("*** %04x: %-25s RESET -%d; sp %04x\n",
+                Console.Write("*** %04x: %-25s RESET -%d; sp %04x\n",
                     avr.trace_data.old[pci].pc, avr.trace_data.codeline.Length!=0 ? 
                     avr.trace_data.codeline[avr.trace_data.old[pci].pc>>1].symbol : 
                     "unknown",Avr_trace_data.OLD_PC_SIZE-i, avr.trace_data.old[pci].sp);
             }
 
-        	Console.WriteLine("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr));
+        	Console.Write("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr));
         	DUMP_STACK(avr);
 
         	Sim_Avr.Avr_sadly_crashed(avr, 0);
@@ -207,7 +211,7 @@ namespace SimulIDE.src.simavr.sim
             {
                 var oldColor = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine( "%04x : munching stack  SP %04x, A=%04x <= %02x\n",
+                Console.Write( "%04x : munching stack  SP %04x, A=%04x <= %02x\n",
             				avr.PC, _avr_sp_get(avr), addr, v);
                 Console.ForegroundColor = oldColor;
             }
@@ -229,13 +233,13 @@ namespace SimulIDE.src.simavr.sim
                 //        				"PC=%04x SP=%04x O=%04x Address %04x out of ram (%04x)\n"
                 //        				FONT_DEFAULT,
                 //        				avr.pc, _avr_sp_get(avr), _avr_flash_read16le(avr, avr.pc), addr, avr.ramend);
-                //        		crash(avr);
+                Crash(avr);
             }
 
-            //        	if (avr.gdb)
-            //            {
+            if (avr.gdb!=null)
+            {
             //        		avr_gdb_handle_watchpoints(avr, addr, AVR_GDB_WATCH_READ);
-            //        	}
+            }
 
             return avr.data[addr];
         }
@@ -434,7 +438,7 @@ namespace SimulIDE.src.simavr.sim
         			doit = 1;
         	if (doit==0)
         		return;
-        	Console.WriteLine("                                       ->> ");
+        	Console.Write("                                       ->> ");
         	ushort[] r16 = new ushort[4] { R_SPL, R_XL, R_YL, R_ZL };
         	for (int i = 0; i < 4; i++)
         		if (REG_ISTOUCHED(avr, r16[i]) || REG_ISTOUCHED(avr, r16[i+1]))
@@ -444,9 +448,9 @@ namespace SimulIDE.src.simavr.sim
         		}
         	for (int i = 0; i < 3*32; i++)
         		if (REG_ISTOUCHED(avr,(ushort) i)) {
-                    Console.WriteLine("%s=%02x ", Avr_regname((byte)i), avr.data[i]);
+                    Console.Write("%s=%02x ", Avr_regname((byte)i), avr.data[i]);
         		}
-            Console.WriteLine("\n");
+            Console.Write("\n");
         }
         
         
@@ -796,9 +800,9 @@ namespace SimulIDE.src.simavr.sim
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd & vr);
                                     if (r == d)
-                                        STATE(avr, "tst %s[%02x]\n", Avr_regname(d), avr.data[d]);
+                                        STATE(avr, "tst {0:G}[0x{1:X2}] ;", Avr_regname(d), avr.data[d]);
                                     else
-                                        STATE(avr, "and %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                        STATE(avr, "and {0:G}[0x{1:X2}], {2:G}[0x{3:X2}] = 0x{4:X2} ;", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                     _avr_set_r(avr, d, res);
                                     _avr_flags_znv0s(avr, res);
                                     SREG(avr);
@@ -1063,7 +1067,7 @@ namespace SimulIDE.src.simavr.sim
                                 case 0x95c8:
                                     {   // LPM -- Load Program Memory R0 <- (Z) -- 1001 0101 1100 1000
                                         ushort z = (ushort)(avr.data[R_ZL] | (avr.data[R_ZH] << 8));
-                                        STATE(avr, "lpm %s, (Z[%04x])\n", Avr_regname(0), z);
+                                        STATE(avr, "lpm {0:G}, (Z[0x{1:X4}])\n", Avr_regname(0), z);
                                         cycle += 2; // 3 cycles
                                         _avr_set_r(avr, 0, avr.flash[z]);
                                     }
@@ -1098,7 +1102,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     ushort z = (ushort)(avr.data[R_ZL] | (avr.data[R_ZH] << 8));
                                                     int op = (int)(opcode & 1);
-                                                    STATE(avr, "lpm %s, (Z[%04x]%s)\n", Avr_regname(d), z, op != 0 ? "+" : "");
+                                                    STATE(avr, "lpm {0:G}, (Z[0x{1:X4}]{2:G})\n", Avr_regname(d), z, op != 0 ? "+" : "");
                                                     _avr_set_r(avr, d, avr.flash[z]);
                                                     if (op != 0)
                                                     {
@@ -1142,7 +1146,7 @@ namespace SimulIDE.src.simavr.sim
                                                     int op = (int)(opcode & 3);
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     ushort x = (ushort)((avr.data[R_XH] << 8) | avr.data[R_XL]);
-                                                    STATE(avr,"ld %s, %sX[%04x]%s\n", Avr_regname(d), op == 2 ? "--" : "", x, op == 1 ? "++" : "");
+                                                    STATE(avr,"ld {0:G}, {1:G}X[0x{2:X4}]{3:G}\n", Avr_regname(d), op == 2 ? "--" : "", x, op == 1 ? "++" : "");
                                                     cycle++; // 2 cycles (1 for tinyavr, except with inc/dec 2)
                                                     if (op == 2)
                                                         x--;
@@ -1364,8 +1368,8 @@ namespace SimulIDE.src.simavr.sim
                                                     uint a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
                                                     ushort x = _avr_flash_read16le(avr, new_pc);
                                                     a = (a << 16) | x;
-                                                    STATE(avr,"jmp 0x%06x\n", a);
                                                     new_pc = a << 1;
+                                                    STATE(avr,"jmp 0x{0:X}\n", new_pc);
                                                     cycle += 2;
                                                     avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                                                     avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
@@ -1378,10 +1382,10 @@ namespace SimulIDE.src.simavr.sim
                                                     uint a = ((opcode & 0x01f0) >> 3) | (opcode & 1);
                                                     ushort x = _avr_flash_read16le(avr, new_pc);
                                                     a = (a << 16) | x;
-                                                    STATE(avr,"call 0x%06x\n", a);
                                                     new_pc += 2;
                                                     cycle += (ulong)(1 + _avr_push_addr(avr, new_pc));
                                                     new_pc = a << 1;
+                                                    STATE(avr, "call 0x{0:X}\n", new_pc);
                                                     avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                                                     avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
                                                     avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE - 1);
@@ -1634,7 +1638,7 @@ namespace SimulIDE.src.simavr.sim
                                 byte mask = (byte)(1 << s);
                                 int set = (opcode & 0x0200) != 0?1:0;
                                 int branch = (((vd & mask)!=0 && set!=0) || ((vd & mask)==0 && set==0))?1:0;
-                                STATE(avr,"%s %s[%02x], 0x%02x\t; Will%s branch\n", set!=0 ? "sbrs" : "sbrc", Avr_regname(d), vd, mask, branch!=0 ? "":" not");
+                                STATE(avr,"{0:G} {1:G}[0x{2:X2}], 0x{3:X2}\t; Will{4:G} branch\n", set!=0 ? "sbrs" : "sbrc", Avr_regname(d), vd, mask, branch!=0 ? "":" not");
                                 if (branch!=0)
                                 {
                                     if (_avr_is_instruction_32_bits(avr, new_pc))

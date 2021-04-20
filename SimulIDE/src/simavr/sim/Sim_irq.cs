@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
-  
-
-
-//        // internal structure for a hook, never seen by the notify procs
+        // internal structure for a hook, never seen by the notify procs
         public class Avr_irq_hook
         {
             public Avr_irq_hook next;
@@ -20,58 +17,30 @@ namespace SimulIDE.src.simavr.sim
             public Avr_irq_notify notify;    // called when IRQ is raised - optional if "chain" is on
             object[] param;                // "notify" parameter
         }
-
+        /*
+         * Internal IRQ system
+         *
+         * This subsystem allows any piece of code to "register" a hook to be called when an IRQ is
+         * raised. The IRQ definition is up to the module defining it, for example a IOPORT pin change
+         * might be an IRQ in which case any piece of code can be notified when a pin has changed state
+         *
+         * The notify hooks are chained, and duplicates are filtered out so you can't register a
+         * notify hook twice on one particular IRQ
+         *
+         * IRQ calling order is not defined, so don't rely on it.
+         *
+         * IRQ hook needs to be registered in reset() handlers, ie after all modules init() bits
+         * have been called, to prevent race condition of the initialization order.
+         */
     
-        //# ifndef __SIM_IRQ_H__
-        //#define __SIM_IRQ_H__
-
-        //# include <stdint.h>
-
-        //# ifdef __cplusplus
-        //        extern "C" {
-        //#endif
-
-        ///*
-        // * Internal IRQ system
-        // *
-        // * This subsystem allows any piece of code to "register" a hook to be called when an IRQ is
-        // * raised. The IRQ definition is up to the module defining it, for example a IOPORT pin change
-        // * might be an IRQ in which case any piece of code can be notified when a pin has changed state
-        // *
-        // * The notify hooks are chained, and duplicates are filtered out so you can't register a
-        // * notify hook twice on one particular IRQ
-        // *
-        // * IRQ calling order is not defined, so don't rely on it.
-        // *
-        // * IRQ hook needs to be registered in reset() handlers, ie after all modules init() bits
-        // * have been called, to prevent race condition of the initialization order.
-        // */
-        //struct avr_irq_t;
-
         public delegate void Avr_irq_notify(ref Avr_irq irq, UInt32 value, object[] param);
-    //        typedef void (* avr_irq_notify_t) (
 
-    //        struct avr_irq_t * irq,
-    //		uint32_t value,
-
-    //        void* param);
-
-
-        
-
-        //        /*
-        //         * IRQ Pool structure
-        //         */
         public class Avr_irq_pool
         {
             public int count;                      //!< number of irqs living in the pool
             public Avr_irq[] irq;		//!< irqs belonging in this pool
         }
 
-
-///*!
-// * Public IRQ structure
-// */
           public class Avr_irq
           {
                 public Avr_irq_pool pool;
@@ -148,22 +117,6 @@ namespace SimulIDE.src.simavr.sim
 
     class Sim_irq
     {
-
-        ///*
-        // * Internal IRQ system
-        // *
-        // * This subsystem allows any piece of code to "register" a hook to be called when an IRQ is
-        // * raised. The IRQ definition is up to the module defining it, for example a IOPORT pin change
-        // * might be an IRQ in which case any piece of code can be notified when a pin has changed state
-        // *
-        // * The notify hooks are chained, and duplicates are filtered out so you can't register a
-        // * notify hook twice on one particular IRQ
-        // *
-        // * IRQ calling order is not defined, so don't rely on it.
-        // *
-        // * IRQ hook needs to be registered in reset() handlers, ie after all modules init() bits
-        // * have been called, to prevent race condition of the initialization order.
-        // */
 
         public static void _avr_irq_pool_add(ref Avr_irq_pool pool,ref Avr_irq irq)
         {
@@ -408,33 +361,7 @@ namespace SimulIDE.src.simavr.sim
         //    irq->flags = flags;
         //}
 
-
-
-
-
-
-
-
-
-
-        //struct avr_irq_t;
-
-        //        typedef void (* avr_irq_notify_t) (
-
-        //        struct avr_irq_t * irq,
-        //		uint32_t value,
-
-        //        void* param);
-
-
-        //        enum {
-        //            IRQ_FLAG_NOT = (1 << 0),    //!< change polarity of the IRQ
-        //            IRQ_FLAG_FILTERED = (1 << 1),   //!< do not "notify" if "value" is the same as previous raise
-        //            IRQ_FLAG_ALLOC = (1 << 2), //!< this irq structure was malloced via avr_alloc_irq
-        //            IRQ_FLAG_INIT = (1 << 3), //!< this irq hasn't been used yet
-        //            IRQ_FLAG_FLOATING = (1 << 4), //!< this 'pin'/signal is floating
-        //            IRQ_FLAG_USER = (1 << 5), //!< Can be used by irq users
-        //        };
+        // typedef void (* avr_irq_notify_t) (struct avr_irq_t * irq,	uint32_t value,  void* param);
 
         public static byte IRQ_FLAG_NOT = (1 << 0);    //!< change polarity of the IRQ
         public static byte IRQ_FLAG_FILTERED = (1 << 1);   //!< do not "notify" if "value" is the same as previous raise
@@ -520,13 +447,6 @@ namespace SimulIDE.src.simavr.sim
         //                avr_irq_t* irq,
         //                avr_irq_notify_t notify,
         //                void* param);
-
-        //# ifdef __cplusplus
-        //    };
-        //#endif
-
-        //#endif /* __SIM_IRQ_H__ */ 
-
 
     }
 }
