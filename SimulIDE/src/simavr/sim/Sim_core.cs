@@ -1020,7 +1020,7 @@ namespace SimulIDE.src.simavr.sim
                                 case 0x95e8:
                                     { // SPM -- Store Program Memory -- 1001 0101 1110 1000
                                         STATE(avr, "spm\n");
-                                        Sim_io.Avr_ioctl(avr, Avr_flash.AVR_IOCTL_FLASH_SPM, 0);
+                                        Sim_io.Avr_ioctl(avr, Avr_flash_st.AVR_IOCTL_FLASH_SPM, 0);
                                     }
                                     break;
                                 case 0x9409:   // IJMP -- Indirect jump -- 1001 0100 0000 1001

@@ -65,14 +65,14 @@ namespace SimulIDE.src.simavr.sim
 //            return (avr->data[a]) & (rb.mask << rb.bit);
 //        }
 
-//        static inline uint8_t avr_regbit_get(avr_t* avr, avr_regbit_t rb)
-//        {
-//            uint16_t a = rb.reg;
-//            if (!a)
-//                return 0;
-//            //uint8_t m = rb.mask << rb.bit;
-//            return (avr->data[a] >> rb.bit) & rb.mask;
-//        }
+        public static byte Avr_regbit_get(Avr avr, Avr_regbit rb)
+        {
+            ushort a = (ushort) rb.reg;
+            if (a!=0)
+                return 0;
+            //uint8_t m = rb.mask << rb.bit;
+            return (byte)((avr.data[a] >> rb.bit) & rb.mask);
+        }
 
 //        /*
 //         * Using regbit from value eliminates some of the
@@ -102,13 +102,13 @@ namespace SimulIDE.src.simavr.sim
 //            return (avr->data[a]) & (rb.mask << rb.bit);
 //        }
 
-//        static inline uint8_t avr_regbit_clear(avr_t* avr, avr_regbit_t rb)
-//        {
-//            uint16_t a = rb.reg;
-//            uint8_t m = rb.mask << rb.bit;
-//            avr_core_watch_write(avr, a, avr->data[a] & ~m);
-//            return avr->data[a];
-//        }
+         public static byte Avr_regbit_clear(Avr avr, Avr_regbit rb)
+         {
+             ushort a = (ushort) rb.reg;
+             byte m = (byte) (rb.mask << rb.bit);
+             Sim_core.Avr_core_watch_write(avr, a,(uint)(avr.data[a] & ~m));
+             return avr.data[a];
+         }
 
 
 //        /*

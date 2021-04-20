@@ -6,43 +6,62 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.sim
 {
+
+    ///*
+    // * Handles self-programming subsystem if the core
+    // * supports it.
+    // */
     public class Avr_flash
+    {
+        public Avr_io io;
+        public ushort flags;
+        public ushort[] tmppage;
+        public byte[] tmppage_used;
+        public ushort spm_pagesize;
+        public byte r_spm;
+        public Avr_regbit selfprgen;
+        public Avr_regbit pgers;     // page erase
+        public Avr_regbit pgwrt;     // page write
+        public Avr_regbit blbset;    // lock bit set
+        public Avr_regbit rwwsre;    // read while write section read enable
+        public Avr_regbit rwwsb;     // read while write section busy
+        public Avr_int_vector flash; // Interrupt vector
+    }
+
+    public class Avr_flash_st
     {
 
 
-        //        static avr_cycle_count_t avr_progen_clear(struct avr_t * avr, avr_cycle_count_t when, void* param)
-        //{
+        public static ulong Avr_progen_clear(Avr avr, ulong when, object param)
+        {
 
-        //    avr_flash_t* p = (avr_flash_t*)param;
-        //        avr_regbit_clear(p->io.avr, p->selfprgen);
-        //        AVR_LOG(avr, LOG_WARNING, "FLASH: avr_progen_clear - SPM not received, clearing PRGEN bit\n");
-        //	return 0;
-        //}
+            Avr_flash p = (Avr_flash)param;
+            Sim_regbit.Avr_regbit_clear(p.io.avr, p.selfprgen);
+        //    AVR_LOG(avr, LOG_WARNING, "FLASH: avr_progen_clear - SPM not received, clearing PRGEN bit\n");
+        	return 0;
+        }
 
 
-        //    static void avr_flash_write(avr_t* avr, avr_io_addr_t addr, uint8_t v, void* param)
-        //    {
-        //        avr_flash_t* p = (avr_flash_t*)param;
+        public static void Avr_flash_write(Avr avr, uint addr, byte v, object param)
+        {
+            Avr_flash p = (Avr_flash) param;
+            Sim_core.Avr_core_watch_write(avr, addr, v);
+            //	printf("** avr_flash_write %02x\n", v);
+            if (Sim_regbit.Avr_regbit_get(avr, p.selfprgen)!=0)
+                Sim_cycle_timers.Avr_cycle_timer_register(avr, 4, Avr_progen_clear, p); // 4 cycles is very little!
+        }
 
-        //        avr_core_watch_write(avr, addr, v);
+        public static void Avr_flash_clear_temppage(Avr_flash p)
+        {
+            for (int i = 0; i < p.spm_pagesize / 2; i++)
+            {
+                p.tmppage[i] = 0xff;
+                p.tmppage_used[i] = 0;
+            }
+        }
 
-        //        //	printf("** avr_flash_write %02x\n", v);
-
-        //        if (avr_regbit_get(avr, p->selfprgen))
-        //            avr_cycle_timer_register(avr, 4, avr_progen_clear, p); // 4 cycles is very little!
-        //    }
-
-        //    static void avr_flash_clear_temppage(avr_flash_t* p)
-        //    {
-        //        for (int i = 0; i < p->spm_pagesize / 2; i++)
-        //        {
-        //            p->tmppage[i] = 0xff;
-        //            p->tmppage_used[i] = 0;
-        //        }
-        //    }
-
-        //    static int avr_flash_ioctl(struct avr_io_t * port, uint32_t ctl, void* io_param)
-        //{
+        public static int Avr_flash_ioctl(Avr_io port, uint ctl, params object[] io_param)
+        {
         //	if (ctl != AVR_IOCTL_FLASH_SPM)
         //		return -1;
 
@@ -85,20 +104,17 @@ namespace SimulIDE.src.simavr.sim
         //		}
         //	}
         //	avr_regbit_clear(avr, p->selfprgen);
-        //	return 0;
-        //}
+        	return 0;
+        }
 
-        //static void
-        //avr_flash_reset(avr_io_t* port)
-        //{
-        //    avr_flash_t* p = (avr_flash_t*)port;
+        public static void Avr_flash_reset(Avr_io port)
+        {
+         //   Avr_io p = port;
+         //   Avr_flash_clear_temppage(p);
+        }
 
-        //    avr_flash_clear_temppage(p);
-        //}
-
-        //static void
-        //avr_flash_dealloc(struct avr_io_t * port)
-        //{
+        public static void Avr_flash_dealloc(Avr_io port)
+        {
         //	avr_flash_t* p = (avr_flash_t*)port;
 
         //	if (p->tmppage)
@@ -106,64 +122,36 @@ namespace SimulIDE.src.simavr.sim
 
         //	if (p->tmppage_used)
         //		free(p->tmppage_used);
-        //}
+        }
 
-        //static avr_io_t _io = {
-        //	.kind = "flash",
-        //	.ioctl = avr_flash_ioctl,
-        //	.reset = avr_flash_reset,
-        //	.dealloc = avr_flash_dealloc,
-        //};
+        protected static Avr_io _io;
+        static Avr_flash_st()
+        {
+            _io = new Avr_io();
+            _io.kind = "flash";
+            _io.ioctl = Avr_flash_ioctl;
+            _io.reset = Avr_flash_reset;
+            _io.dealloc = Avr_flash_dealloc;
+        }
 
-        //void avr_flash_init(avr_t* avr, avr_flash_t* p)
-        //{
-        //    p->io = _io;
-        //    //	printf("%s init SPM %04x\n", __FUNCTION__, p->r_spm);
+        public static void Avr_flash_init(Avr avr, Avr_flash p)
+        {
+            p.io = _io;
+            Console.WriteLine("{0:G} init SPM {1:X4}\n", "Avr_flash_init", p.r_spm);
 
-        //    if (!p->tmppage)
-        //        p->tmppage = malloc(p->spm_pagesize);
+            if (p.tmppage==null)
+                p.tmppage = new ushort[p.spm_pagesize];
 
-        //    if (!p->tmppage_used)
-        //        p->tmppage_used = malloc(p->spm_pagesize / 2);
+            if (p.tmppage_used==null)
+                p.tmppage_used = new byte[p.spm_pagesize / 2];
 
-        //    avr_register_io(avr, &p->io);
-        //    avr_register_vector(avr, &p->flash);
-
-        //    avr_register_io_write(avr, p->r_spm, avr_flash_write, p);
-        //}
-
-
-
-
+            Sim_io.Avr_register_io(avr, ref p.io);
+            Sim_interrupts.Avr_register_vector(avr, ref p.flash);
+            Sim_io.Avr_register_io_write(avr, p.r_spm, Avr_flash_write, p);
+        }
 
 
-
-
-        //# include "sim_avr.h"
-
-        ///*
-        // * Handles self-programming subsystem if the core
-        // * supports it.
-        // */
-        //typedef struct avr_flash_t
-        //        {
-        //            avr_io_t io;
-
-        //            uint16_t flags;
-        //            uint16_t* tmppage;
-        //            uint8_t* tmppage_used;
-        //            uint16_t spm_pagesize;
-        //            uint8_t r_spm;
-        //            avr_regbit_t selfprgen;
-        //            avr_regbit_t pgers;     // page erase
-        //            avr_regbit_t pgwrt;     // page write
-        //            avr_regbit_t blbset;    // lock bit set
-        //            avr_regbit_t rwwsre;    // read while write section read enable
-        //            avr_regbit_t rwwsb;     // read while write section busy
-
-        //            avr_int_vector_t flash; // Interrupt vector
-        //        }
-        //        avr_flash_t;
+        
 
         ///* Set if the flash supports a Read While Write section */
         //#define AVR_SELFPROG_HAVE_RWW (1 << 0)

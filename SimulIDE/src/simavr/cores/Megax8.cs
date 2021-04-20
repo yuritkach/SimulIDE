@@ -90,7 +90,7 @@ namespace SimulIDE.src.simavr.cores
         {
             Avr_core_init(avr);
 	        Avr_eeprom_init(avr);
-//            Avr_flash_init(avr, &mcu->selfprog);
+            Avr_flash_st.Avr_flash_init(avr, selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
             Avr_ioports.Avr_ioport_init(avr, ref portb);
