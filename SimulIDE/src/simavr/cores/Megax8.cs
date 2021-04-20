@@ -21,7 +21,7 @@ namespace SimulIDE.src.simavr.cores
         private void InitPortB()
         {
             portb = new Avr_ioport();
-            portb.name = 'B';
+            portb.name = "B";
             portb.r_port = Constants.PORTB;
             portb.r_ddr = Constants.DDRB;
             portb.r_pin = Constants.PINB;
@@ -34,7 +34,7 @@ namespace SimulIDE.src.simavr.cores
         private void InitPortC()
         {
             portc = new Avr_ioport();
-            portc.name = 'C';
+            portc.name = "C";
             portc.r_port = Constants.PORTC;
             portc.r_ddr = Constants.DDRC;
             portc.r_pin = Constants.PINC;
@@ -47,7 +47,7 @@ namespace SimulIDE.src.simavr.cores
         private void InitPortD()
         {
             portd = new Avr_ioport();
-            portd.name = 'D';
+            portd.name = "D";
             portd.r_port = Constants.PORTD;
             portd.r_ddr = Constants.DDRD;
             portd.r_pin = Constants.PIND;

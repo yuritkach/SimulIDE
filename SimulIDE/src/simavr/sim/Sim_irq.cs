@@ -33,7 +33,7 @@ namespace SimulIDE.src.simavr.sim
          * have been called, to prevent race condition of the initialization order.
          */
     
-        public delegate void Avr_irq_notify(ref Avr_irq irq, UInt32 value, object[] param);
+        public delegate void Avr_irq_notify(ref Avr_irq irq, uint value,params object[] param);
 
         public class Avr_irq_pool
         {
@@ -44,77 +44,13 @@ namespace SimulIDE.src.simavr.sim
           public class Avr_irq
           {
                 public Avr_irq_pool pool;
-            	public char name;
-                public UInt32 irq;       //!< any value the user needs
-                public UInt32 value;     //!< current value
+            	public string name;
+                public uint irq;       //!< any value the user needs
+                public uint value;     //!< current value
                 public byte flags;      //!< IRQ_* flags
-                public Avr_irq_hook[] hook;	//!< list of hooks to be notified
+                public Avr_irq_hook hook;	//!< list of hooks to be notified
           }
-
-
-    ////! allocates 'count' IRQs, initializes their "irq" starting from 'base' and increment
-    //avr_irq_t*
-    //avr_alloc_irq(
-    //        avr_irq_pool_t* pool,
-    //        uint32_t base,
-    //        uint32_t count,
-
-    //        const char** names /* optional */);
-    //        void
-    //        avr_free_irq(
-    //                avr_irq_t* irq,
-    //                uint32_t count);
-
-    //        //! init 'count' IRQs, initializes their "irq" starting from 'base' and increment
-    //        void
-    //        avr_init_irq(
-    //                avr_irq_pool_t* pool,
-    //                avr_irq_t* irq,
-    //                uint32_t base,
-    //                uint32_t count,
-
-    //        const char** names /* optional */);
-    //        //! Returns the current IRQ flags
-    //        uint8_t
-    //        avr_irq_get_flags(
-    //                avr_irq_t* irq);
-    //        //! Sets this irq's flags
-    //        void
-    //        avr_irq_set_flags(
-    //                avr_irq_t* irq,
-    //                uint8_t flags);
     
-    /* 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value' */
-    
-    //        //! Same as avr_raise_irq(), but also allow setting the float status
-    //        void
-    //        avr_raise_irq_float(
-    //                avr_irq_t* irq,
-    //                uint32_t value,
-    //                int floating);
-    //        //! this connects a "source" IRQ to a "destination" IRQ
-    //        void
-    //        avr_connect_irq(
-    //                avr_irq_t* src,
-    //                avr_irq_t* dst);
-    //        void
-    //        avr_unconnect_irq(
-    //                avr_irq_t* src,
-    //                avr_irq_t* dst);
-
-    //        //! register a notification 'hook' for 'irq' -- 'param' is anything that your want passed back as argument
-    //        void
-    //        avr_irq_register_notify(
-    //                avr_irq_t* irq,
-    //                avr_irq_notify_t notify,
-    //                void* param);
-
-    //        void
-    //        avr_irq_unregister_notify(
-    //                avr_irq_t* irq,
-    //                avr_irq_notify_t notify,
-    //                void* param);
-
     class Sim_irq
     {
 
@@ -134,7 +70,7 @@ namespace SimulIDE.src.simavr.sim
         }
 
         //! allocates 'count' IRQs, initializes their "irq" starting from '_base' and increment
-        public static Avr_irq[] Avr_alloc_irq(ref Avr_irq_pool pool, uint _base, uint count, char[] names/* optional */)
+        public static Avr_irq[] Avr_alloc_irq(ref Avr_irq_pool pool, uint _base, uint count, string[] names/* optional */)
         {
             Avr_irq[] irq = new Avr_irq[count];
             Avr_init_irq(ref pool, ref irq, _base, count, names);
@@ -144,7 +80,7 @@ namespace SimulIDE.src.simavr.sim
         }
 
         /* init 'count' IRQs, initializes their "irq" starting from 'base' and increment */
-        public static void Avr_init_irq(ref Avr_irq_pool pool, ref Avr_irq[] irq, uint _base, uint count, char[] names /* optional */)
+        public static void Avr_init_irq(ref Avr_irq_pool pool, ref Avr_irq[] irq, uint _base, uint count, string[] names /* optional */)
         {
             irq = new Avr_irq[count];
 
@@ -155,7 +91,7 @@ namespace SimulIDE.src.simavr.sim
                 irq[i].flags = IRQ_FLAG_INIT;
                 if (pool!=null)
                     _avr_irq_pool_add(ref pool, ref irq[i]);
-                if ((names != null) && (names[i]!=0))
+                if ((names != null) && (names[i]!=""))
                     irq[i].name = names[i];
                 else
                 {
@@ -165,53 +101,41 @@ namespace SimulIDE.src.simavr.sim
         }
 
 
-        //static avr_irq_hook_t*
-        //_avr_alloc_irq_hook(
-        //        avr_irq_t* irq)
-        //{
-        //    avr_irq_hook_t* hook = malloc(sizeof(avr_irq_hook_t));
-        //    memset(hook, 0, sizeof(avr_irq_hook_t));
-        //    hook->next = irq->hook;
-        //    irq->hook = hook;
-        //    return hook;
-        //}
+        public static Avr_irq_hook _avr_alloc_irq_hook(Avr_irq irq)
+        {
+            Avr_irq_hook hook = new Avr_irq_hook();
+            hook.next = irq.hook;
+            irq.hook = hook;
+            return hook;
+        }
 
-        //void
-        //avr_free_irq(
-        //        avr_irq_t* irq,
-        //        uint32_t count)
-        //{
-        //    if (!irq || !count)
-        //        return;
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        avr_irq_t* iq = irq + i;
-        //        if (iq->pool)
-        //            _avr_irq_pool_remove(iq->pool, iq);
-        //        if (iq->name)
-        //            free((char*)iq->name);
-        //        iq->name = NULL;
-        //        // purge hooks
-        //        avr_irq_hook_t* hook = iq->hook;
-        //        while (hook)
-        //        {
-        //            avr_irq_hook_t* next = hook->next;
-        //            free(hook);
-        //            hook = next;
-        //        }
-        //        iq->hook = NULL;
-        //    }
-        //    // if that irq list was allocated by us, free it
-        //    if (irq->flags & IRQ_FLAG_ALLOC)
-        //        free(irq);
-        //}
+        public static void Avr_free_irq(Avr_irq[] irq,uint count)
+        {
+            if (irq==null || count==0)
+                return;
+            for (int i = 0; i < count; i++)
+            {
+                Avr_irq iq = irq[i];
+                if (iq.pool!=null)
+                    _avr_irq_pool_remove(ref iq.pool, iq);
+                iq.name="";
+                // purge hooks
+                Avr_irq_hook hook = iq.hook;
+                while (hook!=null)
+                {
+                    Avr_irq_hook next = hook.next;
+                    hook = null;
+                    hook = next;
+                }
+                iq.hook = null;
+            }
+            // if that irq list was allocated by us, free it
+            //if (irq.flags & IRQ_FLAG_ALLOC)
+            irq=null;
+        }
 
-        //void
-        //avr_irq_register_notify(
-        //        avr_irq_t* irq,
-        //        avr_irq_notify_t notify,
-        //        void* param)
-        //{
+        public static void Avr_irq_register_notify(Avr_irq irq, Avr_irq_notify notify,params object[] param)
+        {
         //    if (!irq || !notify)
         //        return;
 
@@ -225,7 +149,7 @@ namespace SimulIDE.src.simavr.sim
         //    hook = _avr_alloc_irq_hook(irq);
         //    hook->notify = notify;
         //    hook->param = param;
-        //}
+        }
 
         //void
         //avr_irq_unregister_notify(
@@ -370,83 +294,6 @@ namespace SimulIDE.src.simavr.sim
         public static byte IRQ_FLAG_FLOATING = (1 << 4); //!< this 'pin'/signal is floating
         public static byte IRQ_FLAG_USER = (1 << 5); //!< Can be used by irq users
 
-
-        //        /*
-        //         * IRQ Pool structure
-        //         */
-        //        typedef struct avr_irq_pool_t
-        //        {
-        //            int count;                      //!< number of irqs living in the pool
-        //            struct avr_irq_t ** irq;		//!< irqs belonging in this pool
-        //}
-        //        avr_irq_pool_t;
-
-        ///*!
-        // * Public IRQ structure
-        // */
-        //typedef struct avr_irq_t
-        //        {
-        //            struct avr_irq_pool_t *	pool;
-        //	const char* name;
-        //            uint32_t irq;       //!< any value the user needs
-        //            uint32_t value;     //!< current value
-        //            uint8_t flags;      //!< IRQ_* flags
-        //            struct avr_irq_hook_t * hook;	//!< list of hooks to be notified
-        //}
-        //        avr_irq_t;
-
-      
-
-
         //        const char** names /* optional */);
-        //        void
-        //        avr_free_irq(
-        //                avr_irq_t* irq,
-        //                uint32_t count);
-
-     
-        //        //! Returns the current IRQ flags
-        //        uint8_t
-        //        avr_irq_get_flags(
-        //                avr_irq_t* irq);
-        //        //! Sets this irq's flags
-        //        void
-        //        avr_irq_set_flags(
-        //                avr_irq_t* irq,
-        //                uint8_t flags);
-        //        //! 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value'
-        //        void
-        //        avr_raise_irq(
-        //                avr_irq_t* irq,
-        //                uint32_t value);
-        //        //! Same as avr_raise_irq(), but also allow setting the float status
-        //        void
-        //        avr_raise_irq_float(
-        //                avr_irq_t* irq,
-        //                uint32_t value,
-        //                int floating);
-        //        //! this connects a "source" IRQ to a "destination" IRQ
-        //        void
-        //        avr_connect_irq(
-        //                avr_irq_t* src,
-        //                avr_irq_t* dst);
-        //        void
-        //        avr_unconnect_irq(
-        //                avr_irq_t* src,
-        //                avr_irq_t* dst);
-
-        //        //! register a notification 'hook' for 'irq' -- 'param' is anything that your want passed back as argument
-        //        void
-        //        avr_irq_register_notify(
-        //                avr_irq_t* irq,
-        //                avr_irq_notify_t notify,
-        //                void* param);
-
-        //        void
-        //        avr_irq_unregister_notify(
-        //                avr_irq_t* irq,
-        //                avr_irq_notify_t notify,
-        //                void* param);
-
     }
 }

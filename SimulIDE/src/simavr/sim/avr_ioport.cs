@@ -7,38 +7,17 @@ namespace SimulIDE.src.simavr.sim {
 
     public delegate int IOPortIOCtlDelegate(Avr_io port, uint ctl, object parms);
 
-    //public class Avr_io
-    //{
-    //    public string kind;
-    //    public IOPortResetDelegate reset;
-    //    public IOPortIOCtlDelegate ioctl;
-    //    public string[] irq_names;
-
-    //    public Avr_io(string kind, IOPortResetDelegate reset,
-    //         IOPortIOCtlDelegate ioctl, string[] irq_names)
-    //    {
-    //        this.kind = kind;
-    //        this.reset = reset;
-    //        this.ioctl = ioctl;
-    //        this.irq_names = irq_names;
-    //    }
-
-    //}
-
     public class Avr_ioport_external
     {
         public byte name;
         public byte mask;
         public byte value;
     } 
-
-    ///*
-    // * Definition for an IO port
-    // */
+   
     public class Avr_ioport
     {
         public Avr_io io;
-        public char name;
+        public string name;
         public uint r_port;
         public uint r_ddr;
         public uint r_pin;
@@ -58,32 +37,6 @@ namespace SimulIDE.src.simavr.sim {
 
 
     public class Avr_ioports {
-
-
-
-
-
-        ///*
-        //	avr_ioport.c
-
-        //	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
-
-        // 	This file is part of simavr.
-
-        //	simavr is free software: you can redistribute it and/or modify
-        //	it under the terms of the GNU General Public License as published by
-        //	the Free Software Foundation, either version 3 of the License, or
-        //	(at your option) any later version.
-
-        //	simavr is distributed in the hope that it will be useful,
-        //	but WITHOUT ANY WARRANTY; without even the implied warranty of
-        //	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        //	GNU General Public License for more details.
-
-        //	You should have received a copy of the GNU General Public License
-        //	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
-        // */
-
 
         public static byte Avr_ioport_read(Avr avr,uint addr,object param)
         {
@@ -173,12 +126,8 @@ namespace SimulIDE.src.simavr.sim {
         // * AVR code, or any external piece of code that see fit to do it.
         // * Either way, this will raise pin change interrupts, if needed
         // */
-        //void
-        //avr_ioport_irq_notify(
-        //		struct avr_irq_t * irq,
-        //		uint32_t value,
-        //		void * param)
-        //{
+        public static void Avr_ioport_irq_notify(ref Avr_irq irq, uint value,object[] param)
+        {
         //	avr_ioport_t * p = (avr_ioport_t *)param;
         //	avr_t * avr = p->io.avr;
 
@@ -210,16 +159,16 @@ namespace SimulIDE.src.simavr.sim {
         //		if (raise)
         //			avr_raise_interrupt(avr, &p->pcint);
         //	}
-        //}
+        }
 
-        public static void avr_ioport_reset(Avr_io port)
+        public static void Avr_ioport_reset(Avr_io port)
         {
             Avr_ioport p = new Avr_ioport();
             p.name = port.irq_names[0];
             p.io = port;
 
-            // 	for (int i = 0; i < IOPORT_IRQ_PIN_ALL; i++)
-            // 		avr_irq_register_notify(p.io.irq + i, avr_ioport_irq_notify, p);
+            for (int i = 0; i < IOPORT_IRQ_PIN_ALL; i++)
+                Sim_irq.Avr_irq_register_notify(p.io.irq[i], Avr_ioport_irq_notify, new object[1] { p });
         }
 
         public static int Avr_ioport_ioctl(Avr_io port, uint ctl, object[] io_param)
@@ -319,8 +268,9 @@ namespace SimulIDE.src.simavr.sim {
             _io = new Avr_io();
             _io.kind = "port";
             _io.ioctl = Avr_ioport_ioctl;
-//            _io.            
-//            , avr_ioport_reset, , irq_names);
+            _io.irq_names = irq_names;
+            _io.reset = Avr_ioport_reset;
+
     }
 
 
@@ -339,7 +289,7 @@ namespace SimulIDE.src.simavr.sim {
         	Sim_io.Avr_register_io(avr, ref p.io);
         	Sim_interrupts.Avr_register_vector(avr, ref p.pcint);
         	// allocate this module's IRQ
-        	Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_IOPORT_GETIRQ((byte)p.name), IOPORT_IRQ_COUNT, null);
+        	Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_IOPORT_GETIRQ((byte)p.name[0]), IOPORT_IRQ_COUNT, null);
 
         	for (int i = 0; i < IOPORT_IRQ_COUNT; i++)
         		p.io.irq[i].flags |= Sim_irq.IRQ_FLAG_FILTERED;
@@ -349,40 +299,6 @@ namespace SimulIDE.src.simavr.sim {
             Sim_io.Avr_register_io_write(avr, p.r_pin, Avr_ioport_pin_write, p);
             Sim_io.Avr_register_io_write(avr, p.r_ddr, Avr_ioport_ddr_write, p);
         }
-
-
-        ///*
-        //	avr_ioport.h
-
-        //	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
-
-        // 	This file is part of simavr.
-
-        //	simavr is free software: you can redistribute it and/or modify
-        //	it under the terms of the GNU General Public License as published by
-        //	the Free Software Foundation, either version 3 of the License, or
-        //	(at your option) any later version.
-
-        //	simavr is distributed in the hope that it will be useful,
-        //	but WITHOUT ANY WARRANTY; without even the implied warranty of
-        //	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        //	GNU General Public License for more details.
-
-        //	You should have received a copy of the GNU General Public License
-        //	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
-        // */
-
-        //#ifndef __AVR_IOPORT_H__
-        //#define __AVR_IOPORT_H__
-
-        //#ifdef __cplusplus
-        //extern "C" {
-        //#endif
-
-        //#include "sim_avr.h"
-
-
-
 
         //#define AVR_IOPORT_OUTPUT 0x100
 

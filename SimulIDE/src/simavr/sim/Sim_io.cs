@@ -9,25 +9,25 @@ using System.Threading.Tasks;
 namespace SimulIDE.src.simavr.sim
 {
     public delegate int ioctl_function(Avr_io io, uint ctl, object[] io_param);
-
+    public delegate void ioportreset_function(Avr_io io);
+    public delegate void iodealoc_function(Avr_io io);
     public class Avr_io
     {
         public Avr_io next;
         public Avr avr;     // avr we are attached to
         public string kind;       // pretty name, for debug
-        public char[] irq_names; // IRQ names
+        public string[] irq_names; // IRQ names
 
         public uint irq_ioctl_get; // used to get irqs from this module
         public uint irq_count;  // number of (optional) irqs
-        public Avr_irq[] irq;		// optional external IRQs
-    	// called at reset time
-    	//void (* reset) (struct avr_io_t *io);
-    	// called externally. allow access to io modules and so on
-    	public ioctl_function ioctl;
+        public Avr_irq[] irq;       // optional external IRQs
+                                    // called at reset time
+        public ioportreset_function reset;
+        // called externally. allow access to io modules and so on
+        public ioctl_function ioctl;
         // optional, a function to free up allocated system resources
-        //        void (* dealloc) (struct avr_io_t *io);
+        public iodealoc_function dealloc;
     }
-    
 
     public class Sim_io
     {
@@ -204,12 +204,11 @@ namespace SimulIDE.src.simavr.sim
 
             if (irqs==null)
             {
-                char[] irq_names = null;
+                string[] irq_names = null;
 
                 if (io.irq_names!=null)
                 {
-                    irq_names = new char[count];
-                    char[] buf= new char[64];
+                    irq_names = new string[count];
                     for (int i = 0; i < count; i++)
                     {
                         /*
@@ -217,38 +216,33 @@ namespace SimulIDE.src.simavr.sim
                         * the IRQ name ("=0") and the last character of the ioctl ('p','o','r','A')
                         * to create a full name "=porta.0"
                         */
-                    
-                        char[] dst = buf;
+
+                        string dst = "";
+                        dst += io.irq_names[i][0];
                         // copy the 'flags' of the name out
-                        char kind = io.irq_names[i];
+                        string kind = io.irq_names[i].Substring(1);
 
              //           while (isdigit(*kind))
              //               *dst++ = *kind++;
              //           while (!isalpha(*kind))
              //               *dst++ = *kind++;
                         // add avr name
-                    
-                        //				strcpy(dst, io->avr->mmcu);
-            //            strcpy(dst, "avr");
-            //            dst += strlen(dst);
-            //            *dst++ = '.';
+                        dst += io.avr.mmcu;
+                        dst += "avr";
+                        dst += '.';
                         // add module 'kind'
-            //            strcpy(dst, io->kind);
-            //            dst += strlen(dst);
+                        dst += io.kind;
                         // add port name, if any
-            //            if ((ctl & 0xff) > ' ')
-            //                *dst++ = tolower(ctl & 0xff);
-            //            *dst++ = '.';
+                        if ((ctl & 0xff) > ' ')
+                            dst += (char)(ctl & 0xff);
+                        dst+= '.';
                         // add the rest of the irq name
-            //            strcpy(dst, kind);
-            //            dst += strlen(dst);
-            //            *dst = 0;
-                        //				printf("%s\n", buf);
-            //            irq_names[i] = strdup(buf);
+                        dst += kind;
+                        irq_names[i] = dst;
                     }
                 }
 
-                irqs = Sim_irq.Avr_alloc_irq(ref io.avr.irq_pool, 0,count, irq_names);
+                irqs = Sim_irq.Avr_alloc_irq(ref io.avr.irq_pool, 0,count,irq_names);
                 irq_names = null;
             }
     
@@ -257,73 +251,22 @@ namespace SimulIDE.src.simavr.sim
             return io.irq;
         }
 
-        //static void
-        //avr_deallocate_io(
-        //        avr_io_t* io)
-        //{
-        //    if (io->dealloc)
-        //        io->dealloc(io);
-        //    avr_free_irq(io->irq, io->irq_count);
-        //    io->irq_count = 0;
-        //    io->irq_ioctl_get = 0;
-        //    io->avr = NULL;
-        //    io->next = NULL;
-        //}
+        public static void Avr_deallocate_io(Avr_io io)
+        {
+            io.dealloc?.Invoke(io);
+            Sim_irq.Avr_free_irq(io.irq, io.irq_count);
+            io.irq_count = 0;
+            io.irq_ioctl_get = 0;
+            io.avr = null;
+            io.next = null;
+        }
 
-        //void
-        //avr_deallocate_ios(
-        //        avr_t* avr)
-        //{
-        //    avr_io_t* port = avr->io_port;
-        //    while (port)
-        //    {
-        //        avr_io_t* next = port->next;
-        //        avr_deallocate_io(port);
-        //        port = next;
-        //    }
-        //    avr->io_port = NULL;
-        //}
-
-
-
-
-
-
-
-
-
-
-
-
-        //        /*
-        //	sim_io.h
-
-        //	Copyright 2008, 2009 Michel Pollet <buserror@gmail.com>
-
-        // 	This file is part of simavr.
-
-        //	simavr is free software: you can redistribute it and/or modify
-        //	it under the terms of the GNU General Public License as published by
-        //	the Free Software Foundation, either version 3 of the License, or
-        //	(at your option) any later version.
-
-        //	simavr is distributed in the hope that it will be useful,
-        //	but WITHOUT ANY WARRANTY; without even the implied warranty of
-        //	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-        //	GNU General Public License for more details.
-
-        //	You should have received a copy of the GNU General Public License
-        //	along with simavr.  If not, see <http://www.gnu.org/licenses/>.
-        // */
-
-        //# ifndef __SIM_IO_H__
-        //#define __SIM_IO_H__
-
-        //# include "sim_avr.h"
-
-        //# ifdef __cplusplus
-        //        extern "C" {
-        //#endif
+        public static void Avr_deallocate_ios(Avr avr)
+        {
+            foreach(Avr_io port in avr.io_ports)
+                Avr_deallocate_io(port);
+            avr.io_ports = null;
+        }
 
         ///*
         // * used by the ioports to implement their own features
@@ -392,25 +335,8 @@ namespace SimulIDE.src.simavr.sim
         //        //
         //        // the "index" is a bit number, or ALL bits if index == 8
         public static int AVR_IOMEM_IRQ_ALL = 8;
-//        avr_irq_t*
-//        avr_iomem_getirq(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
+//        avr_irq_t* avr_iomem_getirq(Avr avr,uint addr, const char* name /* Optional, if NULL, "ioXXXX" will be used */ , int index);
 
-//        const char* name /* Optional, if NULL, "ioXXXX" will be used */ ,
 
-//        int index);
-
-//        // Terminates all IOs and remove from them from the io chain
-//        void
-//        avr_deallocate_ios(
-//                avr_t* avr);
-
-//# ifdef __cplusplus
-//    };
-//#endif
-
-//#endif /* __SIM_IO_H__ */
-
-}
+    }
 }

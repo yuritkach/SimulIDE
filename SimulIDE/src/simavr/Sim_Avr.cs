@@ -8,6 +8,7 @@ using System.Windows;
 using static SimulIDE.src.simavr.Sim_Avr;
 using static SimulIDE.src.simavr.sim.Avr_vcd_file;
 using SimulIDE.src.simavr.cores;
+using static SimulIDE.src.simavr.sim.Avr_io;
 
 namespace SimulIDE.src.simavr
 {
@@ -260,7 +261,7 @@ namespace SimulIDE.src.simavr
     public byte[] data = new byte[0];
 
     // queue of io modules
-    public Queue<Avr_io> io_ports = new Queue<Avr_io>();
+    public Queue<Avr_io> io_ports;
 
     // Builtin and user-defined commands
     public Avr_cmd_table commands = new Avr_cmd_table();
