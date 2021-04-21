@@ -62,6 +62,8 @@ namespace SimulIDE.src.simavr.cores
         {
             core = new Avr();
             eeprom = new Avr_eeprom();
+            selfprog = new Avr_flash();
+            
             InitPortB();
             InitPortC();
             InitPortD();
@@ -79,6 +81,7 @@ namespace SimulIDE.src.simavr.cores
             DefaultCore(Constants.SIM_VECTOR_SIZE);
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
+            core.custom = new Custom();
         }
 
         protected virtual void Avr_eeprom_init(Avr core)

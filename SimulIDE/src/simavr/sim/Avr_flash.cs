@@ -109,7 +109,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_flash_reset(Avr_io port)
         {
-         //   Avr_io p = port;
+         //   Avr_flash p = (Avr_flash) port;
          //   Avr_flash_clear_temppage(p);
         }
 

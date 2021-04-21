@@ -26,17 +26,17 @@ namespace SimulIDE.src.simavr.sim
 //        /*
 //         * set/get/clear io register bits in one operation
 //         */
-//        static inline uint8_t avr_regbit_set(avr_t* avr, avr_regbit_t rb)
-//        {
-//            uint16_t a = rb.reg;
-//            uint8_t m;
+        public static byte Avr_regbit_set(Avr avr, Avr_regbit rb)
+        {
+            ushort a = (ushort) rb.reg;
+            byte m;
 
-//            if (!a)
-//                return 0;
-//            m = rb.mask << rb.bit;
-//            avr_core_watch_write(avr, a, avr->data[a] | m);
-//            return (avr->data[a] >> rb.bit) & rb.mask;
-//        }
+            if (a!=0)
+                return 0;
+            m = (byte) (rb.mask << rb.bit);
+            Sim_core.Avr_core_watch_write(avr, a,(uint)(avr.data[a] | m));
+            return (byte)((avr.data[a] >> rb.bit) & rb.mask);
+        }
 
 //        static inline uint8_t avr_regbit_setto(avr_t* avr, avr_regbit_t rb, uint8_t v)
 //        {

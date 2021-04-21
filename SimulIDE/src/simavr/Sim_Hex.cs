@@ -131,7 +131,13 @@ namespace SimulIDE.src.simavr
                         continue;
                 }
 
-                if (chunk < max_chunks && addr != (chunks[chunk].baseaddr + chunks[chunk].size))
+                //if (chunk < max_chunks && addr != ((*chunks)[chunk].baseaddr + (*chunks)[chunk].size))
+                //{
+                //    if ((*chunks)[chunk].size)
+                //        chunk++;
+                //}
+
+                if ((chunk < max_chunks) && (addr == (chunks[chunk].baseaddr + chunks[chunk].size)))
                 {
                     if (chunks[chunk].size>0)
                         chunk++;

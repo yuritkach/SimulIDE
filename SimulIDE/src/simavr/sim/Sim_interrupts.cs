@@ -26,7 +26,7 @@ namespace SimulIDE.src.simavr.sim
     {
         public Avr_int_vector[] vector = new Avr_int_vector[64];
         public byte vector_count;
-        //public Avr_int_pending pending;
+       // public Avr_int_pending pending;
         public byte[] pending = new byte[0]; 
         public byte running_ptr;
         public Avr_int_vector[] running = new Avr_int_vector[64]; // stack of nested interrupts
@@ -39,18 +39,12 @@ namespace SimulIDE.src.simavr.sim
 
         //        DEFINE_FIFO(avr_int_vector_p, avr_int_pending);
 
-        //        void
-        //        avr_interrupt_init(
-        //                avr_t* avr)
-        //        {
-        //            avr_int_table_p table = &avr->interrupts;
-        //            memset(table, 0, sizeof(*table));
-
-        //            static const char* names[] = { ">avr.int.pending", ">avr.int.running" };
-        //            avr_init_irq(&avr->irq_pool, table->irq,
-        //                    0, // base number
-        //                    AVR_INT_IRQ_COUNT, names);
-        //        }
+        public static void Avr_interrupt_init(ref Avr avr)
+        {
+            Avr_int_table table = avr.Interrupts;
+            string[] names = new string[]{ ">avr.int.pending", ">avr.int.running" };
+            Sim_irq.Avr_init_irq(ref avr.irq_pool,ref table.irq,0, AVR_INT_IRQ_COUNT, names);
+        }
 
         public static void Avr_interrupt_reset(Avr avr)
         {
@@ -65,26 +59,20 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_vector(Avr avr, ref Avr_int_vector vector)
         {
-        //            if (!vector->vector)
-        //                return;
-
-        //            avr_int_table_p table = &avr->interrupts;
-
-        //            char name0[48], name1[48];
-        //            sprintf(name0, ">avr.int.%02x.pending", vector->vector);
-        //            sprintf(name1, ">avr.int.%02x.running", vector->vector);
-        //            const char* names[2] = { name0, name1 };
-        //            avr_init_irq(&avr->irq_pool, vector->irq,
-        //                    vector->vector * 256, // base number
-        //                    AVR_INT_IRQ_COUNT, names);
-        //            table->vector[table->vector_count++] = vector;
-        //            if (vector->trace)
-        //                printf("IRQ%d registered (enabled %04x:%d)\n",
-        //                    vector->vector, vector->enable.reg, vector->enable.bit);
-
-        //            if (!vector->enable.reg)
-        //                AVR_LOG(avr, LOG_WARNING, "IRQ%d No 'enable' bit !\n",
-        //                    vector->vector);
+            if (vector == null)
+                vector = new Avr_int_vector();
+            if (vector.vector==0)
+                return;
+            Avr_int_table table = avr.Interrupts;
+            string name0 = ">avr.int."+vector.vector.ToString("X2")+".pending";
+            string name1 = ">avr.int." + vector.vector.ToString("X2") + ".running";
+            string[] names = new string[] { name0, name1 };
+            Sim_irq.Avr_init_irq(ref avr.irq_pool,ref vector.irq,(uint)(vector.vector * 256), AVR_INT_IRQ_COUNT, names);
+            table.vector[table.vector_count++] = vector;
+            if (vector.trace!=0)
+                Console.WriteLine("IRQ{0:G} registered (enabled {1:X4}:{2:G})\n",vector.vector, vector.enable.reg, vector.enable.bit);
+            //            if (!vector->enable.reg)
+            //                AVR_LOG(avr, LOG_WARNING, "IRQ%d No 'enable' bit !\n",vector->vector);
         }
 
         public static bool Avr_has_pending_interrupts(Avr avr)
@@ -300,112 +288,12 @@ namespace SimulIDE.src.simavr.sim
         //    }
         }
 
-
-
-        //# ifndef __SIM_INTERRUPTS_H__
-        //#define __SIM_INTERRUPTS_H__
-
-        //# include "sim_avr_types.h"
-        //# include "sim_irq.h"
-        //# include "fifo_declare.h"
-
-        //# ifdef __cplusplus
-        //        extern "C" {
-        //#endif
-
-        //enum {
-        //            AVR_INT_IRQ_PENDING = 0,
-        //            AVR_INT_IRQ_RUNNING,
-        //            AVR_INT_IRQ_COUNT,
-        //            AVR_INT_ANY = 0xff, // for avr_get_interrupt_irq()
-        //        };
-        //        // interrupt vector for the IO modules
         public static byte AVR_INT_IRQ_PENDING = 0;
         public static byte AVR_INT_IRQ_RUNNING = 1;
         public static byte AVR_INT_IRQ_COUNT = 2;
         public static byte AVR_INT_ANY = 0xFF;
 
-
-
-
-        
-
-    //// Size needs to be >= max number of vectors, and a power of two
-    //DECLARE_FIFO(avr_int_vector_p, avr_int_pending, 64);
-
-    //        // interrupt vectors, and their enable/clear registers
-    
-
-    ///*
-    // * Interrupt Helper Functions
-    // */
-    //// register an interrupt vector. It's only needed if you want to use the "r_raised" flags
-    //void
-    //avr_register_vector(
-
-    //        struct avr_t *avr,
-    //		avr_int_vector_t* vector);
-    //        // raise an interrupt (if enabled). The interrupt is latched and will be called later
-    //        // return non-zero if the interrupt was raised and is now pending
-    //        int
-    //        avr_raise_interrupt(
-
-    //        struct avr_t * avr,
-    //		avr_int_vector_t* vector);
-    //        // return non-zero if the AVR core has any pending interrupts
-    //        int
-    //        avr_has_pending_interrupts(
-
-    //        struct avr_t * avr);
-    //// return nonzero if a specific interrupt vector is pending
-    //int
-    //avr_is_interrupt_pending(
-
-    //        struct avr_t * avr,
-    //		avr_int_vector_t* vector);
-    //        // clear the "pending" status of an interrupt
-    //        void
-    //        avr_clear_interrupt(
-
-    //        struct avr_t * avr,
-    //		avr_int_vector_t* vector);
-    //        // called by the core at each cycle to check whether an interrupt is pending
-    //        void
-    //        avr_service_interrupts(
-
-    //        struct avr_t * avr);
-    //// called by the core when RETI opcode is ran
-    //void
-    //avr_interrupt_reti(
-
-    //        struct avr_t * avr);
-    //// clear the interrupt (inc pending) if "raised" flag is 1
-    //int
-    //avr_clear_interrupt_if(
-
-    //        struct avr_t * avr,
-    //		avr_int_vector_t* vector,
-    //        uint8_t old);
-
-    //// return the IRQ that is raised when the vector is enabled and called/cleared
-    //// this allows tracing of pending interrupts
-    //avr_irq_t*
-    //avr_get_interrupt_irq(
-
-    //        struct avr_t * avr,
-    //		uint8_t v);
-
-    //        // Initializes the interrupt table
-    //        void
-    //        avr_interrupt_init(
-
-    //        struct avr_t * avr );
-
-    //// reset the interrupt table and the fifo
-    //void
-    //avr_interrupt_reset(
-
-    //        struct avr_t * avr );
+        //DECLARE_FIFO(avr_int_vector_p, avr_int_pending, 64);
 
     }
 }

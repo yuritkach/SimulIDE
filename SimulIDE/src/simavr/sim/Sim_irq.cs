@@ -37,36 +37,37 @@ namespace SimulIDE.src.simavr.sim
 
         public class Avr_irq_pool
         {
-            public int count;                      //!< number of irqs living in the pool
-            public Avr_irq[] irq;		//!< irqs belonging in this pool
+            public int Count { get { return irq.Count; } }                      //!< number of irqs living in the pool
+            public List<Avr_irq> irq;       //!< irqs belonging in this pool
+
+            public Avr_irq_pool()
+            {
+                irq = new List<Avr_irq>();
+            }
+
         }
 
-          public class Avr_irq
-          {
-                public Avr_irq_pool pool;
-            	public string name;
-                public uint irq;       //!< any value the user needs
-                public uint value;     //!< current value
-                public byte flags;      //!< IRQ_* flags
-                public Avr_irq_hook hook;	//!< list of hooks to be notified
-          }
+        public class Avr_irq
+        {
+            public Avr_irq_pool pool;
+            public string name;
+            public uint irq;       //!< any value the user needs
+            public uint value;     //!< current value
+            public byte flags;      //!< IRQ_* flags
+            public Avr_irq_hook hook;	//!< list of hooks to be notified
+        }
     
     class Sim_irq
     {
 
         public static void _avr_irq_pool_add(ref Avr_irq_pool pool,ref Avr_irq irq)
         {
-            if (pool.irq == null)
-                pool.irq = new Avr_irq[0];
-            Array.Resize<Avr_irq>(ref pool.irq, pool.irq.Length + 1);
-            pool.count = pool.irq.Length;
-            pool.irq[pool.count - 1] = irq;
-            irq.pool = pool;
+            pool.irq.Add(irq);
         }
 
         public static void _avr_irq_pool_remove(ref Avr_irq_pool pool,Avr_irq irq)
         {
-            pool.irq = pool.irq.Where((val, idx) => val != irq).ToArray();
+            pool.irq.Remove(irq);
         }
 
         //! allocates 'count' IRQs, initializes their "irq" starting from '_base' and increment
@@ -84,6 +85,9 @@ namespace SimulIDE.src.simavr.sim
         {
             irq = new Avr_irq[count];
 
+            if (pool == null)
+                pool = new Avr_irq_pool();
+           
             for (int i = 0; i < count; i++)
             {
                 irq[i] = new Avr_irq();

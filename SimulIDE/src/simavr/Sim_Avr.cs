@@ -48,10 +48,10 @@ namespace SimulIDE.src.simavr
         public Avr_trace_data()
         {
             for (int i = 0; i < OLD_PC_SIZE; i++)
-            {
                 old[i] = new pcsp();
-            }
 
+            for (int i = 0; i < STACK_FRAME_SIZE; i++)
+                stack_frame[i] = new pcsp();
         }
 
         public static int STACK_FRAME_SIZE = 32;
@@ -69,7 +69,8 @@ namespace SimulIDE.src.simavr
 
     public delegate void InitDelegate(Avr avr);
     public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object[] param);
-    public delegate byte Avr_io_read_function(Avr avr, uint addr,object[] param); 
+    public delegate byte Avr_io_read_function(Avr avr, uint addr,object[] param);
+    public delegate void CustomInit_function(Avr avr, byte[] data);
 
     public struct Avr_regbit
     {
@@ -90,11 +91,11 @@ namespace SimulIDE.src.simavr
     {
         // called at init time (for special purposes like using a
         // memory mapped file as flash see: simduino)
-        public void Init(Avr avr, byte[] data) { }
+        public CustomInit_function Init;
         // called at termination time ( to clean special initializations)
-        public void Deinit(Avr avr, byte[] data) { }
+        public CustomInit_function Deinit;
         // value passed to init() and deinit()
-        byte[] data;
+        public byte[] data;
     }
 
     public class ReadIO
@@ -110,9 +111,15 @@ namespace SimulIDE.src.simavr
 
     public class IO
     {
-        public  Avr_irq[] irq = new Avr_irq[0]; // optional, used only if asked for with avr_iomem_getirq()
+        public  Avr_irq[] irq = new Avr_irq[Sim_io.AVR_IOMEM_IRQ_ALL+1]; // optional, used only if asked for with avr_iomem_getirq()
         public ReadIO r = new ReadIO();
         public WriteIO w = new WriteIO();
+
+        public IO()
+        {
+            for (int i = 0; i <= Sim_io.AVR_IOMEM_IRQ_ALL; i++)
+                irq[i] = new Avr_irq();
+        }
     }
 
     public delegate void Avr_run(Avr avr);
@@ -349,20 +356,17 @@ namespace SimulIDE.src.simavr
         avr.state = CoreStates.cpu_Limbo;
         avr.frequency = 1000000;	// can be overridden via avr_mcu_section
         Sim_Cmds.Avr_cmd_init(ref avr);
-        //Avr_interrupt_init(ref avr);
-        
-        //if (avr.custom.init)
-       // 	avr.custom.init(avr, avr.custom.data);
-       // if (avr->init)
-        //	avr->init(avr);
+        Sim_interrupts.Avr_interrupt_init(ref avr);
+        avr.custom.Init?.Invoke(avr, avr.custom.data);
+        avr.Init?.Invoke(avr);
         // set default (non gdb) fast callbacks
-        avr.Run = Avr_callback_run_raw;
-        //avr->sleep = avr_callback_sleep_raw;
+         avr.Run = Avr_callback_run_raw;
+        //avr.sleep = avr_callback_sleep_raw;
         // number of address bytes to push/pull on/off the stack
-        //avr.address_size = avr.eind? 3 : 2;
+        avr.address_size =(byte)(avr.eind!=0? 3 : 2);
         //avr->log = 1;
-        //avr_reset(avr);
-        //avr_regbit_set(avr, avr->reset_flags.porf);		// by  default set to power-on reset
+        Avr_reset(avr);
+        Sim_regbit.Avr_regbit_set(avr, avr.reset_flags.porf);		// by  default set to power-on reset
         return 0;
         }
 
