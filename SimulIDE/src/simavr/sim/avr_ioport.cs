@@ -114,11 +114,10 @@ namespace SimulIDE.src.simavr.sim {
         	Avr_ioport p = (Avr_ioport)param;
 
         	if (avr.data[addr] != v)
-                Console.WriteLine("** DDR%c(%02x) = %02x\r\n", p.name, addr, v);
-        	//Avr_raise_irq(p.io.irq + IOPORT_IRQ_DIRECTION_ALL, v);
-        	//Avr_core_watch_write(avr, addr, v);
-
-        	//Avr_ioport_update_irqs(p);
+                Console.WriteLine("** DDR{0:G}({1:X2}) = {2:X2}\r\n", p.name, addr, v);
+        	Avr_raise_irq(p.io.irq + IOPORT_IRQ_DIRECTION_ALL, v);
+        	Avr_core_watch_write(avr, addr, v);
+        	Avr_ioport_update_irqs(p);
         }
 
         ///*

@@ -62,14 +62,14 @@ namespace SimulIDE.src.simavr
         // DEBUG ONLY
         // keeps track of which registers gets touched by instructions
         // reset before each new instructions. Allows meaningful traces
-        public uint[] touched = new uint[256 / 32];	// debug
+        public uint[] touched = new uint[256 / 32+1];	// debug
     }
 
 
 
     public delegate void InitDelegate(Avr avr);
-    public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object[] param);
-    public delegate byte Avr_io_read_function(Avr avr, uint addr,object[] param);
+    public delegate void Avr_io_write_function(Avr avr, uint addr, byte v, object param);
+    public delegate byte Avr_io_read_function(Avr avr, uint addr,object param);
     public delegate void CustomInit_function(Avr avr, byte[] data);
 
     public struct Avr_regbit
@@ -444,7 +444,7 @@ namespace SimulIDE.src.simavr
             Sim_Cmds.Avr_cmd_set_register(avr, addr);
         }
 
-        public static void _avr_io_console_write(Avr avr, uint addr, byte v,  object[] param)
+        public static void _avr_io_console_write(Avr avr, uint addr, byte v,  object param)
         {
         //            if (v == '\r' && avr->io_console_buffer.buf)
         //            {

@@ -151,7 +151,7 @@ namespace SimulIDE.src.gui.editor
             if (board < BoardType.Custom)
                 boardName = boardList[(int)board];
             else boardName = customBoard;
-            string args=" -v --board arduino:avr:" + boardName + " --pref build.path=" + cBuildPath;
+            string args= " -v --board arduino:avr:" + boardName + " --pref build.path=" + cBuildPath;
 //            if (!preferencesPath.isEmpty())
 //                command += " --preferences-file " + preferencesPath;
             args += " --preserve-temp-files --verify " + ProcInoFile;
@@ -159,6 +159,8 @@ namespace SimulIDE.src.gui.editor
 
             outPane.AppendText(cmd+args);
             outPane.AppendText("\n\n");
+
+            //   / Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++ -c -g -Os -Wall -Wextra -std=gnu++11 -fpermissive -fno-exceptions -ffunction -sections -fdata-sections -fno-threadsafe-statics -Wno-error=narrowing -MMD -flto -mmcu=atmega328p -DF_CPU=16000000L -DARDUINO=10810 -DARDUINO_AVR_UNO -DARDUINO_ARCH_AVR -I /Applications/Arduino.app/Contents/Java/ hardware / arduino / avr / cores / arduino - I / Applications / Arduino.app / Contents / Java / hardware / arduino / avr / variants / standard - I / Users / john / Documents / Arduino / libraries / IRremote / var / folders / 2v / _q7vxn794_d8th6w010cnmv00000gn / T / arduino_build_771667 / sketch / sketch_dec25a.ino.cpp - o / var / folders / 2v / _q7vxn794_d8th6w010cnmv00000gn / T / arduino_build_771667 / sketch / sketch_dec25a.ino.cpp.o
 
             compError = "";
 
@@ -245,7 +247,7 @@ namespace SimulIDE.src.gui.editor
             Process compIno_ = new Process();
             compIno_.StartInfo.WorkingDirectory = fileDir;
             compIno_.StartInfo.FileName = objdump;
-            compIno_.StartInfo.Arguments = " -S -j .text " + elfPath;
+            compIno_.StartInfo.Arguments = " -S -d -j .text " + elfPath;
           //  compIno_.StartInfo.Arguments = " -S -x -m -d " + elfPath;
 
             compIno_.StartInfo.UseShellExecute = false;

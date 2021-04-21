@@ -25,7 +25,7 @@ namespace SimulIDE.src.simavr.sim
 
     class Sim_Cmds
     {
-        public static void _avr_cmd_io_write( Avr avr, uint addr, byte v, object[] param)
+        public static void _avr_cmd_io_write( Avr avr, uint addr, byte v, object param)
         {
             Avr_cmd_table commands = avr.commands;
             Avr_cmd command = commands.pending[0];

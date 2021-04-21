@@ -265,7 +265,7 @@ namespace SimulIDE.src.simavr.sim
             {
                 ushort io = (ushort)AVR_DATA_TO_IO(r);
                 if (avr.io[io].w.c!=null)
-                    avr.io[io].w.c(avr, r, (byte) v, new object[1] { avr.io[io].w.param });
+                    avr.io[io].w.c(avr, r, (byte) v, avr.io[io].w.param);
                 else
                     avr.data[r] = (byte) v;
                 if (avr.io[io].irq.Length!=0)
@@ -309,7 +309,7 @@ namespace SimulIDE.src.simavr.sim
         // */
         public static void _avr_set_ram(Avr avr, ushort addr, uint v)
         {
-            if (addr < MAX_IOs + 31)
+            if (addr < (MAX_IOs + 31))
                 _avr_set_r(avr, addr, v);
             else
                 Avr_core_watch_write(avr, addr, v);
@@ -1580,7 +1580,7 @@ namespace SimulIDE.src.simavr.sim
                     {  // LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
                        byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
                        byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
-                       STATE(avr,"ldi {0:G}, 0x{2:X2}\n", Avr_regname(h), k);
+                       STATE(avr,"ldi {0:G}, 0x{1:X2}\n", Avr_regname(h), k);
                        _avr_set_r(avr, h, k);
                     }
                     break;
@@ -1593,24 +1593,30 @@ namespace SimulIDE.src.simavr.sim
                             case 0xf200:
                             case 0xf400:
                             case 0xf600: {	// BRXC/BRXS -- All the SREG branches -- 1111 0Boo oooo osss
-                                ushort o = (ushort)(((ushort)(opcode << 6)) >> 9); // offset
-                                byte s = (byte)(opcode & 7);
+                                int o = (((ushort)(opcode << 6)) >> 9); // offset
+                                if (o >= 64) // TYV negative offset
+                                    o = (128 - o)*-1;
+
+                                    byte s = (byte)(opcode & 7);
                                 int set = (int)((opcode & 0x0400) == 0?1:0);		// this bit means BRXC otherwise BRXS
                                 int branch = (int)((((avr.sreg[s]==1) && (set!=0)) || (avr.sreg[s]!=1 && set==0))?1:0);
                                 string[,] names = new string[2,8]{
                                     { "brcc", "brne", "brpl", "brvc", null, "brhc", "brtc", "brid"},
                                     { "brcs", "breq", "brmi", "brvs", null, "brhs", "brts", "brie"}};
-                                if (names[set,s]!=null) 
-                                    STATE(avr,"{0:G} .{1:G} [{2:X4}]\t; Will{3:G} branch\n", names[set,s], o, new_pc + (o << 1), branch!=0 ? "":" not");
-                                else 
-                                    STATE(avr,"{0:G}{1:G} .{2:G} [{3:X4}]\t; Will{5:G} branch\n", set!=0 ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch!=0 ? "":" not");
-                                
-                                if (branch!=0) 
+
+
+                                    if (names[set, s] != null)
+                                        STATE(avr, "{0:G} .{1:G} [{2:X4}]\t; Will{3:G} branch\n", names[set, s], o << 1, new_pc + (o << 1), branch != 0 ? "" : " not");
+                                    else
+                                        STATE(avr, "{0:G}{1:G} .{2:G} [{3:X4}]\t; Will{4:G} branch\n", set != 0 ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch != 0 ? "" : " not");
+
+                                    if (branch!=0) 
                                 {
                                     cycle++; // 2 cycles if taken, 1 otherwise
                                     new_pc = (uint)(new_pc + (o << 1));
                                 }
-                            }	break;
+                                }
+                                break;
                             case 0xf800:
                             case 0xf900: {	// BLD -- Bit Store from T into a Bit in Register -- 1111 100d dddd 0bbb
                                 byte d = (byte)((opcode >> 4) & 0x1f); 
