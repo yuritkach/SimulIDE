@@ -612,7 +612,7 @@ namespace SimulIDE.src.simavr.sim
                                                 byte vd = avr.data[d];
                                                 byte vr = avr.data[r];
                                                 byte res = (byte)(vd - vr - avr.sreg[S_C]);
-                                                STATE(avr, "cpc %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                                STATE(avr, "cpc {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                                 _avr_flags_sub_Rzns(avr, res, vd, vr);
                                                 SREG(avr);
                                             }
@@ -626,11 +626,11 @@ namespace SimulIDE.src.simavr.sim
                                                 byte res = (byte)(vd + vr);
                                                 if (r == d)
                                                 {
-                                                    STATE(avr, "lsl %s[%02x] = %02x\n", Avr_regname(d), vd, res & 0xff);
+                                                    STATE(avr, "lsl {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), vd, res & 0xff);
                                                 }
                                                 else
                                                 {
-                                                    STATE(avr, "add %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                                    STATE(avr, "add {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                                 }
                                                 _avr_set_r(avr, d, res);
                                                 _avr_flags_add_zns(avr, res, vd, vr);
@@ -644,7 +644,7 @@ namespace SimulIDE.src.simavr.sim
                                                 byte vd = avr.data[d];
                                                 byte vr = avr.data[r];
                                                 byte res = (byte)(vd - vr - avr.sreg[S_C]);
-                                                STATE(avr, "sbc %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res);
+                                                STATE(avr, "sbc {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res);
                                                 _avr_set_r(avr, d, res);
                                                 _avr_flags_sub_Rzns(avr, res, vd, vr);
                                                 SREG(avr);
@@ -657,7 +657,7 @@ namespace SimulIDE.src.simavr.sim
                                                     {  // MOVW -- Copy Register Word -- 0000 0001 dddd rrrr
                                                         byte d = (byte)(((opcode >> 4) & 0xf) << 1);
                                                         byte r = (byte)(((opcode) & 0xf) << 1);
-                                                        STATE(avr, "movw %s:%s, %s:%s[%02x%02x]\n", Avr_regname(d), Avr_regname((byte)(d + 1)), Avr_regname(r), Avr_regname((byte)(r + 1)), avr.data[r + 1], avr.data[r]);
+                                                        STATE(avr, "movw {0:G}:{1:G}, {2:G}:{3:G}[{4:X2}{5:X2}]\n", Avr_regname(d), Avr_regname((byte)(d + 1)), Avr_regname(r), Avr_regname((byte)(r + 1)), avr.data[r + 1], avr.data[r]);
                                                         ushort vr = (ushort)(avr.data[r] | (avr.data[r + 1] << 8));
                                                         _avr_set_r16le(avr, d, vr);
                                                     }; break;
@@ -666,7 +666,7 @@ namespace SimulIDE.src.simavr.sim
                                                         byte r = (byte)(16 + (opcode & 0xf));
                                                         byte d = (byte)(16 + ((opcode >> 4) & 0xf));
                                                         ushort res = (ushort)(((byte)avr.data[r]) * ((byte)avr.data[d]));
-                                                        STATE(avr, "muls %s[%d], %s[%02x] = %d\n", Avr_regname(d), (byte)avr.data[d], Avr_regname(r), (byte)avr.data[r], res);
+                                                        STATE(avr, "muls {0:G}[{1:G}], {2:G}[{3:X2}] = {4:G}", Avr_regname(d), (byte)avr.data[d], Avr_regname(r), (byte)avr.data[r], res);
                                                         _avr_set_r16le(avr, 0, res);
                                                         avr.sreg[S_C] = (byte)((res >> 15) & 1);
                                                         avr.sreg[S_Z] = (byte)(res == 0 ? 1 : 0);
@@ -703,7 +703,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 name = "fmulsu"; break;
                                                         }
                                                         cycle++;
-                                                        STATE(avr, "%s %s[%d], %s[%02x] = %d\n", name, Avr_regname(d), (byte)avr.data[d], Avr_regname(r), (byte)avr.data[r], res);
+                                                        STATE(avr, "{0:G} {1:G}[{2:G}], {3:G}[{4:X2}] = {5:G}", name, Avr_regname(d), (byte)avr.data[d], Avr_regname(r), (byte)avr.data[r], res);
                                                         _avr_set_r16le(avr, 0, res);
                                                         avr.sreg[S_C] = c;
                                                         avr.sreg[S_Z] = (byte)(res == 0 ? 1 : 0);
@@ -730,7 +730,7 @@ namespace SimulIDE.src.simavr.sim
                                     byte vd = avr.data[d];
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd - vr);
-                                    STATE(avr, "sub %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                    STATE(avr, "sub {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                     _avr_set_r(avr, d, res);
                                     _avr_flags_sub_zns(avr, res, vd, vr);
                                     SREG(avr);
@@ -742,7 +742,7 @@ namespace SimulIDE.src.simavr.sim
                                     byte vd = avr.data[d];
                                     byte vr = avr.data[r];
                                     ushort res = (ushort)(vd == vr ? 1 : 0);
-                                    STATE(avr, "cpse %s[%02x], %s[%02x]\t; Will%s skip\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res != 0 ? "" : " not");
+                                    STATE(avr, "cpse {0:G}[{1:X2}], {2:G}[{3:X2}]\t; Will{4:G} skip\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res != 0 ? "" : " not");
                                     if (res != 0)
                                     {
                                         if (_avr_is_instruction_32_bits(avr, new_pc))
@@ -764,7 +764,7 @@ namespace SimulIDE.src.simavr.sim
                                     byte vd = avr.data[d];
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd - vr);
-                                    STATE(avr, "cp %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                    STATE(avr, "cp {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                     _avr_flags_sub_zns(avr, res, vd, vr);
                                     SREG(avr);
                                 }; break;
@@ -776,9 +776,9 @@ namespace SimulIDE.src.simavr.sim
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd + vr + avr.sreg[S_C]);
                                     if (r == d)
-                                        STATE(avr, "rol %s[%02x] = %02x\n", Avr_regname(d), avr.data[d], res);
+                                        STATE(avr, "rol {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), avr.data[d], res);
                                     else
-                                        STATE(avr, "addc %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res);
+                                        STATE(avr, "addc {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), avr.data[d], Avr_regname(r), avr.data[r], res);
                                     _avr_set_r(avr, d, res);
                                     _avr_flags_add_zns(avr, res, vd, vr);
                                     SREG(avr);
@@ -816,9 +816,9 @@ namespace SimulIDE.src.simavr.sim
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd ^ vr);
                                     if (r == d)
-                                        STATE(avr, "clr %s[%02x]\n", Avr_regname(d), avr.data[d]);
+                                        STATE(avr, "clr {0:G}[{1:X2}]", Avr_regname(d), avr.data[d]);
                                     else
-                                        STATE(avr, "eor %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                        STATE(avr, "eor {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                     _avr_set_r(avr, d, res);
                                     _avr_flags_znv0s(avr, res);
                                     SREG(avr);
@@ -831,7 +831,7 @@ namespace SimulIDE.src.simavr.sim
                                     byte vd = avr.data[d];
                                     byte vr = avr.data[r];
                                     byte res = (byte)(vd | vr);
-                                    STATE(avr, "or %s[%02x], %s[%02x] = %02x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                    STATE(avr, "or {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X2}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                     _avr_set_r(avr, d, res);
                                     _avr_flags_znv0s(avr, res);
                                     SREG(avr);
@@ -843,7 +843,7 @@ namespace SimulIDE.src.simavr.sim
                                     byte r = (byte)(((opcode >> 5) & 0x10) | (opcode & 0xf));
                                     byte vr = avr.data[r];
                                     byte res = vr;
-                                    STATE(avr, "mov %s, %s[%02x] = %02x\n", Avr_regname(d), Avr_regname(r), vr, res);
+                                    STATE(avr, "mov {0:G}, {1:G}[{2:X2}] = {3:X2}\n", Avr_regname(d), Avr_regname(r), vr, res);
                                     _avr_set_r(avr, d, res);
                                 }
                                 break;
@@ -858,7 +858,7 @@ namespace SimulIDE.src.simavr.sim
                         byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
                         byte vh = avr.data[h];
                         byte res = (byte)(vh - k);
-                        STATE(avr, "cpi %s[%02x], 0x%02x\n", Avr_regname(h), vh, k);
+                        STATE(avr, "cpi {0:G}[{1:X2}], 0x{2:X2}", Avr_regname(h), vh, k);
                         _avr_flags_sub_zns(avr, res, vh, k);
                         SREG(avr);
                     }
@@ -870,7 +870,7 @@ namespace SimulIDE.src.simavr.sim
                         byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
                         byte vh = avr.data[h];
                         byte res = (byte)(vh - k - avr.sreg[S_C]);
-                        STATE(avr, "sbci %s[%02x], 0x%02x = %02x\n", Avr_regname(h), vh, k, res);
+                        STATE(avr, "sbci {0:G}[{1:X2}], 0x{2:X2} = {3:X2}", Avr_regname(h), vh, k, res);
                         _avr_set_r(avr, h, res);
                         _avr_flags_sub_Rzns(avr, res, vh, k);
                         SREG(avr);
@@ -883,7 +883,7 @@ namespace SimulIDE.src.simavr.sim
                         byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
                         byte vh = avr.data[h];
                         byte res = (byte)(vh - k);
-                        STATE(avr, "subi %s[%02x], 0x%02x = %02x\n", Avr_regname(h), vh, k, res);
+                        STATE(avr, "subi {0:G}[{1:X2}], 0x{2:X2} = {3:X2}", Avr_regname(h), vh, k, res);
                         _avr_set_r(avr, h, res);
                         _avr_flags_sub_zns(avr, res, vh, k);
                         SREG(avr);
@@ -896,7 +896,7 @@ namespace SimulIDE.src.simavr.sim
                         byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
                         byte vh = avr.data[h];
                         byte res = (byte)(vh | k);
-                        STATE(avr, "ori %s[%02x], 0x%02x\n", Avr_regname(h), vh, k);
+                        STATE(avr, "ori {0:G}[{1:X2}], 0x{2:X2}", Avr_regname(h), vh, k);
                         _avr_set_r(avr, h, res);
                         _avr_flags_znv0s(avr, res);
                         SREG(avr);
@@ -909,7 +909,7 @@ namespace SimulIDE.src.simavr.sim
                         byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
                         byte vh = avr.data[h];
                         byte res = (byte)(vh & k);
-                        STATE(avr, "andi %s[%02x], 0x%02x\n", Avr_regname(h), vh, k);
+                        STATE(avr, "andi {0:G}[{1:X2}], 0x{2:X2}", Avr_regname(h), vh, k);
                         _avr_set_r(avr, h, res);
                         _avr_flags_znv0s(avr, res);
                         SREG(avr);
@@ -936,12 +936,12 @@ namespace SimulIDE.src.simavr.sim
                                     byte q = (byte)(((opcode & 0x2000) >> 8) | ((opcode & 0x0c00) >> 7) | (opcode & 0x7));
                                     if ((opcode & 0x0200) != 0)
                                     {
-                                        STATE(avr, "st (Z+%d[%04x]), %s[%02x]\n", q, v + q, Avr_regname(d), avr.data[d]);
+                                        STATE(avr, "st (Z+{0:G}[{1:X4}]), {2:G}[{3:X2}]\n", q, v + q, Avr_regname(d), avr.data[d]);
                                         _avr_set_ram(avr, (ushort)(v + q), avr.data[d]);
                                     }
                                     else
                                     {
-                                        STATE(avr, "ld %s, (Z+%d[%04x])=[%02x]\n", Avr_regname(d), q, v + q, avr.data[v + q]);
+                                        STATE(avr, "ld {0:G}, (Z+{1:G}[{2:X4}])=[{3:X2}]\n", Avr_regname(d), q, v + q, avr.data[v + q]);
                                         _avr_set_r(avr, d, _avr_get_ram(avr, (ushort)(v + q)));
                                     }
                                     cycle += 1; // 2 cycles, 3 for tinyavr
@@ -956,12 +956,12 @@ namespace SimulIDE.src.simavr.sim
 
                                     if ((opcode & 0x0200) != 0)
                                     {
-                                        STATE(avr, "st (Y+%d[%04x]), %s[%02x]\n", q, v + q, Avr_regname(d), avr.data[d]);
+                                        STATE(avr, "st (Y+{0:G}[{1:X4}]), {2:G}[{3:X2}]\n", q, v + q, Avr_regname(d), avr.data[d]);
                                         _avr_set_ram(avr, (ushort)(v + q), avr.data[d]);
                                     }
                                     else
                                     {
-                                        STATE(avr, "ld %s, (Y+%d[%04x])=[%02x]\n", Avr_regname(d), q, v + q, avr.data[d + q]);
+                                        STATE(avr, "ld {0:G}, (Y+{1:G}[{2:X4}])=[{3:X2}]\n", Avr_regname(d), q, v + q, avr.data[d + q]);
                                         _avr_set_r(avr, d, _avr_get_ram(avr, (ushort)(v + q)));
                                     }
                                     cycle += 1; // 2 cycles, 3 for tinyavr
@@ -978,7 +978,7 @@ namespace SimulIDE.src.simavr.sim
                         if ((opcode & 0xff0f) == 0x9408)
                         {
                             byte b = (byte)((opcode >> 4) & 7);
-                            STATE(avr, "%s%c\n", (opcode & 0x0080) != 0 ? "cl" : "se", _sreg_bit_name[b]);
+                            STATE(avr, "{0:G}{1:G}", (opcode & 0x0080) != 0 ? "cl" : "se", _sreg_bit_name[b]);
                             avr_sreg_set(avr, b, (opcode & 0x0080) == 0);
                             SREG(avr);
                         }
@@ -1035,7 +1035,7 @@ namespace SimulIDE.src.simavr.sim
                                         uint z = (uint)(avr.data[R_ZL] | (avr.data[R_ZH] << 8));
                                         if (e != 0)
                                             z |= (uint)(avr.data[avr.eind] << 16);
-                                        STATE(avr, "%si%s Z[%04x]\n", e != 0 ? "e" : "", p != 0 ? "call" : "jmp", z << 1);
+                                        STATE(avr, "{0:G}i{1:G} Z[{2:X4}]\n", e != 0 ? "e" : "", p != 0 ? "call" : "jmp", z << 1);
                                         if (p != 0)
                                             cycle += (uint)(_avr_push_addr(avr, new_pc) - 1);
                                         new_pc = z << 1;
@@ -1056,7 +1056,7 @@ namespace SimulIDE.src.simavr.sim
                                     { // RET -- Return -- 1001 0101 0000 1000
                                         new_pc = _avr_pop_addr(avr);
                                         cycle += (ulong)(1 + avr.address_size);
-                                        STATE(avr, "ret%s\n", ((opcode & 0x10) != 0) ? "i" : "");
+                                        STATE(avr, "ret{0:G}\n", ((opcode & 0x10) != 0) ? "i" : "");
                                         avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                                         avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
                                         avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE - 1);
@@ -1077,7 +1077,7 @@ namespace SimulIDE.src.simavr.sim
                                         if (avr.rampz != 0)
                                             _avr_invalid_opcode(avr);
                                         uint z = (uint)(avr.data[R_ZL] | (avr.data[R_ZH] << 8) | (avr.data[avr.rampz] << 16));
-                                        STATE(avr, "elpm %s, (Z[%02x:%04x])\n", Avr_regname(0), z >> 16, z & 0xffff);
+                                        STATE(avr, "elpm {0:G}, (Z[{1:X2}:{2:X4}])\n", Avr_regname(0), z >> 16, z & 0xffff);
                                         _avr_set_r(avr, 0, avr.flash[z]);
                                         cycle += 2; // 3 cycles
                                     }
@@ -1091,7 +1091,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     ushort x = _avr_flash_read16le(avr, new_pc);
                                                     new_pc += 2;
-                                                    STATE(avr, "lds %s[%02x], 0x%04x\n", Avr_regname(d), avr.data[d], x);
+                                                    STATE(avr, "lds {0:G}[{1:X2}], 0x{2:X4}\n", Avr_regname(d), avr.data[d], x);
                                                     _avr_set_r(avr, d, _avr_get_ram(avr, x));
                                                     cycle++; // 2 cycles
                                                 }
@@ -1120,7 +1120,7 @@ namespace SimulIDE.src.simavr.sim
                                                     uint z = (uint)(avr.data[R_ZL] | (avr.data[R_ZH] << 8) | (avr.data[avr.rampz] << 16));
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     int op = (int)(opcode & 1);
-                                                    STATE(avr,"elpm %s, (Z[%02x:%04x]%s)\n", Avr_regname(d), z >> 16, z & 0xffff, op!=0 ? "+" : "");
+                                                    STATE(avr,"elpm {0:G}, (Z[{1:X2}:{2:X4}]{3:G})\n", Avr_regname(d), z >> 16, z & 0xffff, op!=0 ? "+" : "");
                                                     _avr_set_r(avr, d, avr.flash[z]);
                                                     if (op!=0)
                                                     {
@@ -1165,7 +1165,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     ushort x = (ushort)((avr.data[R_XH] << 8) | avr.data[R_XL]);
-                                                    STATE(avr,"st %sX[%04x]%s, %s[%02x] \n", op == 2 ? "--" : "", x, op == 1 ? "++" : "", Avr_regname(d), vd);
+                                                    STATE(avr,"st {0:G}X[{1:X4}]{2:G}, {3:G}[{4:X2}] \n", op == 2 ? "--" : "", x, op == 1 ? "++" : "", Avr_regname(d), vd);
                                                     cycle++; // 2 cycles, except tinyavr
                                                     if (op == 2)
                                                         x--;
@@ -1181,7 +1181,7 @@ namespace SimulIDE.src.simavr.sim
                                                     int op = (int)(opcode & 3);
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     ushort y = (ushort)((avr.data[R_YH] << 8) | avr.data[R_YL]);
-                                                    STATE(avr,"ld %s, %sY[%04x]%s\n", Avr_regname(d), op == 2 ? "--" : "", y, op == 1 ? "++" : "");
+                                                    STATE(avr,"ld {0:G}, {1:G}Y[{2:X4}]{3:G}\n", Avr_regname(d), op == 2 ? "--" : "", y, op == 1 ? "++" : "");
                                                     cycle++; // 2 cycles, except tinyavr
                                                     if (op == 2)
                                                         y--;
@@ -1199,7 +1199,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     ushort y = (ushort)((avr.data[R_YH] << 8) | avr.data[R_YL]);
-                                                    STATE(avr,"st %sY[%04x]%s, %s[%02x]\n", op == 2 ? "--" : "", y, op == 1 ? "++" : "", Avr_regname(d), vd);
+                                                    STATE(avr,"st {0:G}Y[{1:X4}]{2:G}, {3:G}[{4:X2}]\n", op == 2 ? "--" : "", y, op == 1 ? "++" : "", Avr_regname(d), vd);
                                                     cycle++;
                                                     if (op == 2)
                                                         y--;
@@ -1215,7 +1215,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte vd = avr.data[d];
                                                     ushort x = _avr_flash_read16le(avr, new_pc);
                                                     new_pc += 2;
-                                                    STATE(avr,"sts 0x%04x, %s[%02x]\n", x, Avr_regname(d), vd);
+                                                    STATE(avr,"sts 0x{0:X4}, {1:G}[{2:X2}]\n", x, Avr_regname(d), vd);
                                                     cycle++;
                                                     _avr_set_ram(avr, x, vd);
                                                 }
@@ -1226,7 +1226,7 @@ namespace SimulIDE.src.simavr.sim
                                                     int op = (int)(opcode & 3);
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     ushort z = (ushort)((avr.data[R_ZH] << 8) | avr.data[R_ZL]);
-                                                    STATE(avr,"ld %s, %sZ[%04x]%s\n", Avr_regname(d), op == 2 ? "--" : "", z, op == 1 ? "++" : "");
+                                                    STATE(avr,"ld {0:G}, {1:G}Z[{2:X4}]{3:G}\n", Avr_regname(d), op == 2 ? "--" : "", z, op == 1 ? "++" : "");
                                                     cycle++;; // 2 cycles, except tinyavr
                                                     if (op == 2) z--;
                                                     byte vd = _avr_get_ram(avr, z);
@@ -1242,7 +1242,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     ushort z = (ushort)((avr.data[R_ZH] << 8) | avr.data[R_ZL]);
-                                                    STATE(avr,"st %sZ[%04x]%s, %s[%02x] \n", op == 2 ? "--" : "", z, op == 1 ? "++" : "", Avr_regname(d), vd);
+                                                    STATE(avr,"st {0:G}Z[{1:X4}]{2:G}, {3:G}[{4:X2}] \n", op == 2 ? "--" : "", z, op == 1 ? "++" : "", Avr_regname(d), vd);
                                                     cycle++; // 2 cycles, except tinyavr
                                                     if (op == 2) z--;
                                                     _avr_set_ram(avr, z, vd);
@@ -1255,7 +1255,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     _avr_set_r(avr, d, _avr_pop8(avr));
                                                     ushort sp = _avr_sp_get(avr);
-                                                    STATE(avr,"pop %s (@%04x)[%02x]\n", Avr_regname(d), sp, avr.data[sp]);
+                                                    STATE(avr,"pop {0:G} (@{1:X4})[{2:X2}]\n", Avr_regname(d), sp, avr.data[sp]);
                                                     cycle++;
                                                 }
                                                 break;
@@ -1265,7 +1265,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte vd = avr.data[d];
                                                     _avr_push8(avr, vd);
                                                     ushort sp = _avr_sp_get(avr);
-                                                    STATE(avr,"push %s[%02x] (@%04x)\n", Avr_regname(d), vd, sp);
+                                                    STATE(avr,"push {0:G}[{1:X2}] (@{2:X4})\n", Avr_regname(d), vd, sp);
                                                     cycle++;
                                                 }
                                                 break;
@@ -1274,7 +1274,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)(0xff - vd);
-                                                    STATE(avr,"com %s[%02x] = %02x\n", Avr_regname(d), vd, res);
+                                                    STATE(avr,"com {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), vd, res);
                                                     _avr_set_r(avr, d, res);
                                                     _avr_flags_znv0s(avr, res);
                                                     avr.sreg[S_C] = 1;
@@ -1286,7 +1286,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)(0x00 - vd);
-                                                    STATE(avr,"neg %s[%02x] = %02x\n", Avr_regname(d), vd, res);
+                                                    STATE(avr,"neg {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), vd, res);
                                                     _avr_set_r(avr, d, res);
                                                     avr.sreg[S_H] = (byte)(((res >> 3) | (vd >> 3)) & 1);
                                                     avr.sreg[S_V] = (byte)(res == 0x80?1:0);
@@ -1300,7 +1300,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)((vd >> 4) | (vd << 4)) ;
-                                                    STATE(avr,"swap %s[%02x] = %02x\n", Avr_regname(d), vd, res);
+                                                    STATE(avr,"swap {0:G}[{1:X2}] = {2:X2}\n", Avr_regname(d), vd, res);
                                                     _avr_set_r(avr, d, res);
                                                 }
                                                 break;
@@ -1309,7 +1309,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)(vd + 1);
-                                                    STATE(avr,"inc %s[%02x] = %02x\n", Avr_regname(d), vd, res);
+                                                    STATE(avr,"inc {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), vd, res);
                                                     _avr_set_r(avr, d, res);
                                                     avr.sreg[S_V] = (byte)(res == 0x80?1:0);
                                                     _avr_flags_zns(avr, res);
@@ -1321,7 +1321,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)((vd >> 1) | (vd & 0x80));
-                                                    STATE(avr,"asr %s[%02x]\n", Avr_regname(d), vd);
+                                                    STATE(avr,"asr {0:G}[{1:X2}]", Avr_regname(d), vd);
                                                     _avr_set_r(avr, d, res);
                                                     _avr_flags_zcnvs(avr, res, vd);
                                                     SREG(avr);
@@ -1332,7 +1332,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)(vd >> 1);
-                                                    STATE(avr,"lsr %s[%02x]\n", Avr_regname(d), vd);
+                                                    STATE(avr,"lsr {0:G}[{1:X2}]", Avr_regname(d), vd);
                                                     _avr_set_r(avr, d, res);
                                                     avr.sreg[S_N] = 0;
                                                     _avr_flags_zcvs(avr, res, vd);
@@ -1344,7 +1344,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)((avr.sreg[S_C]!=0? 0x80 : 0) | vd >> 1);
-                                                    STATE(avr,"ror %s[%02x]\n", Avr_regname(d), vd);
+                                                    STATE(avr,"ror {0:G}[{1:X2}]", Avr_regname(d), vd);
                                                     _avr_set_r(avr, d, res);
                                                     _avr_flags_zcnvs(avr, res, vd);
                                                     SREG(avr);
@@ -1355,7 +1355,7 @@ namespace SimulIDE.src.simavr.sim
                                                     byte d = (byte)((opcode >> 4) & 0x1f);
                                                     byte vd = avr.data[d];
                                                     byte res = (byte)(vd - 1);
-                                                    STATE(avr,"dec %s[%02x] = %02x\n", Avr_regname(d), vd, res);
+                                                    STATE(avr,"dec {0:G}[{1:X2}] = {2:X2}", Avr_regname(d), vd, res);
                                                     _avr_set_r(avr, d, res);
                                                     avr.sreg[S_V] = (byte)(res == 0x7f?1:0);
                                                     _avr_flags_zns(avr, res);
@@ -1369,7 +1369,7 @@ namespace SimulIDE.src.simavr.sim
                                                     ushort x = _avr_flash_read16le(avr, new_pc);
                                                     a = (a << 16) | x;
                                                     new_pc = a << 1;
-                                                    STATE(avr,"jmp 0x{0:X}\n", new_pc);
+                                                    STATE(avr,"jmp {0:X4}\n", new_pc);
                                                     cycle += 2;
                                                     avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                                                     avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
@@ -1385,7 +1385,7 @@ namespace SimulIDE.src.simavr.sim
                                                     new_pc += 2;
                                                     cycle += (ulong)(1 + _avr_push_addr(avr, new_pc));
                                                     new_pc = a << 1;
-                                                    STATE(avr, "call 0x{0:X}\n", new_pc);
+                                                    STATE(avr, "call {0:X4}\n", new_pc);
                                                     avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                                                     avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);
                                                     avr.trace_data.old_pci = (avr.trace_data.old_pci + 1) & (Avr_trace_data.OLD_PC_SIZE - 1);
@@ -1405,7 +1405,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte k = (byte)(((opcode & 0x00c0) >> 2) | (opcode & 0xf)); 
                                                                 ushort vp = (ushort) (avr.data[p] | (avr.data[p + 1] << 8));
                                                                 ushort res = (ushort)(vp + k);
-                                                                STATE(avr,"adiw %s:%s[%04x], 0x%02x\n", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
+                                                                STATE(avr,"adiw {0:G}:{1:G}[{2:X4}], 0x{3:X2}", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
                                                                 _avr_set_r16le_hl(avr, p, res);
                                                                 avr.sreg[S_V] = (byte)(((~vp & res) >> 15) & 1);
                                                                 avr.sreg[S_C] = (byte)(((~res & vp) >> 15) & 1);
@@ -1420,7 +1420,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte k = (byte)(((opcode & 0x00c0) >> 2) | (opcode & 0xf)); 
                                                                 ushort vp = (ushort)(avr.data[p] | (avr.data[p + 1] << 8));
                                                                 ushort res = (ushort)(vp - k);
-                                                                STATE(avr,"sbiw %s:%s[%04x], 0x%02x\n", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
+                                                                STATE(avr,"sbiw {0:G}:{1:G}[{2:X4}], 0x{3:X2}\n", Avr_regname(p), Avr_regname((byte)(p + 1)), vp, k);
                                                                 _avr_set_r16le_hl(avr, p, res);
                                                                 avr.sreg[S_V] = (byte)(((vp & ~res) >> 15) & 1);
                                                                 avr.sreg[S_C] = (byte)(((res & ~vp) >> 15) & 1);
@@ -1434,7 +1434,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
                                                                 byte mask = (byte)(1 << (byte)(opcode & 0x7));
                                                                 byte res = (byte)(_avr_get_ram(avr, io) & ~mask);
-                                                                STATE(avr,"cbi %s[%04x], 0x%02x = %02x\n", Avr_regname(io), avr.data[io], mask, res);
+                                                                STATE(avr,"cbi {0:G}[{1:X4}], 0x{2:X2} = {3:X2}\n", Avr_regname(io), avr.data[io], mask, res);
                                                                 _avr_set_ram(avr, io, res);
                                                                 cycle++;
                                                             }
@@ -1444,7 +1444,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
                                                                 byte mask = (byte)(1 << (byte)(opcode & 0x7));
                                                                 byte res = (byte)(_avr_get_ram(avr, io) & mask);
-                                                                STATE(avr,"sbic %s[%04x], 0x%02x\t; Will%s branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
+                                                                STATE(avr,"sbic {0:G}[{1:X4}], 0x{2:X2}\t; Will{3:G} branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
                                                                 if (res!=0)
                                                                 {
                                                                     if (_avr_is_instruction_32_bits(avr, new_pc))
@@ -1466,7 +1466,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte mask = (byte)(1 << (byte)(opcode & 0x7));
 
                                                                 byte res = (byte)(_avr_get_ram(avr, io) | mask);
-                                                                STATE(avr,"sbi %s[%04x], 0x%02x = %02x\n", Avr_regname(io), avr.data[io], mask, res);
+                                                                STATE(avr,"sbi {0:G}[{1:X4}], 0x{2:X2} = {3:X2}\n", Avr_regname(io), avr.data[io], mask, res);
                                                                 _avr_set_ram(avr, io, res);
                                                                 cycle++;
                                                             }
@@ -1476,7 +1476,7 @@ namespace SimulIDE.src.simavr.sim
                                                                 byte io = (byte)(((opcode >> 3) & 0x1f) + 32);
                                                                 byte mask = (byte)(1 << (byte)(opcode & 0x7));
                                                                 byte res = (byte)(_avr_get_ram(avr, io) & mask);
-                                                                STATE(avr,"sbis %s[%04x], 0x%02x\t; Will%s branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
+                                                                STATE(avr,"sbis {0:G}[{1:X4}], 0x{2:X2}\t; Will{3:G} branch\n", Avr_regname(io), avr.data[io], mask, res!=0?"":" not");
                                                                 if (res!=0)
                                                                 {
                                                                     if (_avr_is_instruction_32_bits(avr, new_pc))
@@ -1502,7 +1502,7 @@ namespace SimulIDE.src.simavr.sim
                                                                         byte vd = avr.data[d];
                                                                         byte vr = avr.data[r];
                                                                         ushort res = (ushort)(vd * vr);
-                                                                        STATE(avr,"mul %s[%02x], %s[%02x] = %04x\n", Avr_regname(d), vd, Avr_regname(r), vr, res);
+                                                                        STATE(avr,"mul {0:G}[{1:X2}], {2:G}[{3:X2}] = {4:X4}", Avr_regname(d), vd, Avr_regname(r), vr, res);
                                                                         cycle++;
                                                                         _avr_set_r16le(avr, 0, res);
                                                                         avr.sreg[S_Z] = (byte)(res == 0?1:0);
@@ -1530,13 +1530,13 @@ namespace SimulIDE.src.simavr.sim
                             case 0xb800: {	// OUT A,Rr -- 1011 1AAd dddd AAAA
                                 byte d = (byte)((opcode >> 4) & 0x1f); 
                                 byte A = (byte)(((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32);
-                        		STATE(avr,"out %s, %s[%02x]\n", Avr_regname(A), Avr_regname(d), avr.data[d]);
+                        		STATE(avr,"out {0:G}, {1:G}[{2:X2}]\n", Avr_regname(A), Avr_regname(d), avr.data[d]);
                         		_avr_set_ram(avr, A, avr.data[d]);
                         	}	break;
                             case 0xb000: {	// IN Rd,A -- 1011 0AAd dddd AAAA
                         	    byte d = (byte)((opcode >> 4) & 0x1f); 
                                 byte A = (byte)(((((opcode >> 9) & 3) << 4) | ((opcode) & 0xf)) + 32);
-                                STATE(avr,"in %s, %s[%02x]\n", Avr_regname(d), Avr_regname(A), avr.data[A]);
+                                STATE(avr,"in {0:G}, {1:G}[{2:X2}]\n", Avr_regname(d), Avr_regname(A), avr.data[A]);
                                 _avr_set_r(avr, d, _avr_get_ram(avr, A));
                             }	break;
                             default: _avr_invalid_opcode(avr);break;
@@ -1547,7 +1547,7 @@ namespace SimulIDE.src.simavr.sim
                 case 0xc000:
                     {  // RJMP -- 1100 kkkk kkkk kkkk
                        ushort o = (ushort)(((ushort)((opcode << 4) & 0xffff)) >> 3);
-                       STATE(avr,"rjmp .%d [%04x]\n", o >> 1, new_pc + o);
+                       STATE(avr,"rjmp .{0:G} [{1:X4}]\n", o >> 1, new_pc + o);
                        new_pc = (new_pc + o) % (avr.flashend+1);
                        cycle++;
                        avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
@@ -1559,7 +1559,7 @@ namespace SimulIDE.src.simavr.sim
                 case 0xd000:
                     {  // RCALL -- 1101 kkkk kkkk kkkk
                         ushort o = (ushort)(((ushort)((opcode << 4) & 0xffff)) >> 3);
-                        STATE(avr,"rcall .%d [%04x]\n", o >> 1, new_pc + o);
+                        STATE(avr,"rcall .{0:G} [{1:X4}]\n", o >> 1, new_pc + o);
                         cycle += (ulong)_avr_push_addr(avr, new_pc);
                         new_pc = (new_pc + o) % (avr.flashend+1);
                         // 'rcall .1' is used as a cheap "push 16 bits of room on the stack"
@@ -1580,7 +1580,7 @@ namespace SimulIDE.src.simavr.sim
                     {  // LDI Rd, K aka SER (LDI r, 0xff) -- 1110 kkkk dddd kkkk
                        byte h = (byte)(16 + ((opcode >> 4) & 0xf)); 
                        byte k = (byte)(((opcode & 0x0f00) >> 4) | (opcode & 0xf));
-                       STATE(avr,"ldi %s, 0x%02x\n", Avr_regname(h), k);
+                       STATE(avr,"ldi {0:G}, 0x{2:X2}\n", Avr_regname(h), k);
                        _avr_set_r(avr, h, k);
                     }
                     break;
@@ -1601,9 +1601,9 @@ namespace SimulIDE.src.simavr.sim
                                     { "brcc", "brne", "brpl", "brvc", null, "brhc", "brtc", "brid"},
                                     { "brcs", "breq", "brmi", "brvs", null, "brhs", "brts", "brie"}};
                                 if (names[set,s]!=null) 
-                                    STATE(avr,"%s .%d [%04x]\t; Will%s branch\n", names[set,s], o, new_pc + (o << 1), branch!=0 ? "":" not");
+                                    STATE(avr,"{0:G} .{1:G} [{2:X4}]\t; Will{3:G} branch\n", names[set,s], o, new_pc + (o << 1), branch!=0 ? "":" not");
                                 else 
-                                    STATE(avr,"%s%c .%d [%04x]\t; Will%s branch\n", set!=0 ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch!=0 ? "":" not");
+                                    STATE(avr,"{0:G}{1:G} .{2:G} [{3:X4}]\t; Will{5:G} branch\n", set!=0 ? "brbs" : "brbc", _sreg_bit_name[s], o, new_pc + (o << 1), branch!=0 ? "":" not");
                                 
                                 if (branch!=0) 
                                 {
@@ -1618,7 +1618,7 @@ namespace SimulIDE.src.simavr.sim
                                 byte s = (byte)(opcode & 7);
                                 byte mask = (byte)(1 << s);
                                 byte v = (byte)((vd & ~mask) | (avr.sreg[S_T]!=0 ? mask : 0));
-                                STATE(avr,"bld %s[%02x], 0x%02x = %02x\n", Avr_regname(d), vd, mask, v);
+                                STATE(avr,"bld {0:G}[{1:X2}], 0x{2:X2} = {3:X2}\n", Avr_regname(d), vd, mask, v);
                                 _avr_set_r(avr, d, v);
                             }	break;
                             case 0xfa00:
@@ -1626,7 +1626,7 @@ namespace SimulIDE.src.simavr.sim
                                 byte d = (byte)((opcode >> 4) & 0x1f); 
                                 byte vd = avr.data[d];
                                 byte s = (byte)(opcode & 7);
-                                STATE(avr,"bst %s[%02x], 0x%02x\n", Avr_regname(d), vd, 1 << s);
+                                STATE(avr,"bst {0:G}[{1:X2}], 0x{3:X2}", Avr_regname(d), vd, 1 << s);
                                 avr.sreg[S_T] = (byte)((vd >> s) & 1);
                                 SREG(avr);
                             }	break;
