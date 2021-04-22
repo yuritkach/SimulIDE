@@ -988,8 +988,6 @@ namespace SimulIDE.src.simavr
 //        const char* format,
 //		... );
 
-//#ifndef AVR_CORE
-//#include <stdarg.h>
 ///*
 // * Type for custom logging functions
 // */
@@ -1017,37 +1015,6 @@ namespace SimulIDE.src.simavr
 // */
 //uint32_t
 //avr_pending_sleep_usec(avr_t* avr, avr_cycle_count_t howLong);
-
-//#ifdef __cplusplus
-//};
-//#endif
-
-//#include "sim_io.h"
-//#include "sim_regbit.h"
-
-//#ifdef __GNUC__
-
-//# ifndef likely
-//#  define likely(x) __builtin_expect(!!(x), 1)
-//# endif
-
-//# ifndef unlikely
-//#  define unlikely(x) __builtin_expect(!!(x), 0)
-//# endif
-
-//#else /* ! __GNUC__ */
-
-//# ifndef likely
-//#  define likely(x) x
-//# endif
-
-//# ifndef unlikely
-//#  define unlikely(x) x
-//# endif
-
-//#endif /* __GNUC__ */
-
-//#endif /*__SIM_AVR_H__*/
 
 
     }

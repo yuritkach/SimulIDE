@@ -28,17 +28,17 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_eeprom_declare(Mcu mcu, byte _vector)
         {
 
-            mcu.eeprom.size = (ushort)(Constants.E2END + 1);
-            mcu.eeprom.r_eearh = Constants.EEARH;
-            mcu.eeprom.r_eearl = Constants.EEARL;
-            mcu.eeprom.r_eedr = Constants.EEDR;
-            mcu.eeprom.r_eedr = Constants.EECR;
-            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM0), Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM1) };
-            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEMPE);
-            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPE);
-            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERE);
+            mcu.eeprom.size = (ushort)(ConstantsX8.E2END + 1);
+            mcu.eeprom.r_eearh = ConstantsX8.EEARH;
+            mcu.eeprom.r_eearl = ConstantsX8.EEARL;
+            mcu.eeprom.r_eedr = ConstantsX8.EEDR;
+            mcu.eeprom.r_eedr = ConstantsX8.EECR;
+            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EEPM0), Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EEPM1) };
+            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EEMPE);
+            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EEPE);
+            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EERE);
             Avr_int_vector vec = new Avr_int_vector();
-            vec.enable = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERIE);
+            vec.enable = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.EECR, ConstantsX8.EERIE);
             vec.vector = _vector;
             mcu.eeprom.ready = vec;
         }

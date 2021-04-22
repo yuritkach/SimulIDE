@@ -438,19 +438,27 @@ namespace SimulIDE.src.gui.editor
             {
                 if (!driveCirc) Simulator.Self().StopTimer();
                 state = DBG_STEPING;
-                for (int i=0;i<10000;i++)
-                { 
+                int prev = prevDebugLine;
+                do
+                {
                     RunClockTick();
                     Sim_core_helper.console.ScrollToEnd();
                 }
-              
+                while (debugLine == prev);
+                Console.WriteLine("debugLine={0:G} prevDebugline={1:G}",debugLine,prev);
             }
             UpdateScreen();
         }
 
         public void StepHex()
         {
-          //
+            if (state == DBG_RUNNING) return;
+            stepOver = false;
+            if (!driveCirc) Simulator.Self().StopTimer();
+            state = DBG_STEPING;
+            RunClockTick();
+            Sim_core_helper.console.ScrollToEnd();
+            UpdateScreen();
         }
 
         public void StepOver()

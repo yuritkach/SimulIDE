@@ -26,44 +26,44 @@ namespace SimulIDE.src.simavr.cores
         }
 
 
-        protected override void InitConstants()
+        protected override void Init()
         {
-            base.InitConstants();
+            base.Init();
 
-            Constants.SIM_MMCU = "atmega328";
-            Constants.SIM_CORENAME = "mcu_mega328";
-            Constants.SIM_VECTOR_SIZE = 4;
+            ConstantsX328.SIM_MMCU = "atmega328";
+            ConstantsX328.SIM_CORENAME = "mcu_mega328";
+            ConstantsX328.SIM_VECTOR_SIZE = 4;
             /* Signature */
-            Constants.SIGNATURE_0 = 0x1E;
-            Constants.SIGNATURE_1 = 0x95;
-            Constants.SIGNATURE_2 = 0x0F;
+            ConstantsX328.SIGNATURE_0 = 0x1E;
+            ConstantsX328.SIGNATURE_1 = 0x95;
+            ConstantsX328.SIGNATURE_2 = 0x0F;
 
             /* Constants */
-            Constants.SPM_PAGESIZE = 128;
-            Constants.RAMSTART = 0x100;
-            Constants.RAMEND = 0x8FF;     /* Last On-Chip SRAM Location */
-            Constants.XRAMSIZE = 0;
-            Constants.XRAMEND = Constants.RAMEND;
-            Constants.E2END = 0x3FF;
-            Constants.E2PAGESIZE = 4;
-            Constants.FLASHEND = 0x7FFF;
+            ConstantsX328.SPM_PAGESIZE = 128;
+            ConstantsX328.RAMSTART = 0x100;
+            ConstantsX328.RAMEND = 0x8FF;     /* Last On-Chip SRAM Location */
+            ConstantsX328.XRAMSIZE = 0;
+            ConstantsX328.XRAMEND = ConstantsX328.RAMEND;
+            ConstantsX328.E2END = 0x3FF;
+            ConstantsX328.E2PAGESIZE = 4;
+            ConstantsX328.FLASHEND = 0x7FFF;
 
-            Constants.EEARH =Constants._SFR_IO8(0x22);
-            Constants.EEARL = Constants._SFR_IO8(0x21);
-            Constants.EEDR = Constants._SFR_IO8(0x20);
-            Constants.EECR = Constants._SFR_IO8(0x0F);
-            Constants.EERE = 0;
-            Constants.EEPE = 1;
-            Constants.EEMPE = 2;
-            Constants.EERIE = 3;
-            Constants.EEPM0 = 4;
-            Constants.EEPM1 = 5;
+            ConstantsX328.EEARH =ConstantsX328._SFR_IO8(0x22);
+            ConstantsX328.EEARL = ConstantsX328._SFR_IO8(0x21);
+            ConstantsX328.EEDR = ConstantsX328._SFR_IO8(0x20);
+            ConstantsX328.EECR = ConstantsX328._SFR_IO8(0x0F);
+            ConstantsX328.EERE = 0;
+            ConstantsX328.EEPE = 1;
+            ConstantsX328.EEMPE = 2;
+            ConstantsX328.EERIE = 3;
+            ConstantsX328.EEPM0 = 4;
+            ConstantsX328.EEPM1 = 5;
 
-            Constants.MCUSR = Constants._SFR_IO8(0x34);
-            Constants.MCUCSR = Constants._SFR_IO8(0x35);
+            ConstantsX328.MCUSR = ConstantsX328._SFR_IO8(0x34);
+            ConstantsX328.MCUCSR = ConstantsX328._SFR_IO8(0x35);
 
             /* Fuses */
-            Constants.FUSE_MEMORY_SIZE = 3;
+            ConstantsX328.FUSE_MEMORY_SIZE = 3;
         }
 
     }

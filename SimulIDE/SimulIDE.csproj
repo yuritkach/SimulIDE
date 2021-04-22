@@ -101,7 +101,8 @@
       <DependentUpon>StateViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\INamedObject.cs" />
-    <Compile Include="src\simavr\cores\Constants.cs" />
+    <Compile Include="src\simavr\cores\ConstantsX328.cs" />
+    <Compile Include="src\simavr\cores\ConstantsX8.cs" />
     <Compile Include="src\simavr\cores\Mcu.cs" />
     <Compile Include="src\simavr\cores\Mega328.cs" />
     <Compile Include="src\simavr\cores\Megax8.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="src\simavr\sim\Sim_io.cs" />
     <Compile Include="src\simavr\sim\Sim_irq.cs" />
     <Compile Include="src\simavr\sim\Sim_regbit.cs" />
-    <Compile Include="src\simavr\sim\Sim_time.cs" />
+    <Compile Include="src\simavr\sim\Sim_time_helper.cs" />
     <Compile Include="src\simavr\sim\Sim_utils.cs" />
     <Compile Include="src\simavr\Sim_Avr.cs" />
     <Compile Include="src\simavr\Sim_core_decl.cs" />

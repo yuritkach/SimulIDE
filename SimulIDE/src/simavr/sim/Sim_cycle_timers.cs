@@ -88,7 +88,7 @@ namespace SimulIDE.src.simavr.sim
         //// no sanity checks checking here, on purpose
         public static void Avr_cycle_timer_insert(Avr avr,ulong when,Avr_cycle_timer timer,params object[] param)
         {
-        //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
+            Avr_cycle_timer_pool pool = avr.cycle_timers;
 
         //    when += avr->cycle;
 

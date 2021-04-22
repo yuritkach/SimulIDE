@@ -28,34 +28,29 @@ namespace SimulIDE.src.simavr.cores
         // the core_megax shared constructor will be confused
         public Avr_ioport porta;
 
-        public Mcu()
+        public Mcu() { }
+
+        protected virtual void Init()
         {
-            InitConstants();
             core = new Avr();
         }
 
-        protected virtual void InitConstants()
-        {
-            Constants.SIGNATURE_0 = 0;
-            Constants.SIGNATURE_1 = 0;
-            Constants.SIGNATURE_2 = 0;
-            Constants.LOCKBITS = 0xFF;
-        }
+        
 
         public virtual void DefaultCore(byte vectorSize)
         {
-            core.ioend = (ushort)(Constants.RAMSTART - 1);
-            core.ramend = Constants.RAMEND;
-            core.flashend = Constants.FLASHEND;
-            core.e2end = Constants.E2END;
+            core.ioend = (ushort)(ConstantsX8.RAMSTART - 1);
+            core.ramend = ConstantsX8.RAMEND;
+            core.flashend = ConstantsX8.FLASHEND;
+            core.e2end = ConstantsX8.E2END;
             core.vector_size = vectorSize;
 
-            if (Constants.SIGNATURE_0 != 0)
+            if (ConstantsX8.SIGNATURE_0 != 0)
             {
-                core.fuse = Constants.FUSE;
-                core.signature = Constants.SIGNATURE;
-                core.lockbits = Constants.LOCKBITS;
-                core.reset_flags = Constants.RESETFLAGS;
+                core.fuse = ConstantsX8.FUSE;
+                core.signature = ConstantsX8.SIGNATURE;
+                core.lockbits = ConstantsX8.LOCKBITS;
+                core.reset_flags = ConstantsX8.RESETFLAGS;
             }
         }
 

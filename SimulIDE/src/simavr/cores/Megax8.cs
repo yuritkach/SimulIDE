@@ -18,44 +18,50 @@ namespace SimulIDE.src.simavr.cores
             Mx8_init(core);
         }
 
+        protected override void Init()
+        {
+            base.Init();
+        }
+
+
         private void InitPortB()
         {
             portb = new Avr_ioport();
             portb.name = "B";
-            portb.r_port = Constants.PORTB;
-            portb.r_ddr = Constants.DDRB;
-            portb.r_pin = Constants.PINB;
+            portb.r_port = ConstantsX8.PORTB;
+            portb.r_ddr = ConstantsX8.DDRB;
+            portb.r_pin = ConstantsX8.PINB;
             portb.pcint = new Avr_int_vector();
-            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE0);
-            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF0);
-            portb.pcint.vector = Constants.PCINT0_vect;
-            portb.r_pcint = Constants.PCMSK0;
+            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCICR, ConstantsX8.PCIE0);
+            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCIFR, ConstantsX8.PCIF0);
+            portb.pcint.vector = ConstantsX8.PCINT0_vect;
+            portb.r_pcint = ConstantsX8.PCMSK0;
         }
         private void InitPortC()
         {
             portc = new Avr_ioport();
             portc.name = "C";
-            portc.r_port = Constants.PORTC;
-            portc.r_ddr = Constants.DDRC;
-            portc.r_pin = Constants.PINC;
+            portc.r_port = ConstantsX8.PORTC;
+            portc.r_ddr = ConstantsX8.DDRC;
+            portc.r_pin = ConstantsX8.PINC;
             portc.pcint = new Avr_int_vector();
-            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE1);
-            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF1);
-            portc.pcint.vector = Constants.PCINT1_vect;
-            portc.r_pcint = Constants.PCMSK1;
+            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCICR, ConstantsX8.PCIE1);
+            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCIFR, ConstantsX8.PCIF1);
+            portc.pcint.vector = ConstantsX8.PCINT1_vect;
+            portc.r_pcint = ConstantsX8.PCMSK1;
         }
         private void InitPortD()
         {
             portd = new Avr_ioport();
             portd.name = "D";
-            portd.r_port = Constants.PORTD;
-            portd.r_ddr = Constants.DDRD;
-            portd.r_pin = Constants.PIND;
+            portd.r_port = ConstantsX8.PORTD;
+            portd.r_ddr = ConstantsX8.DDRD;
+            portd.r_pin = ConstantsX8.PIND;
             portd.pcint = new Avr_int_vector();
-            portd.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE2);
-            portd.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF2);
-            portd.pcint.vector = Constants.PCINT2_vect;
-            portd.r_pcint = Constants.PCMSK2;
+            portd.pcint.enable = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCICR, ConstantsX8.PCIE2);
+            portd.pcint.raised = Sim_regbit.AVR_IO_REGBIT(ConstantsX8.PCIFR, ConstantsX8.PCIF2);
+            portd.pcint.vector = ConstantsX8.PCINT2_vect;
+            portd.r_pcint = ConstantsX8.PCMSK2;
         }
 
         protected void InitStructure()
@@ -70,15 +76,10 @@ namespace SimulIDE.src.simavr.cores
 
         }
 
-        protected override void InitConstants()
-        {
-            base.InitConstants();
-        }
-
         protected virtual void Avr_core_init(Avr core)
         {
-            core.mmcu = Constants.SIM_MMCU;
-            DefaultCore(Constants.SIM_VECTOR_SIZE);
+            core.mmcu = ConstantsX8.SIM_MMCU;
+            DefaultCore(ConstantsX8.SIM_VECTOR_SIZE);
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
             core.custom = new Custom();
@@ -86,7 +87,7 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void Avr_eeprom_init(Avr core)
         {
-            Avr_eeprom.Avr_eeprom_declare((Mcu)this, Constants.EE_READY_vect);
+            Avr_eeprom.Avr_eeprom_declare((Mcu)this, ConstantsX8.EE_READY_vect);
         }
 
         protected void Mx8_init(Avr avr)
@@ -115,12 +116,6 @@ namespace SimulIDE.src.simavr.cores
         }
 
 
-
-        ///* Termporary hack for mega 324 due to mangled headers */
-        //# ifdef _AVR_IOM328P_H_
-        //#undef EFUSE_DEFAULT
-        //#define EFUSE_DEFAULT 0
-        //#endif
 
         //const struct mcu_t SIM_CORENAME = {
         //	.core = {

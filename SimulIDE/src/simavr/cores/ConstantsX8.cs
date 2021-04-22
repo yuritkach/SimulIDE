@@ -7,23 +7,24 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.cores
 {
-    public class Constants
+    public class ConstantsX8
     {
 
         public static byte[] FUSE
         {
             get
             {
-                switch (Constants.FUSE_MEMORY_SIZE)
+                switch (ConstantsX8.FUSE_MEMORY_SIZE)
                 {
                     case 6: return new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-                    case 3: return new byte[] { Constants.LFUSE_DEFAULT, Constants.HFUSE_DEFAULT, Constants.EFUSE_DEFAULT };
-                    case 2: return new byte[] { Constants.LFUSE_DEFAULT, Constants.HFUSE_DEFAULT };
-                    case 1: return new byte[] { Constants.FUSE_DEFAULT };
+                    case 3: return new byte[] { ConstantsX8.LFUSE_DEFAULT, ConstantsX8.HFUSE_DEFAULT, ConstantsX8.EFUSE_DEFAULT };
+                    case 2: return new byte[] { ConstantsX8.LFUSE_DEFAULT, ConstantsX8.HFUSE_DEFAULT };
+                    case 1: return new byte[] { ConstantsX8.FUSE_DEFAULT };
                     default: return new byte[] { 0 };
                 }
             }
         }
+
         public static byte[] SIGNATURE
         {
             get
@@ -32,11 +33,11 @@ namespace SimulIDE.src.simavr.cores
             }
         }
 
-        public static int MCU_STATUS_REG
+        public static byte MCU_STATUS_REG
         {
             get
             {
-                return (int)(MCUSR != null ? MCUSR : MCUCSR);
+                return (byte)(MCUSR != null ? MCUSR : MCUCSR);
             }
         }
 
@@ -90,16 +91,16 @@ namespace SimulIDE.src.simavr.cores
         */
         public virtual bool Get__AVR_LIBC_DEPRECATED_ENABLE__() { return true; }
 
-        public static byte SIGNATURE_0;
-        public static byte SIGNATURE_1;
-        public static byte SIGNATURE_2;
-        public static byte LOCKBITS;
+        public static byte SIGNATURE_0 = 0;
+        public static byte SIGNATURE_1 = 0;
+        public static byte SIGNATURE_2 = 0;
+        public static byte LOCKBITS = 0XFF;
         public static byte LFUSE_DEFAULT;
         public static byte HFUSE_DEFAULT;
         public static byte EFUSE_DEFAULT;
         public static byte FUSE_DEFAULT;
-        public static int? MCUSR = null;
-        public static int? MCUCSR = null;
+        public static byte MCUSR = 0;
+        public static byte MCUCSR = 0;
 
         public static bool? __SIM_CORE_DECLARE_H__ = null;
         public static ushort SPM_PAGESIZE;
@@ -1010,13 +1011,13 @@ namespace SimulIDE.src.simavr.cores
         {
             get
             {
-                return (byte)((1 << Constants.PRADC) |
-                              (1 << Constants.PRUSART0) |
-                              (1 << Constants.PRSPI) |
-                              (1 << Constants.PRTIM1) |
-                              (1 << Constants.PRTIM0) |
-                              (1 << Constants.PRTIM2) |
-                              (1 << Constants.PRTWI));
+                return (byte)((1 << ConstantsX8.PRADC) |
+                              (1 << ConstantsX8.PRUSART0) |
+                              (1 << ConstantsX8.PRSPI) |
+                              (1 << ConstantsX8.PRTIM1) |
+                              (1 << ConstantsX8.PRTIM0) |
+                              (1 << ConstantsX8.PRTIM2) |
+                              (1 << ConstantsX8.PRTWI));
             }
         }
 

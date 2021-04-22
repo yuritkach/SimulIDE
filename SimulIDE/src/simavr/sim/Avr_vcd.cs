@@ -31,7 +31,7 @@ namespace SimulIDE.src.simavr.sim
             vcd = new Avr_vcd();
             vcd.avr = avr;
             vcd.filename = filename;
-            vcd.period = Sim_time.Avr_usec_to_cycles(vcd.avr, period);
+            vcd.period = Sim_time_helper.Avr_usec_to_cycles(vcd.avr, period);
             return 0;
         }
 
