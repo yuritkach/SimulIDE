@@ -45,7 +45,7 @@ namespace SimulIDE.src.simavr.sim {
         	byte v = (byte)((avr.data[p.r_pin] & ~ddr) | (avr.data[p.r_port] & ddr));
         	avr.data[addr] = v;
         	// made to trigger potential watchpoints
-        	v = Sim_core.Avr_core_watch_read(avr, addr);
+        	v = Sim_core_helper.Avr_core_watch_read(avr, addr);
         	Sim_irq.Avr_raise_irq(p.io.irq[IOPORT_IRQ_REG_PIN], v);
         	if (avr.data[addr] != v)
                 Console.WriteLine("** PIN%c(%02x) = %02x\r\n", p.name, addr, v);
@@ -89,7 +89,7 @@ namespace SimulIDE.src.simavr.sim {
 
         	if (avr.data[addr] != v)
                 Console.WriteLine("** PORT%c(%02x) = %02x\r\n", p.name, addr, v);
-        	Sim_core.Avr_core_watch_write(avr, addr, v);
+            Sim_core_helper.Avr_core_watch_write(avr, addr, v);
         	Sim_irq.Avr_raise_irq(p.io.irq[IOPORT_IRQ_REG_PORT], v);
             Avr_ioport_update_irqs(ref p);
         }
@@ -115,9 +115,9 @@ namespace SimulIDE.src.simavr.sim {
 
         	if (avr.data[addr] != v)
                 Console.WriteLine("** DDR{0:G}({1:X2}) = {2:X2}\r\n", p.name, addr, v);
-        	Avr_raise_irq(p.io.irq + IOPORT_IRQ_DIRECTION_ALL, v);
-        	Avr_core_watch_write(avr, addr, v);
-        	Avr_ioport_update_irqs(p);
+        	Sim_irq.Avr_raise_irq(p.io.irq[IOPORT_IRQ_DIRECTION_ALL], v);
+            Sim_core_helper.Avr_core_watch_write(avr, addr, v);
+        	Avr_ioport_update_irqs(ref p);
         }
 
         ///*

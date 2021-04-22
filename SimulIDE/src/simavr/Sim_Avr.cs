@@ -407,7 +407,7 @@ namespace SimulIDE.src.simavr
             for (int i = 0x20; i <= avr.ioend; i++)
                 avr.data[i] = 0;
 
-            Sim_core._avr_sp_set(avr, avr.ramend);
+            Sim_core_helper._avr_sp_set(avr, avr.ramend);
             avr.PC = avr.reset_pc;	// Likely to be zero
             for (int i = 0; i < 8; i++)
                 avr.sreg[i] = 0;
@@ -565,7 +565,7 @@ namespace SimulIDE.src.simavr
                    if (avr.cyclesDone > 1)
                         avr.cyclesDone -= 1;
                    else
-                        avr.PC = Sim_core.Avr_run_one(avr);
+                        avr.PC = Sim_core_helper.Avr_run_one(avr);
                    avr.cycle += 1;
               }
 

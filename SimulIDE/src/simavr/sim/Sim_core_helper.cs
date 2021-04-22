@@ -1,10 +1,14 @@
+using SimulIDE.src.gui.editor;
 using System;
+using System.Windows.Controls;
 
 namespace SimulIDE.src.simavr.sim
 {
-    public class Sim_core : Sim_Avr
+    public class Sim_core_helper : Sim_Avr
     {
-        static Sim_core()
+        public static TextBox console; 
+
+        static Sim_core_helper()
         {
             reg_names[R_XH] = "XH";
             reg_names[R_XL] = "XL";
@@ -20,12 +24,12 @@ namespace SimulIDE.src.simavr.sim
         public static void DUMP_REG(Avr avr)
         { 
             for (int i = 0; i < 32; i++)
-                Console.Write("%s=%02x%c", Avr_regname((byte)i), avr.data[i],i==15?'\n':' ');
-            Console.Write("\n");
+                console.AppendText(string.Format("%s=%02x%c", Avr_regname((byte)i), avr.data[i],i==15?'\n':' '));
+            console.AppendText(string.Format("\n"));
         	ushort y = (ushort)(avr.data[R_YL] | (avr.data[R_YH]<<8));
         	for (int i = 0; i < 20; i++)
-                Console.Write("Y+%02d=%02x ", i, avr.data[y+i]);
-        	Console.Write("\n");
+                console.AppendText(string.Format("Y+%02d=%02x ", i, avr.data[y+i]));
+            console.AppendText(string.Format("\n"));
         }
 
         public static void DUMP_STACK(Avr avr)
@@ -33,12 +37,12 @@ namespace SimulIDE.src.simavr.sim
             for (int i = avr.trace_data.stack_frame_index; i==0; i--)
             {
             	int pci = i-1;
-                var oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-            	Console.Write("*** %04x: %-25s sp %04x\n",avr.trace_data.stack_frame[pci].pc, 
+                //var oldColor = console.Foreground;
+                //console. Foreground = new ;
+                console.AppendText(string.Format("*** %04x: %-25s sp %04x\n",avr.trace_data.stack_frame[pci].pc, 
             		(avr.trace_data.codeline.Length!=0)?avr.trace_data.codeline[avr.trace_data.stack_frame[pci].pc>>1].symbol : "unknown",
-                    avr.trace_data.stack_frame[pci].sp);
-                Console.ForegroundColor = oldColor;
+                    avr.trace_data.stack_frame[pci].sp));
+                //console.ForegroundColor = oldColor;
             }
         }
 
@@ -50,7 +54,7 @@ namespace SimulIDE.src.simavr.sim
             dst = 0;
             for (int i = 0; i < 8; i++)
                 if (avr.sreg[i] > 1)
-                    Console.Write("** Invalid SREG!!\n");
+                    console.AppendText("** Invalid SREG!!\n");
                 else
                 if (avr.sreg[i] != 0)
                     dst |= (byte)(1 << i);
@@ -138,12 +142,12 @@ namespace SimulIDE.src.simavr.sim
                         DUMP_REG(avr);
                     }
                     if (!donttrace)
-                        Console.Write("%04x: %-25s ", avr.PC, symn);
+                        console.AppendText(string.Format("{0:X4}: {1:G} ", avr.PC, symn));
                 }
                 else
                 {
-                    Console.Write("0x"+avr.PC.ToString("X4")+" : ");
-                    Console.Write(command, param);
+                    console.AppendText(string.Format("0x"+avr.PC.ToString("X4")+" : "));
+                    console.AppendText(string.Format(command, param));
                 }
                 //Console.WriteLine("%s: %04x: ", avr.PC);
             }
@@ -153,26 +157,26 @@ namespace SimulIDE.src.simavr.sim
         public static void SREG(Avr avr)
         {
             if (avr.trace != 0/* && donttrace == 0*/)
-                Console.Write("\t\t\t\t\t\t\t\t\tSREG = ");
+                console.AppendText(string.Format("\t\t\tSREG = "));
             for (int _sbi = 0; _sbi < 8; _sbi++)
-                Console.Write(avr.sreg[_sbi] != 0 ? _sreg_bit_name[_sbi].ToString().ToUpper() : ".");
-            Console.Write("\n");
+                console.AppendText(string.Format(avr.sreg[_sbi] != 0 ? _sreg_bit_name[_sbi].ToString().ToUpper() : "."));
+            console.AppendText(string.Format("\n"));
         }
 
         public static void Crash(Avr avr)
         {
             DUMP_REG(avr);
-            Console.Write("*** CYCLE: %04x PC: %04x\n", avr.cycle, avr.PC);
+            console.AppendText(string.Format("*** CYCLE: {0:X4} PC: {1:X4}\n", avr.cycle, avr.PC));
             for (int i = Avr_trace_data.OLD_PC_SIZE-1; i > 0; i--)
             {
                 int pci = (avr.trace_data.old_pci + i) & 0xf;
-                Console.Write("*** %04x: %-25s RESET -%d; sp %04x\n",
+                console.AppendText(string.Format("*** {0:X4}: {1:G} RESET -{2:G}; sp {3:X4}\n",
                     avr.trace_data.old[pci].pc, avr.trace_data.codeline.Length!=0 ? 
                     avr.trace_data.codeline[avr.trace_data.old[pci].pc>>1].symbol : 
-                    "unknown",Avr_trace_data.OLD_PC_SIZE-i, avr.trace_data.old[pci].sp);
+                    "unknown",Avr_trace_data.OLD_PC_SIZE-i, avr.trace_data.old[pci].sp));
             }
 
-        	Console.Write("Stack Ptr %04x/%04x = %d \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr));
+            console.AppendText(string.Format("Stack Ptr {0:X4}/{1:X4} = {2:G} \n", _avr_sp_get(avr), avr.ramend, avr.ramend - _avr_sp_get(avr)));
         	DUMP_STACK(avr);
 
         	Sim_Avr.Avr_sadly_crashed(avr, 0);
@@ -209,11 +213,11 @@ namespace SimulIDE.src.simavr.sim
             */
             if (avr.trace_data.stack_frame_index > 1 && addr > avr.trace_data.stack_frame[avr.trace_data.stack_frame_index-2].sp)
             {
-                var oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write( "%04x : munching stack  SP %04x, A=%04x <= %02x\n",
-            				avr.PC, _avr_sp_get(avr), addr, v);
-                Console.ForegroundColor = oldColor;
+                //                var oldColor = Console.ForegroundColor;
+                //                Console.ForegroundColor = ConsoleColor.Red;
+                console.AppendText(string.Format( "{0:X4} : munching stack  SP {1:X4}, A={2:X4} <= {3:X2}\n",
+            				avr.PC, _avr_sp_get(avr), addr, v));
+ //               Console.ForegroundColor = oldColor;
             }
 
             if (avr.gdb!=null)
@@ -396,7 +400,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static string Avr_regname(byte reg)
         {
-            if (reg_names[reg] == "")
+            if (reg_names[reg] == null)
             {
                 string tt;
                 if (reg < 32)
@@ -438,7 +442,7 @@ namespace SimulIDE.src.simavr.sim
         			doit = 1;
         	if (doit==0)
         		return;
-        	Console.Write("                                       ->> ");
+            console.AppendText(string.Format("                                       ->> "));
         	ushort[] r16 = new ushort[4] { R_SPL, R_XL, R_YL, R_ZL };
         	for (int i = 0; i < 4; i++)
         		if (REG_ISTOUCHED(avr, r16[i]) || REG_ISTOUCHED(avr, r16[i+1]))
@@ -448,9 +452,9 @@ namespace SimulIDE.src.simavr.sim
         		}
         	for (int i = 0; i < 3*32; i++)
         		if (REG_ISTOUCHED(avr,(ushort) i)) {
-                    Console.Write("%s=%02x ", Avr_regname((byte)i), avr.data[i]);
+                    console.AppendText(string.Format("{0:G}={1:X2} ", Avr_regname((byte)i), avr.data[i]));
         		}
-            Console.Write("\n");
+            console.AppendText(string.Format("\n"));
         }
         
         
@@ -1020,7 +1024,7 @@ namespace SimulIDE.src.simavr.sim
                                 case 0x95e8:
                                     { // SPM -- Store Program Memory -- 1001 0101 1110 1000
                                         STATE(avr, "spm\n");
-                                        Sim_io.Avr_ioctl(avr, Avr_flash_st.AVR_IOCTL_FLASH_SPM, 0);
+                                        Sim_io.Avr_ioctl(avr, Avr_flash_helper.AVR_IOCTL_FLASH_SPM, 0);
                                     }
                                     break;
                                 case 0x9409:   // IJMP -- Indirect jump -- 1001 0100 0000 1001
@@ -1546,9 +1550,11 @@ namespace SimulIDE.src.simavr.sim
 
                 case 0xc000:
                     {  // RJMP -- 1100 kkkk kkkk kkkk
-                       ushort o = (ushort)(((ushort)((opcode << 4) & 0xffff)) >> 3);
-                       STATE(avr,"rjmp .{0:G} [{1:X4}]\n", o >> 1, new_pc + o);
-                       new_pc = (new_pc + o) % (avr.flashend+1);
+                        int o = (int)(((ushort)((opcode << 4) & 0xffff)) >> 4); // offset
+                        if (o >= 2048)
+                            o = (4096 - o) * -1;
+                       STATE(avr,"rjmp .{0:G} [{1:X4}]\n", (o << 1), new_pc + (o<<1));
+                       new_pc = (uint)(new_pc + (o<<1)) % (avr.flashend+1);
                        cycle++;
                        avr.trace_data.old[avr.trace_data.old_pci].pc = avr.PC;
                        avr.trace_data.old[avr.trace_data.old_pci].sp = _avr_sp_get(avr);

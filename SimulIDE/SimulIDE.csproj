@@ -97,6 +97,9 @@
     <Compile Include="src\gui\RamTable.xaml.cs">
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
+    <Compile Include="src\gui\StateViewer\StateViewer.xaml.cs">
+      <DependentUpon>StateViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simavr\cores\Constants.cs" />
     <Compile Include="src\simavr\cores\Mcu.cs" />
@@ -110,7 +113,7 @@
     <Compile Include="src\simavr\sim\Avr_vcd.cs" />
     <Compile Include="src\simavr\sim\Avr_watchdog.cs" />
     <Compile Include="src\simavr\sim\Sim_Cmds.cs" />
-    <Compile Include="src\simavr\sim\Sim_core.cs" />
+    <Compile Include="src\simavr\sim\Sim_core_helper.cs" />
     <Compile Include="src\simavr\sim\Sim_cycle_timers.cs" />
     <Compile Include="src\simavr\sim\Sim_elf.cs" />
     <Compile Include="src\simavr\sim\Sim_gdb.cs" />
@@ -160,6 +163,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="src\gui\RamTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="src\gui\StateViewer\StateViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -232,7 +239,7 @@
     <Resource Include="resources\images\savecirc.png" />
     <Resource Include="resources\images\savecircas.png" />
     <Resource Include="resources\images\saveimage.png" />
-    <Resource Include="resources\images\step.png" />
+    <Resource Include="resources\images\stepcpp.png" />
     <Resource Include="resources\images\stepover.png" />
     <Resource Include="resources\images\stop.png" />
     <Resource Include="resources\images\switchbut.png" />
@@ -243,6 +250,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="resources\images\closepage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\images\stephex.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -70,9 +70,14 @@
 
         </ToolBar>
         <ToolBar x:Name="debuggerToolBar" Grid.Row="0" Visibility="Visible" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="800">
-            <Button x:Name="debuggerStepButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepButton_Click">
+            <Button x:Name="debuggerStepButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepCppButton_Click">
                 <Button.Background>
-                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/step.png"/>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/stepcpp.png"/>
+                </Button.Background>
+            </Button>
+            <Button x:Name="debuggerAnimateButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepHexButton_Click">
+                <Button.Background>
+                    <ImageBrush ImageSource="/SimulIDE;component/resources/images/stephex.png"/>
                 </Button.Background>
             </Button>
             <Button x:Name="debuggerStepOverButton" Content="" Height="24" VerticalAlignment="Top" Width="24" Click="DebuggerStepOverButton_Click">

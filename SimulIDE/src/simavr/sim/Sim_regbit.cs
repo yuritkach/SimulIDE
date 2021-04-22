@@ -9,11 +9,6 @@ namespace SimulIDE.src.simavr.sim
     public class Sim_regbit
     {
 
-
-
-
-
-
 //#define ARRAY_SIZE(_aa) (sizeof(_aa) / sizeof((_aa)[0]))
 
 
@@ -34,7 +29,7 @@ namespace SimulIDE.src.simavr.sim
             if (a!=0)
                 return 0;
             m = (byte) (rb.mask << rb.bit);
-            Sim_core.Avr_core_watch_write(avr, a,(uint)(avr.data[a] | m));
+            Sim_core_helper.Avr_core_watch_write(avr, a,(uint)(avr.data[a] | m));
             return (byte)((avr.data[a] >> rb.bit) & rb.mask);
         }
 
@@ -106,7 +101,7 @@ namespace SimulIDE.src.simavr.sim
          {
              ushort a = (ushort) rb.reg;
              byte m = (byte) (rb.mask << rb.bit);
-             Sim_core.Avr_core_watch_write(avr, a,(uint)(avr.data[a] & ~m));
+            Sim_core_helper.Avr_core_watch_write(avr, a,(uint)(avr.data[a] & ~m));
              return avr.data[a];
          }
 

@@ -28,13 +28,10 @@ namespace SimulIDE.src.simavr.sim
         public Avr_int_vector flash; // Interrupt vector
     }
 
-    public class Avr_flash_st
+    public class Avr_flash_helper
     {
-
-
         public static ulong Avr_progen_clear(Avr avr, ulong when, object param)
         {
-
             Avr_flash p = (Avr_flash)param;
             Sim_regbit.Avr_regbit_clear(p.io.avr, p.selfprgen);
         //    AVR_LOG(avr, LOG_WARNING, "FLASH: avr_progen_clear - SPM not received, clearing PRGEN bit\n");
@@ -45,7 +42,7 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_flash_write(Avr avr, uint addr, byte v, object param)
         {
             Avr_flash p = (Avr_flash) param;
-            Sim_core.Avr_core_watch_write(avr, addr, v);
+            Sim_core_helper.Avr_core_watch_write(avr, addr, v);
             //	printf("** avr_flash_write %02x\n", v);
             if (Sim_regbit.Avr_regbit_get(avr, p.selfprgen)!=0)
                 Sim_cycle_timers.Avr_cycle_timer_register(avr, 4, Avr_progen_clear, p); // 4 cycles is very little!
@@ -125,7 +122,7 @@ namespace SimulIDE.src.simavr.sim
         }
 
         protected static Avr_io _io;
-        static Avr_flash_st()
+        static Avr_flash_helper()
         {
             _io = new Avr_io();
             _io.kind = "flash";

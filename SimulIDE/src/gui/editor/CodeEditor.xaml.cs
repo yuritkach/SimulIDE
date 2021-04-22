@@ -3,6 +3,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
+using SimulIDE.src.simavr.sim;
 using SimulIDE.src.simulator;
 using System;
 using System.Collections.Generic;
@@ -215,12 +216,15 @@ namespace SimulIDE.src.gui.editor
             if (file.EndsWith(".cpp") || file.EndsWith(".c") || file.EndsWith(".ino") || file.EndsWith(".h"))
             {
                 //m_appPath+"/data/codeeditor/cpp.sintax"
-//                string path = sintaxPath + "cpp.sintax";
-//                hlighter.SetMultiline( true );
-//                hlighter.ReadSintaxFile(path );
+                //                string path = sintaxPath + "cpp.sintax";
+                //                hlighter.SetMultiline( true );
+                //                hlighter.ReadSintaxFile(path );
 
-                if(file.EndsWith(".ino") )
-                    debugger = new InoDebugger(this, outPane, filePath );
+                if (file.EndsWith(".ino"))
+                {
+                    Sim_core_helper.console = outPane;
+                    debugger = new InoDebugger(this, outPane, filePath);
+                }
             }
         //    else if(m_file.endsWith(".asm") )
         //    {
@@ -419,7 +423,7 @@ namespace SimulIDE.src.gui.editor
         //    timerTick();
         }
 
-        public void Step(bool over)
+        public void StepCpp(bool over)
         {
             if (state == DBG_RUNNING) return;
 
@@ -433,11 +437,20 @@ namespace SimulIDE.src.gui.editor
             else
             {
                 if (!driveCirc) Simulator.Self().StopTimer();
-                prevDebugLine = debugLine;
                 state = DBG_STEPING;
-                RunClockTick();
+                for (int i=0;i<10000;i++)
+                { 
+                    RunClockTick();
+                    Sim_core_helper.console.ScrollToEnd();
+                }
+              
             }
             UpdateScreen();
+        }
+
+        public void StepHex()
+        {
+          //
         }
 
         public void StepOver()
@@ -454,22 +467,22 @@ namespace SimulIDE.src.gui.editor
             if (!debugging) return;
             if (state == DBG_PAUSED) return;
 
-            UInt64 time0 = Simulator.Self().mS();
+            ulong time0 = Simulator.Self().mS();
             int i = 0;
             for (i = 0; i < 200000; i++)
             {
                 debugLine = debugger.Step();
 
                 if (debugLine >= 0) break;                // New Line reached
-
-                if (Simulator.Self().mS() - time0 > 100)
+                ulong time1 = Simulator.Self().mS();
+                if (time1 - time0 > 100)
                     break; // Avoid blocking GUI
             }
             //qDebug() <<"m_prevDebugLine "<<m_prevDebugLine<< "  m_debugLine "<<m_debugLine;
 
             if (debugLine < 0)                           // Step Not Finished
             {
-        //        QTimer::singleShot(5, this, SLOT(runClockTick()));
+                //        QTimer::singleShot(5, this, SLOT(runClockTick()));
             }
             else                                            // Step Finished
             {
@@ -528,13 +541,7 @@ namespace SimulIDE.src.gui.editor
             outPane.AppendText("Starting Debbuger..." + "\n");
 
             bool error = false;
-
-            if (McuComponent.Self()==null)             // Must be an Mcu in Circuit
-            {
-                outPane.AppendText("\n   Error: No Mcu in Simulator... \n");
-                error = true;
-            }
-            else if (debugger==null)             // No debugger for this file type
+            if (debugger==null)             // No debugger for this file type
             {
                 outPane.AppendText("\n    Error: No Debugger Suited for this File... \n");
                 error = true;

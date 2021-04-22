@@ -1,4 +1,5 @@
 ﻿using SimulIDE.src.gui.circuitwidget;
+using SimulIDE.src.simavr.sim;
 using SimulIDE.src.simulator.elements.processors;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace SimulIDE.src.gui.editor
         //QT_TRANSLATE_NOOP("App::Property","Board"),
         //QT_TRANSLATE_NOOP("App::Property","Custom Board")
         //};
-        public InoDebugger(object parent, TextBox outPane, string filePath):base(parent, outPane, filePath )
+        public InoDebugger(object parent, TextBox outPane, string filePath):base(parent, outPane, filePath)
         {
             //Q_UNUSED(InoDebugger_properties);
             SetObjectName("Arduino Compiler/Debugger");

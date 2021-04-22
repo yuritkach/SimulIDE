@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SimulIDE.src.simavr.cores
 {
@@ -30,6 +31,7 @@ namespace SimulIDE.src.simavr.cores
         public Mcu()
         {
             InitConstants();
+            core = new Avr();
         }
 
         protected virtual void InitConstants()

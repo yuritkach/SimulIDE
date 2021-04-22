@@ -1,5 +1,6 @@
 ﻿using SimulIDE.src.gui;
 using SimulIDE.src.gui.circuitwidget.components.mcu;
+using SimulIDE.src.gui.editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;

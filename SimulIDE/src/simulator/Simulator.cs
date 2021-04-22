@@ -476,6 +476,11 @@ namespace SimulIDE.src.simulator
             return step;
         }
 
+        public UInt64 StepAnimate()
+        {
+            return step;
+        }
+
         UInt64 CircTime()
         {
             return circTime;

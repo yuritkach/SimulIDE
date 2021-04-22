@@ -343,27 +343,39 @@ namespace SimulIDE.src.gui.editor
             GetCodeEditor().Run();
         }
 
-        protected void Step()
+        protected void StepCpp()
         {
             SetStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(step()));
-            GetCodeEditor().Step( false );
+            GetCodeEditor().StepCpp( false );
 
             Pause(); // Добавлено TYV
 
         }
 
+        protected void StepHex()
+        {
+            SetStepActs();
+            //        QTimer::singleShot(10, getCodeEditor(), SLOT(step()));
+            GetCodeEditor().StepHex();
+
+            Pause(); // Добавлено TYV
+
+        }
+
+
         protected void StepOver()
         {
             SetStepActs();
     //        QTimer::singleShot(10, getCodeEditor(), SLOT(stepOver()));
-            GetCodeEditor().Step( true ); 
+            GetCodeEditor().StepCpp( true ); 
         }
 
         protected void SetStepActs()
         {
             debuggerRunToBKButton.IsEnabled = false;
-            debuggerStepButton.IsEnabled = false;
+//            debuggerStepCPPButton.IsEnabled = false;
+//            debuggerStepHexButton.IsEnabled = false;
             debuggerStepOverButton.IsEnabled = false;
             debuggerResetButton.IsEnabled = false;
             debuggerPauseButton.IsEnabled = true;
@@ -451,12 +463,14 @@ namespace SimulIDE.src.gui.editor
         private void EditorCompileButton_Click(object sender, RoutedEventArgs e) => Compile();
         private void EditorLoadButton_Click(object sender, RoutedEventArgs e) => Upload();
         private void EditorDebugButton_Click(object sender, RoutedEventArgs e) => Debug();
-        private void DebuggerStepButton_Click(object sender, RoutedEventArgs e) => Step();
+        private void DebuggerStepCppButton_Click(object sender, RoutedEventArgs e) => StepCpp();
         private void DebuggerStepOverButton_Click(object sender, RoutedEventArgs e) => StepOver();
         private void DebuggerRunToBKButton_Click(object sender, RoutedEventArgs e) => Run(); 
         private void DebuggerPauseButton_Click(object sender, RoutedEventArgs e) => Pause();
         private void DebuggerResetButton_Click(object sender, RoutedEventArgs e) => Reset();
         private void DebuggerStopButton_Click(object sender, RoutedEventArgs e) => Stop();
+        private void DebuggerStepHexButton_Click(object sender, RoutedEventArgs e) => StepHex();
+
 
         private void TabItemButton_Click(object sender, RoutedEventArgs e)
         {
@@ -467,7 +481,6 @@ namespace SimulIDE.src.gui.editor
             CloseTabSheet(index);
         }
 
-        
         
     }
 }

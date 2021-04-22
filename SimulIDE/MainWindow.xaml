@@ -8,18 +8,30 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="30" />
             <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="250" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Frame Name="ComponentFrame" Grid.Column="0" HorizontalAlignment="Left"></Frame>
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-        <Frame Name="CircuitFrame" Grid.Column="2"/>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Frame Name="CircuitFrame" Grid.Row="0"/>
+            <GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Stretch" />
+            <Frame Name="StateViewerFrame" Grid.Row="2"/>
+        </Grid>
+
         <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
         <Frame Name="EditorFrame" Grid.Column="4" HorizontalAlignment="Right"></Frame>
+        
 
     </Grid>
     
