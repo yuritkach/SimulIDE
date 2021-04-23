@@ -28,27 +28,27 @@ namespace SimulIDE.src.simavr.cores
         {
             portb = new Avr_ioport();
             portb.name = "B";
-            portb.r_port = Constants.PORTB;
-            portb.r_ddr = Constants.DDRB;
-            portb.r_pin = Constants.PINB;
+            portb.r_port = (uint)Constants.Get("PORTB");
+            portb.r_ddr = (uint)Constants.Get("DDRB");
+            portb.r_pin = (uint)Constants.Get("PINB");
             portb.pcint = new Avr_int_vector();
-            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE0);
-            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF0);
-            portb.pcint.vector = Constants.PCINT0_vect;
-            portb.r_pcint = Constants.PCMSK0;
+            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCICR"), (byte)Constants.Get("PCIE0"));
+            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF0"));
+            portb.pcint.vector = (byte)Constants.Get("PCINT0_vect");
+            portb.r_pcint = (uint)Constants.Get("PCMSK0");
         }
         private void InitPortC()
         {
             portc = new Avr_ioport();
             portc.name = "C";
-            portc.r_port = Constants.PORTC;
-            portc.r_ddr = Constants.DDRC;
-            portc.r_pin = Constants.PINC;
+            portc.r_port = (uint)Constants.Get("PORTC");
+            portc.r_ddr = (uint)Constants.Get("DDRC");
+            portc.r_pin = (uint)Constants.Get("PINC");
             portc.pcint = new Avr_int_vector();
-            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE1);
-            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF1);
-            portc.pcint.vector = Constants.PCINT1_vect;
-            portc.r_pcint = Constants.PCMSK1;
+            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCICR"), (byte)Constants.Get("PCIE1"));
+            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF1"));
+            portc.pcint.vector = (byte)Constants.Get("PCINT1_vect");
+            portc.r_pcint = (uint)Constants.Get("PCMSK1");
         }
         private void InitPortD()
         {

@@ -39,18 +39,18 @@ namespace SimulIDE.src.simavr.cores
 
         public virtual void DefaultCore(byte vectorSize)
         {
-            core.ioend = (ushort)(Constants.RAMSTART - 1);
-            core.ramend = Constants.RAMEND;
-            core.flashend = Constants.FLASHEND;
-            core.e2end = Constants.E2END;
+            core.ioend = (ushort)((ushort)Constants.Get("RAMSTART") - 1);
+            core.ramend = (ushort)Constants.Get("RAMEND");
+            core.flashend = (ushort)Constants.Get("FLASHEND");
+            core.e2end = (ushort)Constants.Get("E2END");
             core.vector_size = vectorSize;
 
-            if (Constants.SIGNATURE_0 != 0)
+            if ((byte)Constants.Get("SIGNATURE_0") != 0)
             {
-                core.fuse = Constants.FUSE;
-                core.signature = Constants.SIGNATURE;
-                core.lockbits = Constants.LOCKBITS;
-                core.reset_flags = Constants.RESETFLAGS;
+                core.fuse = (byte[]) Constants.Get("FUSE");
+                core.signature = (byte[])Constants.Get("SIGNATURE");
+                core.lockbits = (byte)Constants.Get("LOCKBITS");
+                core.reset_flags = (ResetFlags)Constants.Get("RESETFLAGS");
             }
         }
 

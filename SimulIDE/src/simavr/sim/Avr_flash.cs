@@ -162,15 +162,15 @@ namespace SimulIDE.src.simavr.sim
         public static void AVR_SELFPROG_DECLARE_INTERNAL(Avr_flash fl, byte _spmr, byte _spen, byte _vector)
         {
             fl.r_spm = _spmr;
-            fl.spm_pagesize = Constants.GetUShort("SPM_PAGESIZE");
-            fl.selfprgen = Constants.AVR_IO_REGBIT(_spmr, _spen);
-            fl.pgers = AVR_IO_REGBIT(_spmr, PGERS),\
-            fl.pgwrt = AVR_IO_REGBIT(_spmr, PGWRT),\
-            fl.blbset = AVR_IO_REGBIT(_spmr, BLBSET),\
+            fl.spm_pagesize = (ushort)Constants.Get("SPM_PAGESIZE");
+            fl.selfprgen = Sim_regbit.AVR_IO_REGBIT(_spmr, _spen);
+            fl.pgers = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("PGERS"));
+            fl.pgwrt = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("PGWRT"));
+            fl.blbset = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("BLBSET"));
 
             if (fl.flash == null)
                 fl.flash = new Avr_int_vector();
-            fl.flash.enable = AVR_IO_REGBIT(_spmr, SPMIE);
+            fl.flash.enable = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("SPMIE"));
             fl.flash.vector = _vector;
         }   
 

@@ -438,486 +438,478 @@ namespace SimulIDE.src.simavr.cores.avr
                 Constants.Set("ADCL6", 6);
                 Constants.Set("ADCL7", 7);
 
-Constants.Set("ADCH" ,Constants._SFR_MEM8(0x79)
-Constants.Set("ADCH0", 0);
-Constants.Set("ADCH1", 1);
-Constants.Set("ADCH2", 2);
-Constants.Set("ADCH3", 3);
-Constants.Set("ADCH4", 4);
-Constants.Set("ADCH5", 5);
-Constants.Set("ADCH6", 6);
-Constants.Set("ADCH7", 7);
+                Constants.Set("ADCH", Constants._SFR_MEM8(0x79));
+                Constants.Set("ADCH0", 0);
+                Constants.Set("ADCH1", 1);
+                Constants.Set("ADCH2", 2);
+                Constants.Set("ADCH3", 3);
+                Constants.Set("ADCH4", 4);
+                Constants.Set("ADCH5", 5);
+                Constants.Set("ADCH6", 6);
+                Constants.Set("ADCH7", 7);
 
-Constants.Set("ADCSRA" ,Constants._SFR_MEM8(0x7A)
-Constants.Set("ADPS0", 0);
-Constants.Set("ADPS1", 1);
-Constants.Set("ADPS2", 2);
-Constants.Set("ADIE 3
-Constants.Set("ADIF 4
-Constants.Set("ADATE 5
-Constants.Set("ADSC 6
-Constants.Set("ADEN 7
+                Constants.Set("ADCSRA", Constants._SFR_MEM8(0x7A));
+                Constants.Set("ADPS0", 0);
+                Constants.Set("ADPS1", 1);
+                Constants.Set("ADPS2", 2);
+                Constants.Set("ADIE", 3);
+                Constants.Set("ADIF", 4);
+                Constants.Set("ADATE", 5);
+                Constants.Set("ADSC", 6);
+                Constants.Set("ADEN", 7);
 
-Constants.Set("ADCSRB" ,Constants._SFR_MEM8(0x7B)
-Constants.Set("ADTS0", 0);
-Constants.Set("ADTS1", 1);
-Constants.Set("ADTS2", 2);
-Constants.Set("ACME 6
+                Constants.Set("ADCSRB", Constants._SFR_MEM8(0x7B));
+                Constants.Set("ADTS0", 0);
+                Constants.Set("ADTS1", 1);
+                Constants.Set("ADTS2", 2);
+                Constants.Set("ACME", 6);
 
-Constants.Set("ADMUX" ,Constants._SFR_MEM8(0x7C)
-Constants.Set("MUX0", 0);
-Constants.Set("MUX1", 1);
-Constants.Set("MUX2", 2);
-Constants.Set("MUX3", 3);
-Constants.Set("ADLAR 5
-Constants.Set("REFS0 6
-Constants.Set("REFS1 7
+                Constants.Set("ADMUX", Constants._SFR_MEM8(0x7C));
+                Constants.Set("MUX0", 0);
+                Constants.Set("MUX1", 1);
+                Constants.Set("MUX2", 2);
+                Constants.Set("MUX3", 3);
+                Constants.Set("ADLAR", 5);
+                Constants.Set("REFS0", 6);
+                Constants.Set("REFS1", 7);
 
-Constants.Set("DIDR0" ,Constants._SFR_MEM8(0x7E)
-Constants.Set("ADC0D 0
-Constants.Set("ADC1D 1
-Constants.Set("ADC2D 2
-Constants.Set("ADC3D 3
-Constants.Set("ADC4D 4
-Constants.Set("ADC5D 5
+                Constants.Set("DIDR0", Constants._SFR_MEM8(0x7E));
+                Constants.Set("ADC0D", 0);
+                Constants.Set("ADC1D", 1);
+                Constants.Set("ADC2D", 2);
+                Constants.Set("ADC3D", 3);
+                Constants.Set("ADC4D", 4);
+                Constants.Set("ADC5D", 5);
 
-Constants.Set("DIDR1" ,Constants._SFR_MEM8(0x7F)
-Constants.Set("AIN0D 0
-Constants.Set("AIN1D 1
+                Constants.Set("DIDR1", Constants._SFR_MEM8(0x7F));
+                Constants.Set("AIN0D", 0);
+                Constants.Set("AIN1D", 1);
 
-Constants.Set("TCCR1A" ,Constants._SFR_MEM8(0x80)
-Constants.Set("WGM10", 0);
-Constants.Set("WGM11", 1);
-Constants.Set("COM1B0 4
-Constants.Set("COM1B1 5
-Constants.Set("COM1A0 6
-Constants.Set("COM1A1 7
+                Constants.Set("TCCR1A", Constants._SFR_MEM8(0x80));
+                Constants.Set("WGM10", 0);
+                Constants.Set("WGM11", 1);
+                Constants.Set("COM1B0", 4);
+                Constants.Set("COM1B1", 5);
+                Constants.Set("COM1A0", 6);
+                Constants.Set("COM1A1", 7);
+                
 
-Constants.Set("TCCR1B" ,Constants._SFR_MEM8(0x81)
-Constants.Set("CS10", 0);
-Constants.Set("CS11", 1);
-Constants.Set("CS12", 2);
-Constants.Set("WGM12 3
-Constants.Set("WGM13 4
-Constants.Set("ICES1 6
-Constants.Set("ICNC1 7
+                Constants.Set("TCCR1B", Constants._SFR_MEM8(0x81));
+                Constants.Set("CS10", 0);
+                Constants.Set("CS11", 1);
+                Constants.Set("CS12", 2);
+                Constants.Set("WGM12", 3);
+                Constants.Set("WGM13", 4);
+                Constants.Set("ICES1", 6);
+                Constants.Set("ICNC1", 7);
 
-Constants.Set("TCCR1C" ,Constants._SFR_MEM8(0x82)
-Constants.Set("FOC1B 6
-Constants.Set("FOC1A 7
+                Constants.Set("TCCR1C", Constants._SFR_MEM8(0x82));
+                Constants.Set("FOC1B", 6);
+                Constants.Set("FOC1A", 7);
 
-Constants.Set("TCNT1 _SFR_MEM16(0x84)
+                Constants.Set("TCNT1", Constants._SFR_MEM16(0x84));
+                Constants.Set("TCNT1L", Constants._SFR_MEM8(0x84));
+                Constants.Set("TCNT1L0", 0);
+                Constants.Set("TCNT1L1", 1);
+                Constants.Set("TCNT1L2", 2);
+                Constants.Set("TCNT1L3", 3);
+                Constants.Set("TCNT1L4", 4);
+                Constants.Set("TCNT1L5", 5);
+                Constants.Set("TCNT1L6", 6);
+                Constants.Set("TCNT1L7", 7);
 
-Constants.Set("TCNT1L" ,Constants._SFR_MEM8(0x84)
-Constants.Set("TCNT1L0", 0);
-Constants.Set("TCNT1L1", 1);
-Constants.Set("TCNT1L2", 2);
-Constants.Set("TCNT1L3", 3);
-Constants.Set("TCNT1L4", 4);
-Constants.Set("TCNT1L5", 5);
-Constants.Set("TCNT1L6", 6);
-Constants.Set("TCNT1L7", 7);
+                Constants.Set("TCNT1H", Constants._SFR_MEM8(0x85));
+                Constants.Set("TCNT1H0", 0);
+                Constants.Set("TCNT1H1", 1);
+                Constants.Set("TCNT1H2", 2);
+                Constants.Set("TCNT1H3", 3);
+                Constants.Set("TCNT1H4", 4);
+                Constants.Set("TCNT1H5", 5);
+                Constants.Set("TCNT1H6", 6);
+                Constants.Set("TCNT1H7", 7);
 
-Constants.Set("TCNT1H" ,Constants._SFR_MEM8(0x85)
-Constants.Set("TCNT1H0", 0);
-Constants.Set("TCNT1H1", 1);
-Constants.Set("TCNT1H2", 2);
-Constants.Set("TCNT1H3", 3);
-Constants.Set("TCNT1H4", 4);
-Constants.Set("TCNT1H5", 5);
-Constants.Set("TCNT1H6", 6);
-Constants.Set("TCNT1H7", 7);
+                Constants.Set("ICR1", Constants._SFR_MEM16(0x86));
+                Constants.Set("ICR1L", Constants._SFR_MEM8(0x86));
+                Constants.Set("ICR1L0", 0);
+                Constants.Set("ICR1L1", 1);
+                Constants.Set("ICR1L2", 2);
+                Constants.Set("ICR1L3", 3);
+                Constants.Set("ICR1L4", 4);
+                Constants.Set("ICR1L5", 5);
+                Constants.Set("ICR1L6", 6);
+                Constants.Set("ICR1L7", 7);
 
-Constants.Set("ICR1 _SFR_MEM16(0x86)
+                Constants.Set("ICR1H", Constants._SFR_MEM8(0x87));
+                Constants.Set("ICR1H0", 0);
+                Constants.Set("ICR1H1", 1);
+                Constants.Set("ICR1H2", 2);
+                Constants.Set("ICR1H3", 3);
+                Constants.Set("ICR1H4", 4);
+                Constants.Set("ICR1H5", 5);
+                Constants.Set("ICR1H6", 6);
+                Constants.Set("ICR1H7", 7);
 
-Constants.Set("ICR1L" ,Constants._SFR_MEM8(0x86)
-Constants.Set("ICR1L0", 0);
-Constants.Set("ICR1L1", 1);
-Constants.Set("ICR1L2", 2);
-Constants.Set("ICR1L3", 3);
-Constants.Set("ICR1L4", 4);
-Constants.Set("ICR1L5", 5);
-Constants.Set("ICR1L6", 6);
-Constants.Set("ICR1L7", 7);
+                Constants.Set("OCR1A", Constants._SFR_MEM16(0x88));
+                Constants.Set("OCR1AL", Constants._SFR_MEM8(0x88));
+                Constants.Set("OCR1AL0", 0);
+                Constants.Set("OCR1AL1", 1);
+                Constants.Set("OCR1AL2", 2);
+                Constants.Set("OCR1AL3", 3);
+                Constants.Set("OCR1AL4", 4);
+                Constants.Set("OCR1AL5", 5);
+                Constants.Set("OCR1AL6", 6);
+                Constants.Set("OCR1AL7", 7);
 
-Constants.Set("ICR1H" ,Constants._SFR_MEM8(0x87)
-Constants.Set("ICR1H0", 0);
-Constants.Set("ICR1H1", 1);
-Constants.Set("ICR1H2", 2);
-Constants.Set("ICR1H3", 3);
-Constants.Set("ICR1H4", 4);
-Constants.Set("ICR1H5", 5);
-Constants.Set("ICR1H6", 6);
-Constants.Set("ICR1H7", 7);
+                Constants.Set("OCR1AH", Constants._SFR_MEM8(0x89));
+                Constants.Set("OCR1AH0", 0);
+                Constants.Set("OCR1AH1", 1);
+                Constants.Set("OCR1AH2", 2);
+                Constants.Set("OCR1AH3", 3);
+                Constants.Set("OCR1AH4", 4);
+                Constants.Set("OCR1AH5", 5);
+                Constants.Set("OCR1AH6", 6);
+                Constants.Set("OCR1AH7", 7);
 
-Constants.Set("OCR1A _SFR_MEM16(0x88)
+                Constants.Set("OCR1B", Constants._SFR_MEM16(0x8A));
+                Constants.Set("OCR1BL", Constants._SFR_MEM8(0x8A));
+                Constants.Set("OCR1BL0", 0);
+                Constants.Set("OCR1BL1", 1);
+                Constants.Set("OCR1BL2", 2);
+                Constants.Set("OCR1BL3", 3);
+                Constants.Set("OCR1BL4", 4);
+                Constants.Set("OCR1BL5", 5);
+                Constants.Set("OCR1BL6", 6);
+                Constants.Set("OCR1BL7", 7);
 
-Constants.Set("OCR1AL" ,Constants._SFR_MEM8(0x88)
-Constants.Set("OCR1AL0", 0);
-Constants.Set("OCR1AL1", 1);
-Constants.Set("OCR1AL2", 2);
-Constants.Set("OCR1AL3", 3);
-Constants.Set("OCR1AL4", 4);
-Constants.Set("OCR1AL5", 5);
-Constants.Set("OCR1AL6", 6);
-Constants.Set("OCR1AL7", 7);
+                Constants.Set("OCR1BH", Constants._SFR_MEM8(0x8B));
+                Constants.Set("OCR1BH0", 0);
+                Constants.Set("OCR1BH1", 1);
+                Constants.Set("OCR1BH2", 2);
+                Constants.Set("OCR1BH3", 3);
+                Constants.Set("OCR1BH4", 4);
+                Constants.Set("OCR1BH5", 5);
+                Constants.Set("OCR1BH6", 6);
+                Constants.Set("OCR1BH7", 7);
 
-Constants.Set("OCR1AH" ,Constants._SFR_MEM8(0x89)
-Constants.Set("OCR1AH0", 0);
-Constants.Set("OCR1AH1", 1);
-Constants.Set("OCR1AH2", 2);
-Constants.Set("OCR1AH3", 3);
-Constants.Set("OCR1AH4", 4);
-Constants.Set("OCR1AH5", 5);
-Constants.Set("OCR1AH6", 6);
-Constants.Set("OCR1AH7", 7);
+                Constants.Set("TCCR2A", Constants._SFR_MEM8(0xB0));
+                Constants.Set("WGM20", 0);
+                Constants.Set("WGM21", 1);
+                Constants.Set("COM2B0", 4);
+                Constants.Set("COM2B1", 5);
+                Constants.Set("COM2A0", 6);
+                Constants.Set("COM2A1", 7);
 
-Constants.Set("OCR1B _SFR_MEM16(0x8A)
+                Constants.Set("TCCR2B", Constants._SFR_MEM8(0xB1));
+                Constants.Set("CS20", 0);
+                Constants.Set("CS21", 1);
+                Constants.Set("CS22", 2);
+                Constants.Set("WGM22", 3);
+                Constants.Set("FOC2B", 6);
+                Constants.Set("FOC2A", 7);
 
-Constants.Set("OCR1BL" ,Constants._SFR_MEM8(0x8A)
-Constants.Set("OCR1BL0", 0);
-Constants.Set("OCR1BL1", 1);
-Constants.Set("OCR1BL2", 2);
-Constants.Set("OCR1BL3", 3);
-Constants.Set("OCR1BL4", 4);
-Constants.Set("OCR1BL5", 5);
-Constants.Set("OCR1BL6", 6);
-Constants.Set("OCR1BL7", 7);
+                Constants.Set("TCNT2", Constants._SFR_MEM8(0xB2));
+                Constants.Set("TCNT2_0", 0);
+                Constants.Set("TCNT2_1", 1);
+                Constants.Set("TCNT2_2", 2);
+                Constants.Set("TCNT2_3", 3);
+                Constants.Set("TCNT2_4", 4);
+                Constants.Set("TCNT2_5", 5);
+                Constants.Set("TCNT2_6", 6);
+                Constants.Set("TCNT2_7", 7);
 
-Constants.Set("OCR1BH" ,Constants._SFR_MEM8(0x8B)
-Constants.Set("OCR1BH0", 0);
-Constants.Set("OCR1BH1", 1);
-Constants.Set("OCR1BH2", 2);
-Constants.Set("OCR1BH3", 3);
-Constants.Set("OCR1BH4", 4);
-Constants.Set("OCR1BH5", 5);
-Constants.Set("OCR1BH6", 6);
-Constants.Set("OCR1BH7", 7);
+                Constants.Set("OCR2A", Constants._SFR_MEM8(0xB3));
+                Constants.Set("OCR2_0", 0);
+                Constants.Set("OCR2_1", 1);
+                Constants.Set("OCR2_2", 2);
+                Constants.Set("OCR2_3", 3);
+                Constants.Set("OCR2_4", 4);
+                Constants.Set("OCR2_5", 5);
+                Constants.Set("OCR2_6", 6);
+                Constants.Set("OCR2_7", 7);
 
-Constants.Set("TCCR2A" ,Constants._SFR_MEM8(0xB0)
-Constants.Set("WGM20", 0);
-Constants.Set("WGM21", 1);
-Constants.Set("COM2B0 4
-Constants.Set("COM2B1 5
-Constants.Set("COM2A0 6
-Constants.Set("COM2A1 7
+                Constants.Set("OCR2B", Constants._SFR_MEM8(0xB4));
+                Constants.Set("OCR2_0", 0);
+                Constants.Set("OCR2_1", 1);
+                Constants.Set("OCR2_2", 2);
+                Constants.Set("OCR2_3", 3);
+                Constants.Set("OCR2_4", 4);
+                Constants.Set("OCR2_5", 5);
+                Constants.Set("OCR2_6", 6);
+                Constants.Set("OCR2_7", 7);
 
-Constants.Set("TCCR2B" ,Constants._SFR_MEM8(0xB1)
-Constants.Set("CS20", 0);
-Constants.Set("CS21", 1);
-Constants.Set("CS22", 2);
-Constants.Set("WGM22 3
-Constants.Set("FOC2B 6
-Constants.Set("FOC2A 7
+                Constants.Set("ASSR", Constants._SFR_MEM8(0xB6));
+                Constants.Set("TCR2BUB", 0);
+                Constants.Set("TCR2AUB", 1);
+                Constants.Set("OCR2BUB", 2);
+                Constants.Set("OCR2AUB", 3);
+                Constants.Set("TCN2UB", 4);
+                Constants.Set("AS2", 5);
+                Constants.Set("EXCLK", 6);
 
-Constants.Set("TCNT2" ,Constants._SFR_MEM8(0xB2)
-Constants.Set("TCNT2_0", 0);
-Constants.Set("TCNT2_1", 1);
-Constants.Set("TCNT2_2", 2);
-Constants.Set("TCNT2_3", 3);
-Constants.Set("TCNT2_4", 4);
-Constants.Set("TCNT2_5", 5);
-Constants.Set("TCNT2_6", 6);
-Constants.Set("TCNT2_7", 7);
+                Constants.Set("TWBR", Constants._SFR_MEM8(0xB8));
+                Constants.Set("TWBR0", 0);
+                Constants.Set("TWBR1", 1);
+                Constants.Set("TWBR2", 2);
+                Constants.Set("TWBR3", 3);
+                Constants.Set("TWBR4", 4);
+                Constants.Set("TWBR5", 5);
+                Constants.Set("TWBR6", 6);
+                Constants.Set("TWBR7", 7);
 
-Constants.Set("OCR2A" ,Constants._SFR_MEM8(0xB3)
-Constants.Set("OCR2_0", 0);
-Constants.Set("OCR2_1", 1);
-Constants.Set("OCR2_2", 2);
-Constants.Set("OCR2_3", 3);
-Constants.Set("OCR2_4", 4);
-Constants.Set("OCR2_5", 5);
-Constants.Set("OCR2_6", 6);
-Constants.Set("OCR2_7", 7);
+                Constants.Set("TWSR", Constants._SFR_MEM8(0xB9));
+                Constants.Set("TWPS0", 0);
+                Constants.Set("TWPS1", 1);
+                Constants.Set("TWS3", 3);
+                Constants.Set("TWS4", 4);
+                Constants.Set("TWS5", 5);
+                Constants.Set("TWS6", 6);
+                Constants.Set("TWS7", 7);
 
-Constants.Set("OCR2B" ,Constants._SFR_MEM8(0xB4)
-Constants.Set("OCR2_0", 0);
-Constants.Set("OCR2_1", 1);
-Constants.Set("OCR2_2", 2);
-Constants.Set("OCR2_3", 3);
-Constants.Set("OCR2_4", 4);
-Constants.Set("OCR2_5", 5);
-Constants.Set("OCR2_6", 6);
-Constants.Set("OCR2_7", 7);
+                Constants.Set("TWAR", Constants._SFR_MEM8(0xBA));
+                Constants.Set("TWGCE", 0);
+                Constants.Set("TWA0", 1);
+                Constants.Set("TWA1", 2);
+                Constants.Set("TWA2", 3);
+                Constants.Set("TWA3", 4);
+                Constants.Set("TWA4", 5);
+                Constants.Set("TWA5", 6);
+                Constants.Set("TWA6", 7);
+                
 
-Constants.Set("ASSR" ,Constants._SFR_MEM8(0xB6)
-Constants.Set("TCR2BUB 0
-Constants.Set("TCR2AUB 1
-Constants.Set("OCR2BUB 2
-Constants.Set("OCR2AUB 3
-Constants.Set("TCN2UB 4
-Constants.Set("AS2 5
-Constants.Set("EXCLK 6
+                Constants.Set("TWDR", Constants._SFR_MEM8(0xBB));
+                Constants.Set("TWD0", 0);
+                Constants.Set("TWD1", 1);
+                Constants.Set("TWD2", 2);
+                Constants.Set("TWD3", 3);
+                Constants.Set("TWD4", 4);
+                Constants.Set("TWD5", 5);
+                Constants.Set("TWD6", 6);
+                Constants.Set("TWD7", 7);
 
-Constants.Set("TWBR" ,Constants._SFR_MEM8(0xB8)
-Constants.Set("TWBR0", 0);
-Constants.Set("TWBR1", 1);
-Constants.Set("TWBR2", 2);
-Constants.Set("TWBR3", 3);
-Constants.Set("TWBR4", 4);
-Constants.Set("TWBR5", 5);
-Constants.Set("TWBR6", 6);
-Constants.Set("TWBR7", 7);
+                Constants.Set("TWCR", Constants._SFR_MEM8(0xBC));
+                Constants.Set("TWIE", 0);
+                Constants.Set("TWEN", 2);
+                Constants.Set("TWWC", 3);
+                Constants.Set("TWSTO", 4);
+                Constants.Set("TWSTA", 5);
+                Constants.Set("TWEA", 6);
+                Constants.Set("TWINT", 7);
 
-Constants.Set("TWSR" ,Constants._SFR_MEM8(0xB9)
-Constants.Set("TWPS0", 0);
-Constants.Set("TWPS1", 1);
-Constants.Set("TWS3", 3);
-Constants.Set("TWS4", 4);
-Constants.Set("TWS5", 5);
-Constants.Set("TWS6", 6);
-Constants.Set("TWS7", 7);
+                Constants.Set("TWAMR", Constants._SFR_MEM8(0xBD));
+                Constants.Set("TWAM0", 0);
+                Constants.Set("TWAM1", 1);
+                Constants.Set("TWAM2", 2);
+                Constants.Set("TWAM3", 3);
+                Constants.Set("TWAM4", 4);
+                Constants.Set("TWAM5", 5);
+                Constants.Set("TWAM6", 6);
 
-Constants.Set("TWAR" ,Constants._SFR_MEM8(0xBA)
-Constants.Set("TWGCE 0
-Constants.Set("TWA0 1
-Constants.Set("TWA1 2
-Constants.Set("TWA2 3
-Constants.Set("TWA3 4
-Constants.Set("TWA4 5
-Constants.Set("TWA5 6
-Constants.Set("TWA6 7
+                Constants.Set("UCSR0A", Constants._SFR_MEM8(0xC0));
+                Constants.Set("MPCM0", 0);
+                Constants.Set("U2X0", 1);
+                Constants.Set("UPE0", 2);
+                Constants.Set("DOR0", 3);
+                Constants.Set("FE0", 4);
+                Constants.Set("UDRE0", 5);
+                Constants.Set("TXC0", 6);
+                Constants.Set("RXC0", 7);
 
-Constants.Set("TWDR" ,Constants._SFR_MEM8(0xBB)
-Constants.Set("TWD0", 0);
-Constants.Set("TWD1", 1);
-Constants.Set("TWD2", 2);
-Constants.Set("TWD3", 3);
-Constants.Set("TWD4", 4);
-Constants.Set("TWD5", 5);
-Constants.Set("TWD6", 6);
-Constants.Set("TWD7", 7);
+                Constants.Set("UCSR0B", Constants._SFR_MEM8(0xC1));
+                Constants.Set("TXB80", 0);
+                Constants.Set("RXB80", 1);
+                Constants.Set("UCSZ02", 2);
+                Constants.Set("TXEN0", 3);
+                Constants.Set("RXEN0", 4);
+                Constants.Set("UDRIE0", 5);
+                Constants.Set("TXCIE0", 6);
+                Constants.Set("RXCIE0", 7);
 
-Constants.Set("TWCR" ,Constants._SFR_MEM8(0xBC)
-Constants.Set("TWIE 0
-Constants.Set("TWEN 2
-Constants.Set("TWWC 3
-Constants.Set("TWSTO 4
-Constants.Set("TWSTA 5
-Constants.Set("TWEA 6
-Constants.Set("TWINT 7
+                Constants.Set("UCSR0C", Constants._SFR_MEM8(0xC2));
+                Constants.Set("UCPOL0", 0);
+                Constants.Set("UCSZ00", 1);
+                Constants.Set("UCPHA0", 1);
+                Constants.Set("UCSZ01", 2);
+                Constants.Set("UDORD0", 2);
+                Constants.Set("USBS0", 3);
+                Constants.Set("UPM00", 4);
+                Constants.Set("UPM01", 5);
+                Constants.Set("UMSEL00", 6);
+                Constants.Set("UMSEL01", 7);
+                
 
-Constants.Set("TWAMR" ,Constants._SFR_MEM8(0xBD)
-Constants.Set("TWAM0", 0);
-Constants.Set("TWAM1", 1);
-Constants.Set("TWAM2", 2);
-Constants.Set("TWAM3", 3);
-Constants.Set("TWAM4", 4);
-Constants.Set("TWAM5", 5);
-Constants.Set("TWAM6", 6);
+                Constants.Set("UBRR0", Constants._SFR_MEM16(0xC4));
+                Constants.Set("UBRR0L", Constants._SFR_MEM8(0xC4));
+                Constants.Set("UBRR0_0", 0);
+                Constants.Set("UBRR0_1", 1);
+                Constants.Set("UBRR0_2", 2);
+                Constants.Set("UBRR0_3", 3);
+                Constants.Set("UBRR0_4", 4);
+                Constants.Set("UBRR0_5", 5);
+                Constants.Set("UBRR0_6", 6);
+                Constants.Set("UBRR0_7", 7);
 
-Constants.Set("UCSR0A" ,Constants._SFR_MEM8(0xC0)
-Constants.Set("MPCM0", 0);
-Constants.Set("U2X0 1
-Constants.Set("UPE0 2
-Constants.Set("DOR0 3
-Constants.Set("FE0 4
-Constants.Set("UDRE0 5
-Constants.Set("TXC0 6
-Constants.Set("RXC0 7
+                Constants.Set("UBRR0H", Constants._SFR_MEM8(0xC5));
+                Constants.Set("UBRR0_8", 0);
+                Constants.Set("UBRR0_9", 1);
+                Constants.Set("UBRR0_10", 2);
+                Constants.Set("UBRR0_11", 3);
 
-Constants.Set("UCSR0B" ,Constants._SFR_MEM8(0xC1)
-Constants.Set("TXB80", 0);
-Constants.Set("RXB80 1
-Constants.Set("UCSZ02", 2);
-Constants.Set("TXEN0 3
-Constants.Set("RXEN0 4
-Constants.Set("UDRIE0 5
-Constants.Set("TXCIE0 6
-Constants.Set("RXCIE0 7
-
-Constants.Set("UCSR0C" ,Constants._SFR_MEM8(0xC2)
-Constants.Set("UCPOL0", 0);
-Constants.Set("UCSZ00 1
-Constants.Set("UCPHA0 1
-Constants.Set("UCSZ01 2
-Constants.Set("UDORD0 2
-Constants.Set("USBS0 3
-Constants.Set("UPM00 4
-Constants.Set("UPM01 5
-Constants.Set("UMSEL00 6
-Constants.Set("UMSEL01 7
-
-Constants.Set("UBRR0 _SFR_MEM16(0xC4)
-
-Constants.Set("UBRR0L" ,Constants._SFR_MEM8(0xC4)
-Constants.Set("UBRR0_0", 0);
-Constants.Set("UBRR0_1", 1);
-Constants.Set("UBRR0_2", 2);
-Constants.Set("UBRR0_3", 3);
-Constants.Set("UBRR0_4", 4);
-Constants.Set("UBRR0_5", 5);
-Constants.Set("UBRR0_6", 6);
-Constants.Set("UBRR0_7", 7);
-
-Constants.Set("UBRR0H" ,Constants._SFR_MEM8(0xC5)
-Constants.Set("UBRR0_8 0
-Constants.Set("UBRR0_9 1
-Constants.Set("UBRR0_10 2
-Constants.Set("UBRR0_11 3
-
-Constants.Set("UDR0" ,Constants._SFR_MEM8(0xC6)
-Constants.Set("UDR0_0", 0);
-Constants.Set("UDR0_1", 1);
-Constants.Set("UDR0_2", 2);
-Constants.Set("UDR0_3", 3);
-Constants.Set("UDR0_4", 4);
-Constants.Set("UDR0_5", 5);
-Constants.Set("UDR0_6", 6);
-Constants.Set("UDR0_7", 7);
-
-
+                Constants.Set("UDR0", Constants._SFR_MEM8(0xC6));
+                Constants.Set("UDR0_0", 0);
+                Constants.Set("UDR0_1", 1);
+                Constants.Set("UDR0_2", 2);
+                Constants.Set("UDR0_3", 3);
+                Constants.Set("UDR0_4", 4);
+                Constants.Set("UDR0_5", 5);
+                Constants.Set("UDR0_6", 6);
+                Constants.Set("UDR0_7", 7);
 
                 /* Interrupt Vectors */
                 /* Interrupt Vector 0 is the reset vector. */
 
-Constants.Set("INT0_vect_num     1
-Constants.Set("INT0_vect         _VECTOR(1)   /* External Interrupt Request 0 */
+                Constants.Set("INT0_vect_num", 1);
+                Constants.Set("INT0_vect", Constants._VECTOR(1));   /* External Interrupt Request 0 */
 
-Constants.Set("INT1_vect_num     2
-Constants.Set("INT1_vect         _VECTOR(2)   /* External Interrupt Request 1 */
+                Constants.Set("INT1_vect_num", 2);
+                Constants.Set("INT1_vect", Constants._VECTOR(2));   /* External Interrupt Request 1 */
 
-Constants.Set("PCINT0_vect_num   3
-Constants.Set("PCINT0_vect       _VECTOR(3)   /* Pin Change Interrupt Request 0 */
+                Constants.Set("PCINT0_vect_num", 3);
+                Constants.Set("PCINT0_vect", Constants._VECTOR(3));   /* Pin Change Interrupt Request 0 */
 
-Constants.Set("PCINT1_vect_num   4
-Constants.Set("PCINT1_vect       _VECTOR(4)   /* Pin Change Interrupt Request 0 */
+                Constants.Set("PCINT1_vect_num", 4);
+                Constants.Set("PCINT1_vect", Constants._VECTOR(4));   /* Pin Change Interrupt Request 0 */
 
-Constants.Set("PCINT2_vect_num   5
-Constants.Set("PCINT2_vect       _VECTOR(5)   /* Pin Change Interrupt Request 1 */
+                Constants.Set("PCINT2_vect_num", 5);
+                Constants.Set("PCINT2_vect", Constants._VECTOR(5));   /* Pin Change Interrupt Request 1 */
 
-Constants.Set("WDT_vect_num      6
-Constants.Set("WDT_vect          _VECTOR(6)   /* Watchdog Time-out Interrupt */
+                Constants.Set("WDT_vect_num", 6);
+                Constants.Set("WDT_vect", Constants._VECTOR(6));   /* Watchdog Time-out Interrupt */
 
-Constants.Set("TIMER2_COMPA_vect_num 7
-Constants.Set("TIMER2_COMPA_vect _VECTOR(7)   /* Timer/Counter2 Compare Match A */
+                Constants.Set("TIMER2_COMPA_vect_num", 7);
+                Constants.Set("TIMER2_COMPA_vect", Constants._VECTOR(7));   /* Timer/Counter2 Compare Match A */
 
-Constants.Set("TIMER2_COMPB_vect_num 8
-Constants.Set("TIMER2_COMPB_vect _VECTOR(8)   /* Timer/Counter2 Compare Match A */
+                Constants.Set("TIMER2_COMPB_vect_num", 8);
+                Constants.Set("TIMER2_COMPB_vect", Constants._VECTOR(8));   /* Timer/Counter2 Compare Match A */
 
-Constants.Set("TIMER2_OVF_vect_num   9
-Constants.Set("TIMER2_OVF_vect   _VECTOR(9)   /* Timer/Counter2 Overflow */
+                Constants.Set("TIMER2_OVF_vect_num",  9);
+                Constants.Set("TIMER2_OVF_vect", Constants._VECTOR(9));   /* Timer/Counter2 Overflow */
 
-Constants.Set("TIMER1_CAPT_vect_num  10
-Constants.Set("TIMER1_CAPT_vect  _VECTOR(10)  /* Timer/Counter1 Capture Event */
+                Constants.Set("TIMER1_CAPT_vect_num", 10);
+                Constants.Set("TIMER1_CAPT_vect", Constants._VECTOR(10));  /* Timer/Counter1 Capture Event */
 
-Constants.Set("TIMER1_COMPA_vect_num 11
-Constants.Set("TIMER1_COMPA_vect _VECTOR(11)  /* Timer/Counter1 Compare Match A */
+                Constants.Set("TIMER1_COMPA_vect_num", 11);
+                Constants.Set("TIMER1_COMPA_vect", Constants._VECTOR(11));  /* Timer/Counter1 Compare Match A */
 
-Constants.Set("TIMER1_COMPB_vect_num 12
-Constants.Set("TIMER1_COMPB_vect _VECTOR(12)  /* Timer/Counter1 Compare Match B */ 
+                Constants.Set("TIMER1_COMPB_vect_num", 12);
+                Constants.Set("TIMER1_COMPB_vect", Constants._VECTOR(12));  /* Timer/Counter1 Compare Match B */
 
-Constants.Set("TIMER1_OVF_vect_num   13
-Constants.Set("TIMER1_OVF_vect   _VECTOR(13)  /* Timer/Counter1 Overflow */
+                Constants.Set("TIMER1_OVF_vect_num", 13);
+                Constants.Set("TIMER1_OVF_vect", Constants._VECTOR(13));  /* Timer/Counter1 Overflow */
 
-Constants.Set("TIMER0_COMPA_vect_num 14
-Constants.Set("TIMER0_COMPA_vect _VECTOR(14)  /* TimerCounter0 Compare Match A */
+                Constants.Set("TIMER0_COMPA_vect_num", 14);
+                Constants.Set("TIMER0_COMPA_vect", Constants._VECTOR(14));  /* TimerCounter0 Compare Match A */
 
-Constants.Set("TIMER0_COMPB_vect_num 15
-Constants.Set("TIMER0_COMPB_vect _VECTOR(15)  /* TimerCounter0 Compare Match B */
+                Constants.Set("TIMER0_COMPB_vect_num", 15);
+                Constants.Set("TIMER0_COMPB_vect", Constants._VECTOR(15));  /* TimerCounter0 Compare Match B */
 
-Constants.Set("TIMER0_OVF_vect_num  16
-Constants.Set("TIMER0_OVF_vect   _VECTOR(16)  /* Timer/Couner0 Overflow */
+                Constants.Set("TIMER0_OVF_vect_num", 16);
+                Constants.Set("TIMER0_OVF_vect", Constants._VECTOR(16));  /* Timer/Couner0 Overflow */
 
-Constants.Set("SPI_STC_vect_num  17
-Constants.Set("SPI_STC_vect      _VECTOR(17)  /* SPI Serial Transfer Complete */
+                Constants.Set("SPI_STC_vect_num", 17);
+                Constants.Set("SPI_STC_vect", Constants._VECTOR(17));  /* SPI Serial Transfer Complete */
 
-Constants.Set("USART_RX_vect_num 18
-Constants.Set("USART_RX_vect     _VECTOR(18)  /* USART Rx Complete */
+                Constants.Set("USART_RX_vect_num", 18);
+                Constants.Set("USART_RX_vect", Constants._VECTOR(18));  /* USART Rx Complete */
 
-Constants.Set("USART_UDRE_vect_num   19
-Constants.Set("USART_UDRE_vect   _VECTOR(19)  /* USART, Data Register Empty */
+                Constants.Set("USART_UDRE_vect_num", 19);
+                Constants.Set("USART_UDRE_vect", Constants._VECTOR(19));  /* USART, Data Register Empty */
 
-Constants.Set("USART_TX_vect_num 20
-Constants.Set("USART_TX_vect     _VECTOR(20)  /* USART Tx Complete */
+                Constants.Set("USART_TX_vect_num", 20);
+                Constants.Set("USART_TX_vect", Constants._VECTOR(20));  /* USART Tx Complete */
 
-Constants.Set("ADC_vect_num      21
-Constants.Set("ADC_vect          _VECTOR(21)  /* ADC Conversion Complete */
+                Constants.Set("ADC_vect_num", 21);
+                Constants.Set("ADC_vect", Constants._VECTOR(21));  /* ADC Conversion Complete */
 
-Constants.Set("EE_READY_vect_num 22
-Constants.Set("EE_READY_vect     _VECTOR(22)  /* EEPROM Ready */
+                Constants.Set("EE_READY_vect_num", 22);
+                Constants.Set("EE_READY_vect", Constants._VECTOR(22));  /* EEPROM Ready */
 
-Constants.Set("ANALOG_COMP_vect_num  23
-Constants.Set("ANALOG_COMP_vect  _VECTOR(23)  /* Analog Comparator */
+                Constants.Set("ANALOG_COMP_vect_num", 23);
+                Constants.Set("ANALOG_COMP_vect", Constants._VECTOR(23));  /* Analog Comparator */
 
-Constants.Set("TWI_vect_num      24
-Constants.Set("TWI_vect          _VECTOR(24)  /* Two-wire Serial Interface */
+                Constants.Set("TWI_vect_num", 24);
+                Constants.Set("TWI_vect", Constants._VECTOR(24));  /* Two-wire Serial Interface */
 
-Constants.Set("SPM_READY_vect_num    25
-Constants.Set("SPM_READY_vect    _VECTOR(25)  /* Store Program Memory Read */
+                Constants.Set("SPM_READY_vect_num", 25);
+                Constants.Set("SPM_READY_vect", Constants._VECTOR(25));  /* Store Program Memory Read */
 
-Constants.Set("_VECTORS_SIZE (26 * 4)
-
-
+                Constants.Set("_VECTORS_SIZE",(26 * 4));
 
                 /* Constants */
-Constants.Set("SPM_PAGESIZE 128
-Constants.Set("RAMSTART     (0x100)
-Constants.Set("RAMEND       0x8FF     /* Last On-Chip SRAM Location */
-Constants.Set("XRAMSIZE     0
-Constants.Set("XRAMEND      RAMEND
-Constants.Set("E2END        0x3FF
-Constants.Set("E2PAGESIZE   4
-Constants.Set("FLASHEND     0x7FFF
-
-
+                Constants.Set("SPM_PAGESIZE", 128);
+                Constants.Set("RAMSTART", (0x100));
+                Constants.Set("RAMEND", 0x8FF);     /* Last On-Chip SRAM Location */
+                Constants.Set("XRAMSIZE", 0);
+                Constants.Set("XRAMEND", Constants.Get("RAMEND"));
+                Constants.Set("E2END", 0x3FF);
+                Constants.Set("E2PAGESIZE", 4);
+                Constants.Set("FLASHEND", 0x7FFF);
 
                 /* Fuses */
-Constants.Set("FUSE_MEMORY_SIZE 3
+                Constants.Set("FUSE_MEMORY_SIZE", 3);
 
                 /* Low Fuse Byte */
-Constants.Set("FUSE_CKSEL0 (unsigned char)~_BV(0)  /* Select Clock Source */
-Constants.Set("FUSE_CKSEL1 (unsigned char)~_BV(1)  /* Select Clock Source */
-Constants.Set("FUSE_CKSEL2 (unsigned char)~_BV(2)  /* Select Clock Source */
-Constants.Set("FUSE_CKSEL3 (unsigned char)~_BV(3)  /* Select Clock Source */
-Constants.Set("FUSE_SUT0   (unsigned char)~_BV(4)  /* Select start-up time */
-Constants.Set("FUSE_SUT1   (unsigned char)~_BV(5)  /* Select start-up time */
-Constants.Set("FUSE_CKOUT  (unsigned char)~_BV(6)  /* Clock output */
-Constants.Set("FUSE_CKDIV8 (unsigned char)~_BV(7) /* Divide clock by 8 */
-Constants.Set("LFUSE_DEFAULT (FUSE_CKSEL0 & FUSE_CKSEL2 & FUSE_CKSEL3 & FUSE_SUT0 & FUSE_CKDIV8)
+                Constants.Set("FUSE_CKSEL0", ~Constants._BV(0));  /* Select Clock Source */
+                Constants.Set("FUSE_CKSEL1", ~Constants._BV(1));  /* Select Clock Source */
+                Constants.Set("FUSE_CKSEL2", ~Constants._BV(2));  /* Select Clock Source */
+                Constants.Set("FUSE_CKSEL3", ~Constants._BV(3));  /* Select Clock Source */
+                Constants.Set("FUSE_SUT0", ~Constants._BV(4));  /* Select start-up time */
+                Constants.Set("FUSE_SUT1", ~Constants._BV(5));  /* Select start-up time */
+                Constants.Set("FUSE_CKOUT", ~Constants._BV(6));  /* Clock output */
+                Constants.Set("FUSE_CKDIV8", ~Constants._BV(7)); /* Divide clock by 8 */
+                Constants.Set("LFUSE_DEFAULT", ((byte)Constants.Get("FUSE_CKSEL0") & 
+                                                (byte)Constants.Get("FUSE_CKSEL2") & 
+                                                (byte)Constants.Get("FUSE_CKSEL3") & 
+                                                (byte)Constants.Get("FUSE_SUT0") & 
+                                                (byte)Constants.Get("FUSE_CKDIV8")));
 
                 /* High Fuse Byte */
-Constants.Set("FUSE_BOOTRST (unsigned char)~_BV(0)
-Constants.Set("FUSE_BOOTSZ0 (unsigned char)~_BV(1)
-Constants.Set("FUSE_BOOTSZ1 (unsigned char)~_BV(2)
-Constants.Set("FUSE_EESAVE    (unsigned char)~_BV(3)  /* EEPROM memory is preserved through chip erase */
-Constants.Set("FUSE_WDTON     (unsigned char)~_BV(4)  /* Watchdog Timer Always On */
-Constants.Set("FUSE_SPIEN     (unsigned char)~_BV(5)  /* Enable Serial programming and Data Downloading */
-Constants.Set("FUSE_DWEN      (unsigned char)~_BV(6)  /* debugWIRE Enable */
-Constants.Set("FUSE_RSTDISBL  (unsigned char)~_BV(7)  /* External reset disable */
-Constants.Set("HFUSE_DEFAULT (FUSE_BOOTSZ0 & FUSE_BOOTSZ1 & FUSE_SPIEN)
+                Constants.Set("FUSE_BOOTRST", ~Constants._BV(0));
+                Constants.Set("FUSE_BOOTSZ0", ~Constants._BV(1));
+                Constants.Set("FUSE_BOOTSZ1", ~Constants._BV(2));
+                Constants.Set("FUSE_EESAVE", ~Constants._BV(3));  /* EEPROM memory is preserved through chip erase */
+                Constants.Set("FUSE_WDTON", ~Constants._BV(4));  /* Watchdog Timer Always On */
+                Constants.Set("FUSE_SPIEN", ~Constants._BV(5));  /* Enable Serial programming and Data Downloading */
+                Constants.Set("FUSE_DWEN", ~Constants._BV(6));  /* debugWIRE Enable */
+                Constants.Set("FUSE_RSTDISBL", ~Constants._BV(7));  /* External reset disable */
+                Constants.Set("HFUSE_DEFAULT", ((byte)Constants.Get("FUSE_BOOTSZ0") & (byte)Constants.Get("FUSE_BOOTSZ1") & (byte)Constants.Get("FUSE_SPIEN")));
 
                 /* Extended Fuse Byte */
-Constants.Set("FUSE_BODLEVEL0 (unsigned char)~_BV(0)  /* Brown-out Detector trigger level */
-Constants.Set("FUSE_BODLEVEL1 (unsigned char)~_BV(1)  /* Brown-out Detector trigger level */
-Constants.Set("FUSE_BODLEVEL2 (unsigned char)~_BV(2)  /* Brown-out Detector trigger level */
-Constants.Set("EFUSE_DEFAULT  (0xFF)
-
-
+                Constants.Set("FUSE_BODLEVEL0", ~Constants._BV(0));  /* Brown-out Detector trigger level */
+                Constants.Set("FUSE_BODLEVEL1", ~Constants._BV(1));  /* Brown-out Detector trigger level */
+                Constants.Set("FUSE_BODLEVEL2", ~Constants._BV(2));  /* Brown-out Detector trigger level */
+                Constants.Set("EFUSE_DEFAULT", (0xFF));
 
                 /* Lock Bits */
-Constants.Set("__LOCK_BITS_EXIST
-Constants.Set("__BOOT_LOCK_BITS_0_EXIST
-Constants.Set("__BOOT_LOCK_BITS_1_EXIST
-
+                Constants.Set("__LOCK_BITS_EXIST", 1);
+                Constants.Set("__BOOT_LOCK_BITS_0_EXIST", 1);
+                Constants.Set("__BOOT_LOCK_BITS_1_EXIST", 1);
 
                 /* Signature */
-Constants.Set("SIGNATURE_0", 0);x1E
-Constants.Set("SIGNATURE_1 0x95
-#if defined(__AVR_ATmega328__)
-Constants.Set("SIGNATURE_2 0x14
-#else /* ATmega328P */
-Constants.Set("SIGNATURE_2 0x0F
-#endif
+                Constants.Set("SIGNATURE_0", 0x1E);
+                Constants.Set("SIGNATURE_1", 0x95);
+
+                if (Constants.Defined("__AVR_ATmega328__"))
+                    Constants.Set("SIGNATURE_2", 0x14);
+                else /* ATmega328P */
+                    Constants.Set("SIGNATURE_2", 0x0F);
 
 
-Constants.Set("SLEEP_MODE_IDLE (0x00<<1)
-Constants.Set("SLEEP_MODE_ADC (0x01<<1)
-Constants.Set("SLEEP_MODE_PWR_DOWN (0x02<<1)
-Constants.Set("SLEEP_MODE_PWR_SAVE (0x03<<1)
-Constants.Set("SLEEP_MODE_STANDBY (0x06<<1)
-Constants.Set("SLEEP_MODE_EXT_STANDBY (0x07<<1)
-
+                Constants.Set("SLEEP_MODE_IDLE", (0x00 << 1));
+                Constants.Set("SLEEP_MODE_ADC", (0x01 << 1));
+                Constants.Set("SLEEP_MODE_PWR_DOWN", (0x02 << 1));
+                Constants.Set("SLEEP_MODE_PWR_SAVE", (0x03 << 1));
+                Constants.Set("SLEEP_MODE_STANDBY", (0x06 << 1));
+                Constants.Set("SLEEP_MODE_EXT_STANDBY", (0x07 << 1));
 
             }  /* _AVR_IOM328P_H_ */
         }

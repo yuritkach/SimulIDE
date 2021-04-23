@@ -570,9 +570,9 @@ namespace SimulIDE.src.simavr.cores.avr
                 //#endif
             }
 
-            portpins.InitConstants();
-            common.InitConstants();
-            version.InitConstants();
+            //portpins.InitConstants();
+            //common.InitConstants();
+            //version.InitConstants();
 
             //#if __AVR_ARCH__ >= 100
             //# include <avr/xmega.h>

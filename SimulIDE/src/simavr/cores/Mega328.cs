@@ -30,40 +30,40 @@ namespace SimulIDE.src.simavr.cores
         {
             base.Init();
 
-            ConstantsX328.SIM_MMCU = "atmega328";
-            ConstantsX328.SIM_CORENAME = "mcu_mega328";
-            ConstantsX328.SIM_VECTOR_SIZE = 4;
+            Constants.Set("SIM_MMCU","atmega328");
+            Constants.Set("SIM_CORENAME","mcu_mega328");
+            Constants.Set("SIM_VECTOR_SIZE", 4);
             /* Signature */
-            ConstantsX328.SIGNATURE_0 = 0x1E;
-            ConstantsX328.SIGNATURE_1 = 0x95;
-            ConstantsX328.SIGNATURE_2 = 0x0F;
+            Constants.Set("SIGNATURE_0", 0x1E);
+            Constants.Set("SIGNATURE_1", 0x95);
+            Constants.Set("SIGNATURE_2", 0x0F);
 
             /* Constants */
-            ConstantsX328.SPM_PAGESIZE = 128;
-            ConstantsX328.RAMSTART = 0x100;
-            ConstantsX328.RAMEND = 0x8FF;     /* Last On-Chip SRAM Location */
-            ConstantsX328.XRAMSIZE = 0;
-            ConstantsX328.XRAMEND = ConstantsX328.RAMEND;
-            ConstantsX328.E2END = 0x3FF;
-            ConstantsX328.E2PAGESIZE = 4;
-            ConstantsX328.FLASHEND = 0x7FFF;
+            Constants.Set("SPM_PAGESIZE", 128);
+            Constants.Set("RAMSTART" ,0x100);
+            Constants.Set("RAMEND" , 0x8FF);     /* Last On-Chip SRAM Location */
+            Constants.Set("XRAMSIZE" , 0);
+            Constants.Set("XRAMEND" , Constants.Get("RAMEND"));
+            Constants.Set("E2END ", 0x3FF);
+            Constants.Set("E2PAGESIZE" , 4);
+            Constants.Set("FLASHEND" , 0x7FFF);
 
-            ConstantsX328.EEARH =ConstantsX328._SFR_IO8(0x22);
-            ConstantsX328.EEARL = ConstantsX328._SFR_IO8(0x21);
-            ConstantsX328.EEDR = ConstantsX328._SFR_IO8(0x20);
-            ConstantsX328.EECR = ConstantsX328._SFR_IO8(0x0F);
-            ConstantsX328.EERE = 0;
-            ConstantsX328.EEPE = 1;
-            ConstantsX328.EEMPE = 2;
-            ConstantsX328.EERIE = 3;
-            ConstantsX328.EEPM0 = 4;
-            ConstantsX328.EEPM1 = 5;
+            Constants.Set("EEARH" ,Constants._SFR_IO8(0x22));
+            Constants.Set("EEARL" , Constants._SFR_IO8(0x21));
+            Constants.Set("EEDR" , Constants._SFR_IO8(0x20));
+            Constants.Set("EECR" , Constants._SFR_IO8(0x0F));
+            Constants.Set("EERE" , 0);
+            Constants.Set("EEPE" ,1);
+            Constants.Set("EEMPE" , 2);
+            Constants.Set("EERIE" , 3);
+            Constants.Set("EEPM0" , 4);
+            Constants.Set("EEPM1" , 5);
 
-            ConstantsX328.MCUSR = ConstantsX328._SFR_IO8(0x34);
-            ConstantsX328.MCUCSR = ConstantsX328._SFR_IO8(0x35);
+            Constants.Set("MCUSR" , Constants._SFR_IO8(0x34));
+            Constants.Set("MCUCSR" , Constants._SFR_IO8(0x35));
 
             /* Fuses */
-            ConstantsX328.FUSE_MEMORY_SIZE = 3;
+            Constants.Set("FUSE_MEMORY_SIZE" , 3);
         }
 
     }
