@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimulIDE.src.simavr.cores
 {
-    class ConstantsX328:ConstantsX8
+    class ConstantsX328:Constants
     {
      
         /* Registers and associated bit numbers */

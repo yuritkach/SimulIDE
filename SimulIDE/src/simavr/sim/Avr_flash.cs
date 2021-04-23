@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimulIDE.src.simavr.cores;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -158,17 +159,21 @@ namespace SimulIDE.src.simavr.sim
 
         public static uint AVR_IOCTL_FLASH_SPM = Sim_io.AVR_IOCTL_DEF((byte)'f', (byte)'s', (byte)'p', (byte)'m');
 
-//#define AVR_SELFPROG_DECLARE_INTERNAL(_spmr, _spen, _vector) \
-//		.r_spm = _spmr,\
-//		.spm_pagesize = SPM_PAGESIZE,\
-//		.selfprgen = AVR_IO_REGBIT(_spmr, _spen),\
-//		.pgers = AVR_IO_REGBIT(_spmr, PGERS),\
-//		.pgwrt = AVR_IO_REGBIT(_spmr, PGWRT),\
-//		.blbset = AVR_IO_REGBIT(_spmr, BLBSET),\
-//		.flash = {\
-//			.enable = AVR_IO_REGBIT(_spmr, SPMIE),\
-//			.vector = _vector,\
-//		}\
+        public static void AVR_SELFPROG_DECLARE_INTERNAL(Avr_flash fl, byte _spmr, byte _spen, byte _vector)
+        {
+            fl.r_spm = _spmr;
+            fl.spm_pagesize = Constants.GetUShort("SPM_PAGESIZE");
+            fl.selfprgen = Constants.AVR_IO_REGBIT(_spmr, _spen);
+            fl.pgers = AVR_IO_REGBIT(_spmr, PGERS),\
+            fl.pgwrt = AVR_IO_REGBIT(_spmr, PGWRT),\
+            fl.blbset = AVR_IO_REGBIT(_spmr, BLBSET),\
+
+            if (fl.flash == null)
+                fl.flash = new Avr_int_vector();
+            fl.flash.enable = AVR_IO_REGBIT(_spmr, SPMIE);
+            fl.flash.vector = _vector;
+        }   
+
 
 //#define AVR_SELFPROG_DECLARE_NORWW(_spmr, _spen, _vector) \
 //	.selfprog = {\
