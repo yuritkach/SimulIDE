@@ -74,7 +74,7 @@ namespace SimulIDE.src.simavr
 
     public struct Avr_regbit
     {
-        public int reg;
+        public uint reg;
         public byte bit;
         public byte mask;
     }

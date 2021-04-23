@@ -19,7 +19,7 @@ namespace SimulIDE.src.simavr.sim
         public ushort[] tmppage;
         public byte[] tmppage_used;
         public ushort spm_pagesize;
-        public byte r_spm;
+        public uint r_spm;
         public Avr_regbit selfprgen;
         public Avr_regbit pgers;     // page erase
         public Avr_regbit pgwrt;     // page write
@@ -159,7 +159,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static uint AVR_IOCTL_FLASH_SPM = Sim_io.AVR_IOCTL_DEF((byte)'f', (byte)'s', (byte)'p', (byte)'m');
 
-        public static void AVR_SELFPROG_DECLARE_INTERNAL(Avr_flash fl, byte _spmr, byte _spen, byte _vector)
+        public static void AVR_SELFPROG_DECLARE_INTERNAL(ref Avr_flash fl, uint _spmr, byte _spen, byte _vector)
         {
             fl.r_spm = _spmr;
             fl.spm_pagesize = (ushort)Constants.Get("SPM_PAGESIZE");
@@ -175,19 +175,24 @@ namespace SimulIDE.src.simavr.sim
         }   
 
 
-//#define AVR_SELFPROG_DECLARE_NORWW(_spmr, _spen, _vector) \
-//	.selfprog = {\
-//		.flags = 0,\
-//		AVR_SELFPROG_DECLARE_INTERNAL(_spmr, _spen, _vector),\
-//	}
+        public static void AVR_SELFPROG_DECLARE_NORWW(ref Avr_flash selfprog, uint _spmr, byte _spen, byte _vector)
+        {
+            if (selfprog == null)
+                selfprog = new Avr_flash();
+            selfprog.flags = 0;
+            AVR_SELFPROG_DECLARE_INTERNAL(ref selfprog, _spmr, _spen, _vector);
+        }
 
-//#define AVR_SELFPROG_DECLARE(_spmr, _spen, _vector) \
-//	.selfprog = {\
-//		.flags = AVR_SELFPROG_HAVE_RWW,\
-//		AVR_SELFPROG_DECLARE_INTERNAL(_spmr, _spen, _vector),\
-//		.rwwsre = AVR_IO_REGBIT(_spmr, RWWSRE),\
-//		.rwwsb = AVR_IO_REGBIT(_spmr, RWWSB),\
-//	}
+        public static void AVR_SELFPROG_DECLARE(ref Avr_flash selfprog, uint _spmr, byte _spen, byte _vector)
+        {
+            if (selfprog == null)
+                selfprog = new Avr_flash();
+            selfprog.flags = (ushort) Constants.Get("AVR_SELFPROG_HAVE_RWW");
+            AVR_SELFPROG_DECLARE_INTERNAL(ref selfprog, _spmr, _spen, _vector);
+            selfprog.rwwsre = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("RWWSRE"));
+            selfprog.rwwsb = Sim_regbit.AVR_IO_REGBIT(_spmr, (byte)Constants.Get("RWWSB"));
+        
+        }
 
 
     }

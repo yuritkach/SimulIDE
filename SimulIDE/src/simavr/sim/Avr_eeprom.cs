@@ -28,17 +28,19 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_eeprom_declare(Mcu mcu, byte _vector)
         {
 
-            mcu.eeprom.size = (ushort)(Constants.E2END + 1);
-            mcu.eeprom.r_eearh = Constants.EEARH;
-            mcu.eeprom.r_eearl = Constants.EEARL;
-            mcu.eeprom.r_eedr = Constants.EEDR;
-            mcu.eeprom.r_eedr = Constants.EECR;
-            mcu.eeprom.eepm = new Avr_regbit[2] { Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM0), Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPM1) };
-            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEMPE);
-            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EEPE);
-            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERE);
+            mcu.eeprom.size = (ushort)((ushort)Constants.Get("E2END") + 1);
+            mcu.eeprom.r_eearh = (byte)Constants.Get("EEARH");
+            mcu.eeprom.r_eearl = (byte)Constants.Get("EEARL");
+            mcu.eeprom.r_eedr = (byte)Constants.Get("EEDR");
+            mcu.eeprom.r_eecr = (byte)Constants.Get("EECR");
+            mcu.eeprom.eepm = new Avr_regbit[2] {
+                Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EEPM0")),
+                Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EEPM1")) };
+            mcu.eeprom.eempe = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EEMPE"));
+            mcu.eeprom.eepe = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EEPE"));
+            mcu.eeprom.eere = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EERE"));
             Avr_int_vector vec = new Avr_int_vector();
-            vec.enable = Sim_regbit.AVR_IO_REGBIT(Constants.EECR, Constants.EERIE);
+            vec.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("EECR"), (byte)Constants.Get("EERIE"));
             vec.vector = _vector;
             mcu.eeprom.ready = vec;
         }

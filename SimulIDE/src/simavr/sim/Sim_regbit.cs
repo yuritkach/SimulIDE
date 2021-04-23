@@ -141,7 +141,7 @@ namespace SimulIDE.src.simavr.sim
 //                }
 //        }
 
-        public static Avr_regbit  AVR_IO_REGBIT(int _io, byte _bit)
+        public static Avr_regbit  AVR_IO_REGBIT(uint _io, byte _bit)
         {
             Avr_regbit result = new Avr_regbit();
             result.reg = _io;
@@ -150,7 +150,7 @@ namespace SimulIDE.src.simavr.sim
             return result;
         }
 
-        public static Avr_regbit AVR_IO_REGBITS(int _io, byte _bit, byte _mask)
+        public static Avr_regbit AVR_IO_REGBITS(uint _io, byte _bit, byte _mask)
         {
             Avr_regbit result = new Avr_regbit();
             result.reg = _io;

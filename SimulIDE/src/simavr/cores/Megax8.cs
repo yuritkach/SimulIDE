@@ -32,8 +32,8 @@ namespace SimulIDE.src.simavr.cores
             portb.r_ddr = (uint)Constants.Get("DDRB");
             portb.r_pin = (uint)Constants.Get("PINB");
             portb.pcint = new Avr_int_vector();
-            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCICR"), (byte)Constants.Get("PCIE0"));
-            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF0"));
+            portb.pcint.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCICR"), (byte)Constants.Get("PCIE0"));
+            portb.pcint.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF0"));
             portb.pcint.vector = (byte)Constants.Get("PCINT0_vect");
             portb.r_pcint = (uint)Constants.Get("PCMSK0");
         }
@@ -45,8 +45,8 @@ namespace SimulIDE.src.simavr.cores
             portc.r_ddr = (uint)Constants.Get("DDRC");
             portc.r_pin = (uint)Constants.Get("PINC");
             portc.pcint = new Avr_int_vector();
-            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCICR"), (byte)Constants.Get("PCIE1"));
-            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT((int)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF1"));
+            portc.pcint.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCICR"), (byte)Constants.Get("PCIE1"));
+            portc.pcint.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCIFR"), (byte)Constants.Get("PCIF1"));
             portc.pcint.vector = (byte)Constants.Get("PCINT1_vect");
             portc.r_pcint = (uint)Constants.Get("PCMSK1");
         }
@@ -54,14 +54,14 @@ namespace SimulIDE.src.simavr.cores
         {
             portd = new Avr_ioport();
             portd.name = "D";
-            portd.r_port = Constants.PORTD;
-            portd.r_ddr = Constants.DDRD;
-            portd.r_pin = Constants.PIND;
+            portd.r_port =(uint) Constants.Get("PORTD");
+            portd.r_ddr = (uint) Constants.Get("DDRD");
+            portd.r_pin = (uint) Constants.Get("PIND");
             portd.pcint = new Avr_int_vector();
-            portd.pcint.enable = Sim_regbit.AVR_IO_REGBIT(Constants.PCICR, Constants.PCIE2);
-            portd.pcint.raised = Sim_regbit.AVR_IO_REGBIT(Constants.PCIFR, Constants.PCIF2);
-            portd.pcint.vector = Constants.PCINT2_vect;
-            portd.r_pcint = Constants.PCMSK2;
+            portd.pcint.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCICR"),(byte) Constants.Get("PCIE2"));
+            portd.pcint.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PCIFR"),(byte) Constants.Get("PCIF2"));
+            portd.pcint.vector = (byte) Constants.Get("PCINT2_vect");
+            portd.r_pcint = (uint) Constants.Get("PCMSK2");
         }
 
         protected void InitStructure()
@@ -78,8 +78,8 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void Avr_core_init(Avr core)
         {
-            core.mmcu = Constants.SIM_MMCU;
-            DefaultCore(Constants.SIM_VECTOR_SIZE);
+            core.mmcu = (string)Constants.Get("SIM_MMCU");
+            DefaultCore((byte)Constants.Get("SIM_VECTOR_SIZE"));
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
             core.custom = new Custom();
@@ -87,14 +87,14 @@ namespace SimulIDE.src.simavr.cores
 
         protected virtual void Avr_eeprom_init(Avr core)
         {
-            Avr_eeprom.Avr_eeprom_declare((Mcu)this, Constants.EE_READY_vect);
+            Avr_eeprom.Avr_eeprom_declare((Mcu)this, (byte)Constants.Get("EE_READY_vect"));
         }
 
         protected void Mx8_init(Avr avr)
         {
             Avr_core_init(avr);
 	        Avr_eeprom_init(avr);
-            Avr_initSelfprog(avr);
+            Avr_initSelfprog(ref selfprog);
             Avr_flash_helper.Avr_flash_init(avr, selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
@@ -116,12 +116,12 @@ namespace SimulIDE.src.simavr.cores
             Mx8_init(avr);
         }
 
-        protected void Avr_initSelfprog(Avr_flash fl)
+        protected void Avr_initSelfprog(ref Avr_flash fl)
         {
-            if (Constants.RWWSRE != 0)
-                Avr_flash_helper.AVR_SELFPROG_DECLARE(fl, Constants.SPMCSR, Constants.SELFPRGEN, Constants.SPM_READY_vect);
+            if (Constants.Defined("RWWSRE"))
+                Avr_flash_helper.AVR_SELFPROG_DECLARE(ref fl, (uint)Constants.Get("SPMCSR"), (byte)Constants.Get("SELFPRGEN"), (byte)Constants.Get("SPM_READY_vect"));
             else
-                Avr_flash_helper.AVR_SELFPROG_DECLARE_NORWW(fl,Constants.SPMCSR, Constants.SELFPRGEN, Constants.SPM_READY_vect);
+                Avr_flash_helper.AVR_SELFPROG_DECLARE_NORWW(ref fl,(uint)Constants.Get("SPMCSR"), (byte)Constants.Get("SELFPRGEN"), (byte)Constants.Get("SPM_READY_vect"));
         }
 
 
