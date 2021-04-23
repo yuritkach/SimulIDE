@@ -10,7 +10,7 @@ namespace SimulIDE.src.simavr.cores
 {
     public class Constants
     {
-        protected static Dictionary<string, object> constants;
+        protected static Dictionary<string, object> constants= new Dictionary<string, object>();
 
         public static void Set(string name, object value)
         {
@@ -19,10 +19,13 @@ namespace SimulIDE.src.simavr.cores
             else constants.Add(name, value);
         }
 
-        public static object Get(string name)
+        public static dynamic Get(string name)
         {
             if (constants.TryGetValue(name, out object result))
+            {
                 return result;
+            }
+            
             else return null;
         }
 

@@ -18,12 +18,6 @@ namespace SimulIDE.src.simavr.cores
             Mx8_init(core);
         }
 
-        protected override void Init()
-        {
-            base.Init();
-        }
-
-
         private void InitPortB()
         {
             portb = new Avr_ioport();
@@ -79,7 +73,8 @@ namespace SimulIDE.src.simavr.cores
         protected virtual void Avr_core_init(Avr core)
         {
             core.mmcu = (string)Constants.Get("SIM_MMCU");
-            DefaultCore((byte)Constants.Get("SIM_VECTOR_SIZE"));
+            Sim_core_declare.InitConstants();
+            Sim_core_declare.DEFAULT_CORE(ref core,(byte)Constants.Get("SIM_VECTOR_SIZE"));
             core.Init = Mx8_init;
             core.Reset = Mx8_reset;
             core.custom = new Custom();

@@ -342,13 +342,15 @@ namespace SimulIDE.src.simavr.cores.avr
                 Constants.Set("PRTIM2", 6);
                 Constants.Set("PRTWI", 7);
 
-                Constants.Set("__AVR_HAVE_PRR", (1 << (byte)Constants.Get("PRADC")) |
-                                                (1 << (byte)Constants.Get("PRUSART0")) |
-                                                (1 << (byte)Constants.Get("PRSPI")) |
-                                                (1 << (byte)Constants.Get("PRTIM1")) |
-                                                (1 << (byte)Constants.Get("PRTIM0")) |
-                                                (1 << (byte)Constants.Get("PRTIM2")) |
-                                                (1 << (byte)Constants.Get("PRTWI")));
+                Constants.Set("__AVR_HAVE_PRR", (byte)(
+                                                ((byte)(1 << (int)Constants.Get("PRADC"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRUSART0"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRSPI"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRTIM1"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRTIM0"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRTIM2"))) |
+                                                ((byte)(1 << (int)Constants.Get("PRTWI")))
+                                                ));
                 Constants.Set("__AVR_HAVE_PRR_PRADC", 1);
                 Constants.Set("__AVR_HAVE_PRR_PRUSART0", 1);
                 Constants.Set("__AVR_HAVE_PRR_PRSPI", 1);
@@ -866,11 +868,11 @@ namespace SimulIDE.src.simavr.cores.avr
                 Constants.Set("FUSE_SUT1", ~Constants._BV(5));  /* Select start-up time */
                 Constants.Set("FUSE_CKOUT", ~Constants._BV(6));  /* Clock output */
                 Constants.Set("FUSE_CKDIV8", ~Constants._BV(7)); /* Divide clock by 8 */
-                Constants.Set("LFUSE_DEFAULT", ((byte)Constants.Get("FUSE_CKSEL0") & 
-                                                (byte)Constants.Get("FUSE_CKSEL2") & 
-                                                (byte)Constants.Get("FUSE_CKSEL3") & 
-                                                (byte)Constants.Get("FUSE_SUT0") & 
-                                                (byte)Constants.Get("FUSE_CKDIV8")));
+                Constants.Set("LFUSE_DEFAULT", ((int)Constants.Get("FUSE_CKSEL0") & 
+                                                (int)Constants.Get("FUSE_CKSEL2") & 
+                                                (int)Constants.Get("FUSE_CKSEL3") & 
+                                                (int)Constants.Get("FUSE_SUT0") & 
+                                                (int)Constants.Get("FUSE_CKDIV8")));
 
                 /* High Fuse Byte */
                 Constants.Set("FUSE_BOOTRST", ~Constants._BV(0));
@@ -881,7 +883,9 @@ namespace SimulIDE.src.simavr.cores.avr
                 Constants.Set("FUSE_SPIEN", ~Constants._BV(5));  /* Enable Serial programming and Data Downloading */
                 Constants.Set("FUSE_DWEN", ~Constants._BV(6));  /* debugWIRE Enable */
                 Constants.Set("FUSE_RSTDISBL", ~Constants._BV(7));  /* External reset disable */
-                Constants.Set("HFUSE_DEFAULT", ((byte)Constants.Get("FUSE_BOOTSZ0") & (byte)Constants.Get("FUSE_BOOTSZ1") & (byte)Constants.Get("FUSE_SPIEN")));
+                Constants.Set("HFUSE_DEFAULT", ((int)Constants.Get("FUSE_BOOTSZ0") & 
+                                                (int)Constants.Get("FUSE_BOOTSZ1") & 
+                                                (int)Constants.Get("FUSE_SPIEN")));
 
                 /* Extended Fuse Byte */
                 Constants.Set("FUSE_BODLEVEL0", ~Constants._BV(0));  /* Brown-out Detector trigger level */
