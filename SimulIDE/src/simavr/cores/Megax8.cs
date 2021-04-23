@@ -99,9 +99,9 @@ namespace SimulIDE.src.simavr.cores
 //            avr_uart_init(avr, &mcu->uart);
 //            avr_acomp_init(avr, &mcu->acomp);
 //            avr_adc_init(avr, &mcu->adc);
-//            avr_timer_init(avr, &mcu->timer0);
-//            avr_timer_init(avr, &mcu->timer1);
-//            avr_timer_init(avr, &mcu->timer2);
+            Avr_timer_init(avr, mcu.timer0);
+            Avr_timer_init(avr, mcu.timer1);
+            Avr_timer_init(avr, mcu.timer2);
 //            avr_spi_init(avr, &mcu->spi);
 //            avr_twi_init(avr, &mcu->twi);
         }

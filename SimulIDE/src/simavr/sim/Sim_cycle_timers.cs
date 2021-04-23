@@ -20,13 +20,11 @@ namespace SimulIDE.src.simavr.sim
     */
     public class Avr_cycle_timer_slot
     {
-        public Avr_cycle_timer_slot Next;
         public UInt64 when;
         public Avr_cycle_timer timer;
         public object param;
+        public bool free;
     }
-    
-
 
     /*
      * Timer pool contains a pool of timer slots available, they all
@@ -37,8 +35,7 @@ namespace SimulIDE.src.simavr.sim
     public class Avr_cycle_timer_pool
     {
         public Avr_cycle_timer_slot[] timer_slots = new Avr_cycle_timer_slot[Sim_cycle_timers.MAX_CYCLE_TIMERS];
-        public Avr_cycle_timer_slot timer_free;
-        public Avr_cycle_timer_slot timer;
+        public List<Avr_cycle_timer_slot> timers;
     }
 
 
@@ -50,12 +47,13 @@ namespace SimulIDE.src.simavr.sim
         public static void Avr_cycle_timer_reset(Avr avr)
         {
             Avr_cycle_timer_pool pool = avr.cycle_timers;
-            //memset(pool, 0, sizeof(* pool));
-            //	// queue all slots into the free queue
+            if (pool == null)
+                pool = new Avr_cycle_timer_pool();
+            // queue all slots into the free queue
             for(int i = 0; i<MAX_CYCLE_TIMERS; i++ )
             {
-            //		avr_cycle_timer_slot_p t = &pool->timer_slots[i];
-            //QUEUE(pool->timer_free, t);
+            	Avr_cycle_timer_slot t = pool.timer_slots[i];
+                t.free = true;
             }
             avr.run_cycle_count = 1;
             avr.run_cycle_limit = 1;
@@ -90,32 +88,17 @@ namespace SimulIDE.src.simavr.sim
         {
             Avr_cycle_timer_pool pool = avr.cycle_timers;
 
-        //    when += avr->cycle;
-
-        //    avr_cycle_timer_slot_p t = pool->timer_free;
-
-        //    if (!t)
-        //    {
-        //        AVR_LOG(avr, LOG_ERROR, "CYCLE: %s: ran out of timers (%d)!\n", __func__, MAX_CYCLE_TIMERS);
-        //        return;
-        //    }
-        //    // detach head
-        //    pool->timer_free = t->next;
-        //    t->next = NULL;
-        //    t->timer = timer;
-        //    t->param = param;
-        //    t->when = when;
-
-        //    // find its place in the list
-        //    avr_cycle_timer_slot_p loop = pool->timer, last = NULL;
-        //    while (loop)
-        //    {
-        //        if (loop->when > when) break;
-
-        //        last = loop;
-        //        loop = loop->next;
-        //    }
-        //    INSERT(pool->timer, last, t);
+            when += avr.cycle;
+            Avr_cycle_timer_slot t = pool.timer_slots.SingleOrDefault(s => s.free);
+            if (t==null)
+            {
+                // AVR_LOG(avr, LOG_ERROR, "CYCLE: %s: ran out of timers (%d)!\n", __func__, MAX_CYCLE_TIMERS);
+                // return;
+                throw new Exception(string.Format("CYCLE: {0:G}: ran out of timers ({1:G})!\n", "Avr_cycle_timer_insert", MAX_CYCLE_TIMERS));
+            }
+            t.timer = timer;
+            t.param = param;
+            t.when = when;
         }
 
         public static void Avr_cycle_timer_register(Avr avr, ulong when, Avr_cycle_timer timer, params object[] param)
@@ -124,8 +107,8 @@ namespace SimulIDE.src.simavr.sim
 
             // remove it if it was already scheduled
             Avr_cycle_timer_cancel(ref avr, timer, param);
-
-            if (pool.timer_free==null)
+            Avr_cycle_timer_slot t = pool.timer_slots.SingleOrDefault(s => s.free);
+            if (t==null)
             {
                 //AVR_LOG(avr, LOG_ERROR, "CYCLE: %s: pool is full (%d)!\n", __func__, MAX_CYCLE_TIMERS);
                 return;
@@ -196,34 +179,39 @@ namespace SimulIDE.src.simavr.sim
         // */
         public static ulong Avr_cycle_timer_process(Avr avr)
         {
-        //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
+            Avr_cycle_timer_pool pool = avr.cycle_timers;
 
-        //    if (pool->timer) do
-        //        {
-        //            avr_cycle_timer_slot_p t = pool->timer;
-        //            avr_cycle_count_t when = t->when;
+            if (pool != null)
+            {
+                foreach (var t in pool.timers)
+                {
+                    if (!t.free)
+                    {
+                        ulong when = t.when;
+                        if (when > avr.cycle)
+                            return Avr_cycle_timer_return_sleep_run_cycles_limited(avr, when - avr.cycle);
 
-        //            if (when > avr->cycle)
-        //                return avr_cycle_timer_return_sleep_run_cycles_limited(avr, when - avr->cycle);
 
-        //            // detach from active timers
-        //            pool->timer = t->next;
-        //            t->next = NULL;
-        //            do
-        //            {
-        //                avr_cycle_count_t w = t->timer(avr, when, t->param);
-        //                // make sure the return value is either zero, or greater
-        //                // than the last one to prevent infinite loop here
-        //                when = w > when ? w : 0;
-        //            } while (when && when <= avr->cycle);
+                        // detach from active timers
+                        //    pool.timer = t.next;
+                        //    t->next = NULL;
+                        do
+                        {
+                            ulong w = t.timer(avr, when, t.param);
+                            // make sure the return value is either zero, or greater
+                            // than the last one to prevent infinite loop here
+                            when = w > when ? w : 0;
+                        }
+                        while ((when == 0) && (when <= avr.cycle));
+                        if (when != 0) // reschedule then
+                            Avr_cycle_timer_insert(avr, when - avr.cycle, t.timer, t.param);
 
-        //            if (when) // reschedule then
-        //                avr_cycle_timer_insert(avr, when - avr->cycle, t->timer, t->param);
-
-        //            // requeue this one into the free ones
-        //            QUEUE(pool->timer_free, t);
-        //        } while (pool->timer);
-
+                        // requeue this one into the free ones
+                        t.free = true;
+                    }
+                }
+            
+            }
             // original behavior was to return 1000 cycles when no timers were present...
             // run_cycles are bound to at least one cycle but no more than requested limit...
             //	value passed here is returned unbounded, thus preserving original behavior.

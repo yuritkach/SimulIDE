@@ -130,6 +130,10 @@ namespace SimulIDE.src.simavr.sim
             _io.ioctl = Avr_flash_ioctl;
             _io.reset = Avr_flash_reset;
             _io.dealloc = Avr_flash_dealloc;
+
+
+            /* Set if the flash supports a Read While Write section */
+            Constants.Set("AVR_SELFPROG_HAVE_RWW", (1 << 0));
         }
 
         public static void Avr_flash_init(Avr avr, Avr_flash p)
@@ -147,14 +151,6 @@ namespace SimulIDE.src.simavr.sim
             Sim_interrupts.Avr_register_vector(avr, ref p.flash);
             Sim_io.Avr_register_io_write(avr, p.r_spm, Avr_flash_write, p);
         }
-
-
-        
-
-        ///* Set if the flash supports a Read While Write section */
-        //#define AVR_SELFPROG_HAVE_RWW (1 << 0)
-
-        //void avr_flash_init(avr_t* avr, avr_flash_t* p);
 
 
         public static uint AVR_IOCTL_FLASH_SPM = Sim_io.AVR_IOCTL_DEF((byte)'f', (byte)'s', (byte)'p', (byte)'m');

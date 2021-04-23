@@ -676,7 +676,7 @@ namespace SimulIDE.src.gui.editor
         //    }
         //}
 
-        public void UpdateScreen()
+    public void UpdateScreen()
         {
             TextArea.Caret.Line = debugLine;
         }
