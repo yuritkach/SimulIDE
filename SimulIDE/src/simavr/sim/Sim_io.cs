@@ -70,21 +70,16 @@ namespace SimulIDE.src.simavr.sim
             avr.io[a].r.c = readp;
         }
 
-//        static void
-//        _avr_io_mux_write(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
-//                uint8_t v,
-//                void* param)
-//        {
-//            int io = (intptr_t)param;
-//            for (int i = 0; i < avr->io_shared_io[io].used; i++)
-//            {
-//                avr_io_write_t c = avr->io_shared_io[io].io[i].c;
-//                if (c)
-//                    c(avr, addr, v, avr->io_shared_io[io].io[i].param);
-//            }
-//        }
+        public static void _avr_io_mux_write(Avr avr,uint addr,byte v,object param)
+        {
+            int io = (int)param;
+            for (int i = 0; i < avr.io_shared_io[io].used; i++)
+            {
+                Avr_io_write_function c = avr.io_shared_io[io].ios[i].c;
+                if (c!=null)
+                    c(avr, addr, v, avr.io_shared_io[io].ios[i].param);
+            }
+        }
 
         public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object param)
         {
@@ -99,40 +94,43 @@ namespace SimulIDE.src.simavr.sim
              */
             if ((avr.io[a].w.param!=null) || (avr.io[a].w.c!=null))
             {
-//                if (avr->io[a].w.param != param || avr->io[a].w.c != writep)
-//                {
-//                    // if the muxer not already installed, allocate a new slot
-//                    if (avr->io[a].w.c != _avr_io_mux_write)
-//                    {
-//                        int no = avr->io_shared_io_count++;
-//                        if (avr->io_shared_io_count > ARRAY_SIZE(avr->io_shared_io))
-//                        {
-//                            AVR_LOG(avr, LOG_ERROR,
-//                                    "IO: %s(): Too many shared IO registers.\n", __func__);
-//                            abort();
-//                        }
+                if (avr.io[a].w.param != param || avr.io[a].w.c != writep)
+                {
+                    // if the muxer not already installed, allocate a new slot
+                    int no = avr.io_shared_io_count++;
+                    if (avr.io[a].w.c != _avr_io_mux_write)
+                    {
+                        if (avr.io_shared_io_count > avr.io_shared_io.Length)
+                        {
+                            //AVR_LOG(avr, LOG_ERROR,
+                            //        "IO: %s(): Too many shared IO registers.\n", __func__);
+                            //abort();
+                            throw new Exception("Too many shared IO registers.\n");
+
+                        }
 //                        AVR_LOG(avr, LOG_TRACE,
-//                                "IO: %s(%04x): Installing muxer on register.\n",
+//                               "IO: %s(%04x): Installing muxer on register.\n",
 //                                __func__, addr);
-//                        avr->io_shared_io[no].used = 1;
-//                        avr->io_shared_io[no].io[0].param = avr->io[a].w.param;
-//                        avr->io_shared_io[no].io[0].c = avr->io[a].w.c;
-//                        avr->io[a].w.param = (void*)(intptr_t)no;
-//                        avr->io[a].w.c = _avr_io_mux_write;
-//                    }
-//                    int no = (intptr_t)avr->io[a].w.param;
-//                    int d = avr->io_shared_io[no].used++;
-//                    if (avr->io_shared_io[no].used > ARRAY_SIZE(avr->io_shared_io[0].io))
-//                    {
-//                        AVR_LOG(avr, LOG_ERROR,
-//                                "IO: %s(): Too many callbacks on %04x.\n",
-//                                __func__, addr);
-//                        abort();
-//                    }
-//                    avr->io_shared_io[no].io[d].param = param;
-//                    avr->io_shared_io[no].io[d].c = writep;
-//                    return;
-//                }
+                        avr.io_shared_io[no].used = 1;
+                        avr.io_shared_io[no].ios[0].param = avr.io[a].w.param;
+                        avr.io_shared_io[no].ios[0].c = avr.io[a].w.c;
+                        avr.io[a].w.param = (object)no;
+                        avr.io[a].w.c = _avr_io_mux_write;
+                    }
+                    no = (int)avr.io[a].w.param;
+                    int d = avr.io_shared_io[no].used++;
+                    if (avr.io_shared_io[no].used > avr.io_shared_io[0].ios.Length)
+                    {
+                       // AVR_LOG(avr, LOG_ERROR,
+                       //         "IO: %s(): Too many callbacks on %04x.\n",
+                       //         __func__, addr);
+                       // abort();
+                        throw new Exception(string.Format("Too many callbacks on {0:X4}\n",addr));
+                    }
+                    avr.io_shared_io[no].ios[d].param = param;
+                    avr.io_shared_io[no].ios[d].c = writep;
+                    return;
+                }
             }
              
             avr.io[a].w.param = param;

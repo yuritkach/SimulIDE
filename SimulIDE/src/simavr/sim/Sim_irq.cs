@@ -219,11 +219,8 @@ namespace SimulIDE.src.simavr.sim
             Avr_raise_irq_float(irq, value, (irq.flags & IRQ_FLAG_FLOATING));
         }
 
-        //void
-        //avr_connect_irq(
-        //        avr_irq_t* src,
-        //        avr_irq_t* dst)
-        //{
+        public static void Avr_connect_irq(Avr_irq src,Avr_irq dst)
+        {
         //    if (!src || !dst || src == dst)
         //    {
         //        fprintf(stderr, "error: %s invalid irq %p/%p", __FUNCTION__, src, dst);
@@ -238,7 +235,7 @@ namespace SimulIDE.src.simavr.sim
         //    }
         //    hook = _avr_alloc_irq_hook(src);
         //    hook->chain = dst;
-        //}
+        }
 
         //void
         //avr_unconnect_irq(

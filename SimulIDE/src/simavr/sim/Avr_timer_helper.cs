@@ -778,136 +778,132 @@ namespace SimulIDE.src.simavr.sim
                 Sim_interrupts.Avr_clear_interrupt_if(avr, p.comp[compi].interrupt, cp[compi]);
         }
 
-    //static void
-    //avr_timer_irq_icp(
+        public static void Avr_timer_irq_icp(Avr_irq irq,uint value,object param)
+        {
 
-    //        struct avr_irq_t * irq,
-    //        uint32_t value,
-    //		void* param)
-    //{
-    //	avr_timer_t* p = (avr_timer_t*)param;
-    //avr_t* avr = p->io.avr;
+            Avr_timer p = (Avr_timer)param;
+            Avr avr = p.io.avr;
 
-    //	// input capture disabled when ICR is used as top
-    //	if (p->mode.top == avr_timer_wgm_reg_icr)
-    //		return;
-    //	int bing = 0;
-    //	if (avr_regbit_get(avr, p->ices)) { // rising edge
-    //		if (!irq->value && value)
-    //			bing++;
-    //	} else {	// default, falling edge
-    //		if (irq->value && !value)
-    //			bing++;
-    //	}
-    //	if (!bing)
-    //		return;
-    //	// get current TCNT, copy it to ICR, and raise interrupt
-    //	uint16_t tcnt = _avr_timer_get_current_tcnt(p);
-    //avr->data[p->r_icr] = tcnt;
-    //	if (p->r_icrh)
-    //		avr->data[p->r_icrh] = tcnt >> 8;
-    //	avr_raise_interrupt(avr, &p->icr);
-    //}
+    	    // input capture disabled when ICR is used as top
+    	    if (p.mode.top == avr_timer_wgm_reg_icr)
+    		    return;
+    	    int bing = 0;
+    	    if (Sim_regbit.Avr_regbit_get(avr, p.ices)!=0)  // rising edge
+            { 
+                if (irq.value==0 && value!=0)
+    			    bing++;
+    	    }
+            else
+            {	// default, falling edge
+    		    if (irq.value!=0 && value==0)
+    			    bing++;
+    	    }
+    	    if (bing==0)
+    		    return;
+    	    // get current TCNT, copy it to ICR, and raise interrupt
+    	    ushort tcnt = _avr_timer_get_current_tcnt(p);
+            avr.data[p.r_icr] =(byte) tcnt; //ПРОВЕРИТЬ ОДИН ИЛИ ДВА БАЙТА ПИСАТЬ
+    	    if (p.r_icrh!=0)
+    		    avr.data[p.r_icrh] = (byte)(tcnt >> 8);
+    	    Sim_interrupts.Avr_raise_interrupt(avr, p.icr);
+        }
 
     public static int Avr_timer_ioctl(Avr_io port, uint ctl, object io_param)
         {
-        //    avr_timer_t* p = (avr_timer_t*)port;
+            Avr_timer p = (Avr_timer)port;
             int res = -1;
 
-        //    if (ctl == AVR_IOCTL_TIMER_SET_TRACE(p->name))
-        //    {
-        //        /* Allow setting individual trace flags */
-        //        p->trace = *((uint32_t*)io_param);
-        //        res = 0;
-        //    }
-        //    else if (ctl == AVR_IOCTL_TIMER_SET_FREQCLK(p->name))
-        //    {
-        //        float new_freq = *((float*)io_param);
-        //        if (new_freq >= 0.0f)
-        //        {
-        //            if (p->as2.reg)
-        //            {
-        //                if (new_freq <= port->avr->frequency / 4)
-        //                {
-        //                    p->ext_clock = new_freq;
-        //                    res = 0;
-        //                }
-        //            }
-        //            else if (p->ext_clock_pin.reg)
-        //            {
-        //                if (new_freq <= port->avr->frequency / 2)
-        //                {
-        //                    p->ext_clock = new_freq;
-        //                    res = 0;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    else if (ctl == AVR_IOCTL_TIMER_SET_VIRTCLK(p->name))
-        //    {
-        //        uint8_t new_val = *((uint8_t*)io_param);
-        //        if (!new_val)
-        //        {
-        //            avr_ioport_getirq_t req_timer_clock_pin = {
-        //				.bit = p->ext_clock_pin
-        //            };
-        //            if (avr_ioctl(p->io.avr, AVR_IOCTL_IOPORT_GETIRQ_REGBIT, &req_timer_clock_pin) > 0)
-        //            {
-        //                p->ext_clock_flags &= ~AVR_TIMER_EXTCLK_FLAG_VIRT;
-        //                res = 0;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            p->ext_clock_flags |= AVR_TIMER_EXTCLK_FLAG_VIRT;
-        //            res = 0;
-        //        }
-        //    }
-        //    if (res >= 0)
-        //        avr_timer_reconfigure(p, 0); // virtual clock: attempt to follow frequency change preserving the phase
+            if (ctl == AVR_IOCTL_TIMER_SET_TRACE((byte)p.name[1]))
+            {
+                /* Allow setting individual trace flags */
+                p.trace = (uint)io_param;
+                res = 0;
+            }
+            else if (ctl == AVR_IOCTL_TIMER_SET_FREQCLK((byte)p.name[1]))
+            {
+                float new_freq = (float)io_param;
+                if (new_freq >= 0.0f)
+                {
+                    if (p.as2.reg!=0)
+                    {
+                        if (new_freq <= (port.avr.frequency / 4))
+                        {
+                            p.ext_clock = new_freq;
+                            res = 0;
+                        }
+                    }
+                    else 
+                    if (p.ext_clock_pin.reg!=0)
+                    {
+                        if (new_freq <= (port.avr.frequency / 2))
+                        {
+                            p.ext_clock = new_freq;
+                            res = 0;
+                        }
+                    }
+                }
+            }
+            else 
+            if (ctl == AVR_IOCTL_TIMER_SET_VIRTCLK((byte)p.name[1]))
+            {
+                byte new_val = (byte)io_param;
+                if (new_val==0)
+                {
+                    Avr_ioport_getirq req_timer_clock_pin = new Avr_ioport_getirq();
+                    req_timer_clock_pin.bit = p.ext_clock_pin;
+                    
+                    if (Sim_io.Avr_ioctl(p.io.avr, Avr_ioports.AVR_IOCTL_IOPORT_GETIRQ_REGBIT, req_timer_clock_pin) > 0)
+                    {
+                        p.ext_clock_flags = (byte)(p.ext_clock_flags & (~((byte)AVR_TIMER_EXTCLK_FLAG_VIRT)));
+                        res = 0;
+                    }
+                }
+                else
+                {
+                    p.ext_clock_flags |= AVR_TIMER_EXTCLK_FLAG_VIRT;
+                    res = 0;
+                }
+            }
+            if (res >= 0)
+                Avr_timer_reconfigure(p, 0); // virtual clock: attempt to follow frequency change preserving the phase
             return res;
         }
 
         public static void Avr_timer_reset(Avr_io port)
         {
-        //    avr_timer_t* p = (avr_timer_t*)port;
-        //    avr_timer_cancel_all_cycle_timers(p->io.avr, p, 0);
+            Avr_timer p = (Avr_timer)port;
+            Avr_timer_cancel_all_cycle_timers(p.io.avr, p, 0);
 
-        //    // check to see if the comparators have a pin output. If they do,
-        //    // (try) to get the ioport corresponding IRQ and connect them
-        //    // they will automagically be triggered when the comparator raises
-        //    // it's own IRQ
-        //    for (int compi = 0; compi < AVR_TIMER_COMP_COUNT; compi++)
-        //    {
-        //        p->comp[compi].comp_cycles = 0;
+            // check to see if the comparators have a pin output. If they do,
+            // (try) to get the ioport corresponding IRQ and connect them
+            // they will automagically be triggered when the comparator raises
+            // it's own IRQ
+            Avr_ioport_getirq req = new Avr_ioport_getirq();
+            for (int compi = 0; compi < AVR_TIMER_COMP_COUNT; compi++)
+            {
+                p.comp[compi].comp_cycles = 0;
+                req.bit = p.comp[compi].com_pin;
+                if (Sim_io.Avr_ioctl(port.avr, Avr_ioports.AVR_IOCTL_IOPORT_GETIRQ_REGBIT, req) > 0)
+                {
+                    // cool, got an IRQ
+                    //printf("%s-%c COMP%c Connecting PIN IRQ %d\n",
+                    //	__func__, p->name, 'A'+compi, req.irq[0]->irq);
+                    Sim_irq.Avr_connect_irq(port.irq[TIMER_IRQ_OUT_COMP + compi], req.irq[0]);
+                }
+            }
 
-        //        avr_ioport_getirq_t req = {
-        //			.bit = p->comp[compi].com_pin
-        //        };
-        //        if (avr_ioctl(port->avr, AVR_IOCTL_IOPORT_GETIRQ_REGBIT, &req) > 0)
-        //        {
-        //            // cool, got an IRQ
-        //            //printf("%s-%c COMP%c Connecting PIN IRQ %d\n",
-        //            //	__func__, p->name, 'A'+compi, req.irq[0]->irq);
-        //            avr_connect_irq(&port->irq[TIMER_IRQ_OUT_COMP + compi], req.irq[0]);
-        //        }
+            Sim_irq.Avr_irq_register_notify(port.irq[TIMER_IRQ_IN_ICP], Avr_timer_irq_icp, p);
+            req = new Avr_ioport_getirq();
+            req.bit = p.icp;
+            if (Sim_io.Avr_ioctl(port.avr, Avr_ioports.AVR_IOCTL_IOPORT_GETIRQ_REGBIT, req) > 0)
+            {
+                // cool, got an IRQ for the input capture pin
+                //printf("%s-%c ICP Connecting PIN IRQ %d\n", __func__, p->name, req.irq[0]->irq);
+                Sim_irq.Avr_connect_irq(req.irq[0], port.irq[TIMER_IRQ_IN_ICP]);
+            }
+            p.ext_clock_flags = (byte)(p.ext_clock_flags & (~((byte)(AVR_TIMER_EXTCLK_FLAG_STARTED | AVR_TIMER_EXTCLK_FLAG_TN |
+                                    AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_REVDIR))));
         }
-
-        //    avr_irq_register_notify(port->irq + TIMER_IRQ_IN_ICP, avr_timer_irq_icp, p);
-
-        //    avr_ioport_getirq_t req = {
-        //		.bit = p->icp
-        //    };
-        //    if (avr_ioctl(port->avr, AVR_IOCTL_IOPORT_GETIRQ_REGBIT, &req) > 0)
-        //    {
-        //        // cool, got an IRQ for the input capture pin
-        //        //printf("%s-%c ICP Connecting PIN IRQ %d\n", __func__, p->name, req.irq[0]->irq);
-        //        avr_connect_irq(req.irq[0], port->irq + TIMER_IRQ_IN_ICP);
-        //    }
-        //    p->ext_clock_flags &= ~(AVR_TIMER_EXTCLK_FLAG_STARTED | AVR_TIMER_EXTCLK_FLAG_TN |
-        //                            AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_REVDIR);
-
-        //}
 
 
         public static string[] irq_names;
@@ -933,101 +929,105 @@ namespace SimulIDE.src.simavr.sim
         {
             p.io = _io;
 
-//    avr_register_io(avr, &p->io);
-//    avr_register_vector(avr, &p->overflow);
-//    avr_register_vector(avr, &p->icr);
+            Sim_io.Avr_register_io(avr, ref p.io);
+            Sim_interrupts.Avr_register_vector(avr,ref p.overflow);
+            Sim_interrupts.Avr_register_vector(avr, ref p.icr);
 
-//    // allocate this module's IRQ
-//    avr_io_setirqs(&p->io, AVR_IOCTL_TIMER_GETIRQ(p->name), TIMER_IRQ_COUNT, NULL);
+            // allocate this module's IRQ
+            Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_TIMER_GETIRQ((byte)p.name[1]), TIMER_IRQ_COUNT, null);
 
-//    // marking IRQs as "filtered" means they don't propagate if the
-//    // new value raised is the same as the last one.. in the case of the
-//    // pwm value it makes sense not to bother.
-//    p->io.irq[TIMER_IRQ_OUT_PWM0].flags |= IRQ_FLAG_FILTERED;
-//    p->io.irq[TIMER_IRQ_OUT_PWM1].flags |= IRQ_FLAG_FILTERED;
+            // marking IRQs as "filtered" means they don't propagate if the
+            // new value raised is the same as the last one.. in the case of the
+            // pwm value it makes sense not to bother.
+            p.io.irq[TIMER_IRQ_OUT_PWM0].flags |= Sim_irq.IRQ_FLAG_FILTERED;
+            p.io.irq[TIMER_IRQ_OUT_PWM1].flags |= Sim_irq.IRQ_FLAG_FILTERED;
 
-//    if (p->wgm[0].reg) // these are not present on older AVRs
-//        avr_register_io_write(avr, p->wgm[0].reg, avr_timer_write, p);
-//    if (p->wgm[1].reg &&
-//            (p->wgm[1].reg != p->wgm[0].reg))
-//        avr_register_io_write(avr, p->wgm[1].reg, avr_timer_write, p);
-//    if (p->wgm[2].reg &&
-//            (p->wgm[2].reg != p->wgm[0].reg) &&
-//            (p->wgm[2].reg != p->wgm[1].reg))
-//        avr_register_io_write(avr, p->wgm[2].reg, avr_timer_write, p);
-//    if (p->wgm[3].reg &&
-//            (p->wgm[3].reg != p->wgm[0].reg) &&
-//            (p->wgm[3].reg != p->wgm[1].reg) &&
-//            (p->wgm[3].reg != p->wgm[2].reg))
-//        avr_register_io_write(avr, p->wgm[3].reg, avr_timer_write, p);
+            if (p.wgm[0].reg!=0) // these are not present on older AVRs
+                Sim_io.Avr_register_io_write(avr, p.wgm[0].reg, Avr_timer_write, p);
+            if (p.wgm[1].reg!=0 &&
+                    (p.wgm[1].reg != p.wgm[0].reg))
+                Sim_io.Avr_register_io_write(avr, p.wgm[1].reg, Avr_timer_write, p);
+            if (p.wgm[2].reg!=0 &&
+                    (p.wgm[2].reg != p.wgm[0].reg) &&
+                    (p.wgm[2].reg != p.wgm[1].reg))
+                Sim_io.Avr_register_io_write(avr, p.wgm[2].reg, Avr_timer_write, p);
+            if (p.wgm[3].reg!=0 &&
+                    (p.wgm[3].reg != p.wgm[0].reg) &&
+                    (p.wgm[3].reg != p.wgm[1].reg) &&
+                    (p.wgm[3].reg != p.wgm[2].reg))
+                Sim_io.Avr_register_io_write(avr, p.wgm[3].reg, Avr_timer_write, p);
 
-//    avr_register_io_write(avr, p->cs[0].reg, avr_timer_write, p);
-//    if (p->cs[1].reg &&
-//            (p->cs[1].reg != p->cs[0].reg))
-//        avr_register_io_write(avr, p->cs[1].reg, avr_timer_write, p);
-//    if (p->cs[2].reg &&
-//            (p->cs[2].reg != p->cs[0].reg) && (p->cs[2].reg != p->cs[1].reg))
-//        avr_register_io_write(avr, p->cs[2].reg, avr_timer_write, p);
-//    if (p->cs[3].reg &&
-//            (p->cs[3].reg != p->cs[0].reg) &&
-//            (p->cs[3].reg != p->cs[1].reg) &&
-//            (p->cs[3].reg != p->cs[2].reg))
-//        avr_register_io_write(avr, p->cs[3].reg, avr_timer_write, p);
+            Sim_io.Avr_register_io_write(avr, p.cs[0].reg, Avr_timer_write, p);
+            if (p.cs[1].reg!=0 &&
+                    (p.cs[1].reg != p.cs[0].reg))
+                Sim_io.Avr_register_io_write(avr, p.cs[1].reg, Avr_timer_write, p);
+            if (p.cs[2].reg!=0 &&
+                    (p.cs[2].reg != p.cs[0].reg) && (p.cs[2].reg != p.cs[1].reg))
+                Sim_io.Avr_register_io_write(avr, p.cs[2].reg, Avr_timer_write, p);
+            if (p.cs[3].reg!=0 &&
+                    (p.cs[3].reg != p.cs[0].reg) &&
+                    (p.cs[3].reg != p.cs[1].reg) &&
+                    (p.cs[3].reg != p.cs[2].reg))
+                Sim_io.Avr_register_io_write(avr, p.cs[3].reg, Avr_timer_write, p);
 
-//    if (p->as2.reg) // as2 signifies timer/counter 2... therefore must check for register.
-//        avr_register_io_write(avr, p->as2.reg, avr_timer_write, p);
+            if (p.as2.reg != 0) // as2 signifies timer/counter 2... therefore must check for register.
+                Sim_io.Avr_register_io_write(avr, p.as2.reg, Avr_timer_write, p);
 
-//    // this assumes all the "pending" interrupt bits are in the same
-//    // register. Might not be true on all devices ?
-//    avr_register_io_write(avr, p->overflow.raised.reg, avr_timer_write_pending, p);
+            // this assumes all the "pending" interrupt bits are in the same
+            // register. Might not be true on all devices ?
+            Sim_io.Avr_register_io_write(avr, p.overflow.raised.reg, Avr_timer_write_pending, p);
 
-//    /*
-//	 * Even if the timer is 16 bits, we don't care to have watches on the
-//	 * high bytes because the datasheet says that the low address is always
-//	 * the trigger.
-//	 */
-//    for (int compi = 0; compi < AVR_TIMER_COMP_COUNT; compi++)
-//    {
-//        p->comp[compi].timer = p;
+            /*
+             * Even if the timer is 16 bits, we don't care to have watches on the
+             * high bytes because the datasheet says that the low address is always
+             * the trigger.
+             */
+            for (int compi = 0; compi < AVR_TIMER_COMP_COUNT; compi++)
+            {
+                p.comp[compi].timer = p;
 
-//        avr_register_vector(avr, &p->comp[compi].interrupt);
+                Sim_interrupts.Avr_register_vector(avr, ref p.comp[compi].interrupt);
 
-//        if (p->comp[compi].r_ocr) // not all timers have all comparators
-//            avr_register_io_write(avr, p->comp[compi].r_ocr, avr_timer_write_ocr, &p->comp[compi]);
-//    }
-//    avr_register_io_write(avr, p->r_tcnt, avr_timer_tcnt_write, p);
-//    avr_register_io_read(avr, p->r_tcnt, avr_timer_tcnt_read, p);
+                if (p.comp[compi].r_ocr!=0) // not all timers have all comparators
+                    Sim_io.Avr_register_io_write(avr, p.comp[compi].r_ocr, Avr_timer_write_ocr, p.comp[compi]);
+            }
+            Sim_io.Avr_register_io_write(avr, p.r_tcnt, Avr_timer_tcnt_write, p);
+            Sim_io.Avr_register_io_read(avr, p.r_tcnt, Avr_timer_tcnt_read, p);
 
-//    if (p->as2.reg)
-//    {
-//        p->ext_clock_flags = AVR_TIMER_EXTCLK_FLAG_VIRT;
-//        p->ext_clock = 32768.0f;
-//    }
-//    else
-//    {
-//        p->ext_clock_flags = 0;
-//        p->ext_clock = 0.0f;
-//    }
+            if (p.as2.reg!=0)
+            {
+                p.ext_clock_flags = AVR_TIMER_EXTCLK_FLAG_VIRT;
+                p.ext_clock = 32768.0f;
+            }
+            else
+            {
+                p.ext_clock_flags = 0;
+                p.ext_clock = 0.0f;
+            }
         }
 
 
+        // Get the internal IRQ corresponding to the INT
+        public static uint AVR_IOCTL_TIMER_GETIRQ(byte _name)
+        {
+            return Sim_io.AVR_IOCTL_DEF((byte)'t',(byte) 'm',(byte) 'r', (_name));
+        }
 
-
-
-
-
-
-
-        //        // Get the internal IRQ corresponding to the INT
-        //#define AVR_IOCTL_TIMER_GETIRQ(_name) AVR_IOCTL_DEF('t','m','r',(_name))
-
-        //        // add timer number/name (character) to set tracing flags
-        //#define AVR_IOCTL_TIMER_SET_TRACE(_number) AVR_IOCTL_DEF('t','m','t',(_number))
-        //        // enforce using virtual clock generator when external clock is chosen by firmware
-        //#define AVR_IOCTL_TIMER_SET_VIRTCLK(_number) AVR_IOCTL_DEF('t','m','v',(_number))
-        //        // set frequency of the virtual clock generator
-        //#define AVR_IOCTL_TIMER_SET_FREQCLK(_number) AVR_IOCTL_DEF('t','m','f',(_number))
-
+        // add timer number/name (character) to set tracing flags
+        public static uint AVR_IOCTL_TIMER_SET_TRACE(byte _number)
+        {
+            return Sim_io.AVR_IOCTL_DEF((byte)'t',(byte) 'm',(byte) 't', (_number));
+        }
+        // enforce using virtual clock generator when external clock is chosen by firmware
+        public static uint AVR_IOCTL_TIMER_SET_VIRTCLK(byte _number)
+        {
+            return Sim_io.AVR_IOCTL_DEF((byte)'t',(byte) 'm',(byte) 'v', (_number));
+        }
+        // set frequency of the virtual clock generator
+        public static uint AVR_IOCTL_TIMER_SET_FREQCLK(byte _number)
+        {
+            return Sim_io.AVR_IOCTL_DEF((byte)'t',(byte) 'm',(byte) 'f', (_number));
+        }
 
         public const int AVR_TIMER_EXTCLK_CHOOSE = 0x80;		// marker value for cs_div specifying ext clock selection
         public const int AVR_TIMER_EXTCLK_FLAG_TN = 0x80;		// Tn external clock chosen

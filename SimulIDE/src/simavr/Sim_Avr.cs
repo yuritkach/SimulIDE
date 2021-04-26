@@ -109,6 +109,12 @@ namespace SimulIDE.src.simavr
         public Avr_io_write_function c;
     }
 
+    public class IO_Shared
+    {
+        public int used;
+        public WriteIO[] ios = new WriteIO[4];
+    }
+
     public class IO
     {
         public  Avr_irq[] irq = new Avr_irq[Sim_io.AVR_IOMEM_IRQ_ALL+1]; // optional, used only if asked for with avr_iomem_getirq()
@@ -252,15 +258,7 @@ namespace SimulIDE.src.simavr
 	 * other, normal cases...
 	 */
 	public int io_shared_io_count;
-//struct {
-
-//        int used;
-//struct {
-
-//            void* param;
-//void* c;
-//		} io[4];
-//	} io_shared_io[4];
+        public IO_Shared[] io_shared_io = new IO_Shared[4];
 
 	// flash memory (initialized to 0xff, and code loaded into it)
 	public byte[] flash = new byte[0];
