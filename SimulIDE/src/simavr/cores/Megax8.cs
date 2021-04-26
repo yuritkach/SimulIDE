@@ -62,57 +62,56 @@ namespace SimulIDE.src.simavr.cores
         {
             timer0 = new Avr_timer();
             timer0.name = "0";
-            timer0.disabled = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PRR"),Constants.Get("PRTIM0"));
-            timer0.wgm = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0A"), Constants.Get("WGM00")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0A"), Constants.Get("WGM01")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0B"), Constants.Get("WGM02"))};
+            timer0.disabled = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PRR"),(byte)Constants.Get("PRTIM0"));
+            timer0.wgm[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0A"), (byte)Constants.Get("WGM00"));
+            timer0.wgm[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0A"), (byte)Constants.Get("WGM01"));
+            timer0.wgm[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0B"), (byte)Constants.Get("WGM02"));
+            
             timer0.wgm_op[0] = Avr_timer_helper.AVR_TIMER_WGM_NORMAL8();
             timer0.wgm_op[1] = Avr_timer_helper.AVR_TIMER_WGM_FCPWM8();
             timer0.wgm_op[2] = Avr_timer_helper.AVR_TIMER_WGM_CTC();
             timer0.wgm_op[3] = Avr_timer_helper.AVR_TIMER_WGM_FASTPWM8();
             timer0.wgm_op[7] = Avr_timer_helper.AVR_TIMER_WGM_OCPWM();
 
-            timer0.cs = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0B"), Constants.Get("CS00")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0B"), Constants.Get("CS01")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR0B"), Constants.Get("CS02"))
-                };
-            timer0.cs_div = new byte[] { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */, Constants.Get("AVR_TIMER_EXTCLK_CHOOSE"), Constants.Get("AVR_TIMER_EXTCLK_CHOOSE") };
-            timer0.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 4); /* External clock pin */
+            timer0.cs[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0B"), (byte)Constants.Get("CS00"));
+            timer0.cs[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0B"), (byte)Constants.Get("CS01"));
+            timer0.cs[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR0B"), (byte)Constants.Get("CS02"));
+                
+            timer0.cs_div = new byte[] { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */, Avr_timer_helper.AVR_TIMER_EXTCLK_CHOOSE, Avr_timer_helper.AVR_TIMER_EXTCLK_CHOOSE };
+            timer0.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 4); /* External clock pin */
 
             timer0.r_tcnt = Constants.Get("TCNT0");
             timer0.overflow = new Avr_int_vector();
-            timer0.overflow.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK0"), Constants.Get("TOIE0"));
-            timer0.overflow.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR0"), Constants.Get("TOV0"));
+            timer0.overflow.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK0"), (byte)Constants.Get("TOIE0"));
+            timer0.overflow.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR0"), (byte)Constants.Get("TOV0"));
             timer0.overflow.vector = Constants.Get("TIMER0_OVF_vect");
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")] = new Avr_timer_comp();
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR0A");
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR0A"), Constants.Get("COM0A0"), 0x3);
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 6);
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK0"), Constants.Get("OCIE0A"));
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR0"), Constants.Get("OCF0A"));
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER0_COMPA_vect");
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA] = new Avr_timer_comp();
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].r_ocr = Constants.Get("OCR0A");
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR0A"), (byte)Constants.Get("COM0A0"), 0x3);
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 6);
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt = new Avr_int_vector();
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK0"), (byte)Constants.Get("OCIE0A"));
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR0"), (byte)Constants.Get("OCF0A"));
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.vector = Constants.Get("TIMER0_COMPA_vect");
 
-            timer0.comp[Constants.Get("AVR_TIMER_COMPB")] = new Avr_timer_comp();
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR0B");
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR0A"), Constants.Get("COM0B0"), 0x3);
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 5);
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK0"), Constants.Get("OCIE0B"));
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR0"), Constants.Get("OCF0B"));
-            timer0.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER0_COMPB_vect");
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB] = new Avr_timer_comp();
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].r_ocr = Constants.Get("OCR0B");
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR0A"), (byte)Constants.Get("COM0B0"), 0x3);
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 5);
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt = new Avr_int_vector();
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK0"), (byte)Constants.Get("OCIE0B"));
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR0"), (byte)Constants.Get("OCF0B"));
+            timer0.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.vector = Constants.Get("TIMER0_COMPB_vect");
         }
         private void InitTimer1()
         {
             timer1 = new Avr_timer();
             timer1.name = "1";
-            timer1.disabled = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PRR"), Constants.Get("PRTIM1"));
-            timer1.wgm = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1A"), Constants.Get("WGM10")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1A"), Constants.Get("WGM11")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1B"), Constants.Get("WGM12"))};
+            timer1.disabled = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PRR"), (byte)Constants.Get("PRTIM1"));
+            timer1.wgm[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1A"), (byte)Constants.Get("WGM10"));
+            timer1.wgm[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1A"), (byte)Constants.Get("WGM11"));
+            timer1.wgm[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1B"), (byte)Constants.Get("WGM12"));
+            
             timer1.wgm_op[0] = Avr_timer_helper.AVR_TIMER_WGM_NORMAL16();
             timer1.wgm_op[1] = Avr_timer_helper.AVR_TIMER_WGM_FCPWM8();
             timer1.wgm_op[2] = Avr_timer_helper.AVR_TIMER_WGM_FCPWM9();
@@ -128,98 +127,96 @@ namespace SimulIDE.src.simavr.cores
             timer1.wgm_op[15] = Avr_timer_helper.AVR_TIMER_WGM_OCPWM();
 
 
-            timer1.cs = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1B"), Constants.Get("CS10")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1B"), Constants.Get("CS11")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1B"), Constants.Get("CS12"))
-                };
-            timer1.cs_div = new byte[] { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */, Constants.Get("AVR_TIMER_EXTCLK_CHOOSE"), Constants.Get("AVR_TIMER_EXTCLK_CHOOSE") };
-            timer1.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 5); /* External clock pin */
+            timer1.cs[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1B"), (byte)Constants.Get("CS10"));
+            timer1.cs[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1B"), (byte)Constants.Get("CS11"));
+            timer1.cs[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1B"), (byte)Constants.Get("CS12"));
+
+            timer1.cs_div = new byte[] { 0, 0, 3 /* 8 */, 6 /* 64 */, 8 /* 256 */, 10 /* 1024 */, Avr_timer_helper.AVR_TIMER_EXTCLK_CHOOSE, Avr_timer_helper.AVR_TIMER_EXTCLK_CHOOSE };
+            timer1.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 5); /* External clock pin */
 
             timer1.r_tcnt = Constants.Get("TCNT1L");
             timer1.r_tcnth = Constants.Get("TCNT1H");
             timer1.r_icr = Constants.Get("ICR1L");
             timer1.r_icrh = Constants.Get("ICR1H");
-            timer1.ices = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR1B"), Constants.Get("ICES1"));
-            timer1.icp = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTB"), 0);
+            timer1.ices = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR1B"), (byte)Constants.Get("ICES1"));
+            timer1.icp = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTB"), 0);
 
             timer1.overflow = new Avr_int_vector();
-            timer1.overflow.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK1"), Constants.Get("TOIE1"));
-            timer1.overflow.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR1"), Constants.Get("TOV1"));
+            timer1.overflow.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK1"), (byte)Constants.Get("TOIE1"));
+            timer1.overflow.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR1"), (byte)Constants.Get("TOV1"));
             timer1.overflow.vector = Constants.Get("TIMER1_OVF_vect");
 
             timer1.icr = new Avr_int_vector();
-            timer1.icr.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK1"), Constants.Get("ICIE1"));
-            timer1.icr.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR1"), Constants.Get("ICF1"));
+            timer1.icr.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK1"), (byte)Constants.Get("ICIE1"));
+            timer1.icr.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR1"), (byte)Constants.Get("ICF1"));
             timer1.icr.vector = Constants.Get("TIMER1_CAPT_vect");
 
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")] = new Avr_timer_comp();
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR1AL");
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocrh = Constants.Get("OCR1AH");
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR1A"), Constants.Get("COM1A0"), 0x3);
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTB"), 1);
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK1"), Constants.Get("OCIE1A"));
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR1"), Constants.Get("OCF1A"));
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER1_COMPA_vect");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA] = new Avr_timer_comp();
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].r_ocr = Constants.Get("OCR1AL");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].r_ocrh = Constants.Get("OCR1AH");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR1A"), (byte)Constants.Get("COM1A0"), 0x3);
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTB"), 1);
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt = new Avr_int_vector();
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK1"), (byte)Constants.Get("OCIE1A"));
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR1"), (byte)Constants.Get("OCF1A"));
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.vector = Constants.Get("TIMER1_COMPA_vect");
 
-            timer1.comp[Constants.Get("AVR_TIMER_COMPB")] = new Avr_timer_comp();
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR1BL");
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocrh = Constants.Get("OCR1BH");
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR1A"), Constants.Get("COM1B0"), 0x3);
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTB"), 2);
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK1"), Constants.Get("OCIE1B"));
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR1"), Constants.Get("OCF1B"));
-            timer1.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER1_COMPB_vect");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB] = new Avr_timer_comp();
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].r_ocr = Constants.Get("OCR1BL");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].r_ocrh = Constants.Get("OCR1BH");
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR1A"), (byte)Constants.Get("COM1B0"), 0x3);
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTB"), 2);
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt = new Avr_int_vector();
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK1"), (byte)Constants.Get("OCIE1B"));
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR1"), (byte)Constants.Get("OCF1B"));
+            timer1.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.vector = Constants.Get("TIMER1_COMPB_vect");
         }
         private void InitTimer2()
         {
             timer2 = new Avr_timer();
             timer2.name = "2";
-            timer2.disabled = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PRR"), Constants.Get("PRTIM2"));
-            timer2.wgm = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2A"), Constants.Get("WGM20")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2A"), Constants.Get("WGM21")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2B"), Constants.Get("WGM22"))};
+            timer2.disabled = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PRR"), (byte)Constants.Get("PRTIM2"));
+            timer2.wgm[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2A"), (byte)Constants.Get("WGM20"));
+            timer2.wgm[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2A"), (byte)Constants.Get("WGM21"));
+            timer2.wgm[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2B"), (byte)Constants.Get("WGM22"));
+                
             timer2.wgm_op[0] = Avr_timer_helper.AVR_TIMER_WGM_NORMAL8();
             timer2.wgm_op[1] = Avr_timer_helper.AVR_TIMER_WGM_FCPWM8();
             timer2.wgm_op[2] = Avr_timer_helper.AVR_TIMER_WGM_CTC();
             timer2.wgm_op[3] = Avr_timer_helper.AVR_TIMER_WGM_FASTPWM8();
             timer2.wgm_op[7] = Avr_timer_helper.AVR_TIMER_WGM_OCPWM();
 
-            timer2.cs = new Avr_regbit[] {
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2B"), Constants.Get("CS20")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2B"), Constants.Get("CS21")),
-                Sim_regbit.AVR_IO_REGBIT(Constants.Get("TCCR2B"), Constants.Get("CS22"))
-                };
+            timer2.cs[0] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2B"), (byte)Constants.Get("CS20"));
+            timer2.cs[1] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2B"), (byte)Constants.Get("CS21"));
+            timer2.cs[2] = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TCCR2B"), (byte)Constants.Get("CS22"));
+                
             timer2.cs_div = new byte[] { 0, 0, 3 /* 8 */, 5 /* 32 */, 6 /* 64 */, 7 /* 128 */, 8 /* 256 */, 10 /* 1024 */ };
-            timer2.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 4); /* External clock pin */
+            timer2.ext_clock_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 4); /* External clock pin */
             timer2.r_tcnt = Constants.Get("TCNT2");
             // asynchronous timer source bit.. if set, use 32khz frequency
-            timer2.as2 = Sim_regbit.AVR_IO_REGBIT(Constants.Get("ASSR"), Constants.Get("AS2"));
+            timer2.as2 = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("ASSR"), (byte)Constants.Get("AS2"));
             timer2.overflow = new Avr_int_vector();
-            timer2.overflow.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK2"), Constants.Get("TOIE2"));
-            timer2.overflow.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR2"), Constants.Get("TOV2"));
+            timer2.overflow.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK2"), (byte)Constants.Get("TOIE2"));
+            timer2.overflow.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR2"), (byte)Constants.Get("TOV2"));
             timer2.overflow.vector = Constants.Get("TIMER2_OVF_vect");
 
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")] = new Avr_timer_comp();
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR2A");
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR2A"), Constants.Get("COM2A0"), 0x3);
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTB"), 3);
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK2"), Constants.Get("OCIE2A"));
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR2"), Constants.Get("OCF2A"));
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER2_COMPA_vect");
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA] = new Avr_timer_comp();
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].r_ocr = Constants.Get("OCR2A");
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR2A"), (byte)Constants.Get("COM2A0"), 0x3);
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTB"), 3);
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt = new Avr_int_vector();
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK2"), (byte)Constants.Get("OCIE2A"));
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR2"), (byte)Constants.Get("OCF2A"));
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPA].interrupt.vector = Constants.Get("TIMER2_COMPA_vect");
 
-            timer2.comp[Constants.Get("AVR_TIMER_COMPB")] = new Avr_timer_comp();
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].r_ocr = Constants.Get("OCR2B");
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].com = Sim_regbit.AVR_IO_REGBITS(Constants.Get("TCCR2A"), Constants.Get("COM2B0"), 0x3);
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].com_pin = Sim_regbit.AVR_IO_REGBIT(Constants.Get("PORTD"), 3);
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt = new Avr_int_vector();
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.enable = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIMSK2"), Constants.Get("OCIE2B"));
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.raised = Sim_regbit.AVR_IO_REGBIT(Constants.Get("TIFR2"), Constants.Get("OCF2B"));
-            timer2.comp[Constants.Get("AVR_TIMER_COMPA")].interrupt.vector = Constants.Get("TIMER2_COMPB_vect");
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB] = new Avr_timer_comp();
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].r_ocr = Constants.Get("OCR2B");
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].com = Sim_regbit.AVR_IO_REGBITS((uint)Constants.Get("TCCR2A"), (byte)Constants.Get("COM2B0"), 0x3);
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].com_pin = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("PORTD"), 3);
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt = new Avr_int_vector();
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.enable = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIMSK2"), (byte)Constants.Get("OCIE2B"));
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.raised = Sim_regbit.AVR_IO_REGBIT((uint)Constants.Get("TIFR2"), (byte)Constants.Get("OCF2B"));
+            timer2.comp[Avr_timer_helper.AVR_TIMER_COMPB].interrupt.vector = Constants.Get("TIMER2_COMPB_vect");
 
         }
 

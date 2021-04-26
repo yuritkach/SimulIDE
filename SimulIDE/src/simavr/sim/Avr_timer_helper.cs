@@ -17,8 +17,8 @@ namespace SimulIDE.src.simavr.sim
 
     public class Avr_timer_comp
     {
-        public Avr_int_vector interrupt;     // interrupt vector
-        public Avr_timer timer;			// parent timer
+        public Avr_int_vector interrupt = new Avr_int_vector();     // interrupt vector
+        public Avr_timer timer = new Avr_timer();			// parent timer
         public uint r_ocr;            // comparator register low byte
         public uint r_ocrh;           // comparator register hi byte
         public Avr_regbit com;           // comparator output mode registers
@@ -813,13 +813,13 @@ namespace SimulIDE.src.simavr.sim
             Avr_timer p = (Avr_timer)port;
             int res = -1;
 
-            if (ctl == AVR_IOCTL_TIMER_SET_TRACE((byte)p.name[1]))
+            if (ctl == AVR_IOCTL_TIMER_SET_TRACE((byte)p.name[0]))
             {
                 /* Allow setting individual trace flags */
                 p.trace = (uint)io_param;
                 res = 0;
             }
-            else if (ctl == AVR_IOCTL_TIMER_SET_FREQCLK((byte)p.name[1]))
+            else if (ctl == AVR_IOCTL_TIMER_SET_FREQCLK((byte)p.name[0]))
             {
                 float new_freq = (float)io_param;
                 if (new_freq >= 0.0f)
@@ -844,7 +844,7 @@ namespace SimulIDE.src.simavr.sim
                 }
             }
             else 
-            if (ctl == AVR_IOCTL_TIMER_SET_VIRTCLK((byte)p.name[1]))
+            if (ctl == AVR_IOCTL_TIMER_SET_VIRTCLK((byte)p.name[0]))
             {
                 byte new_val = (byte)io_param;
                 if (new_val==0)
@@ -934,7 +934,7 @@ namespace SimulIDE.src.simavr.sim
             Sim_interrupts.Avr_register_vector(avr, ref p.icr);
 
             // allocate this module's IRQ
-            Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_TIMER_GETIRQ((byte)p.name[1]), TIMER_IRQ_COUNT, null);
+            Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_TIMER_GETIRQ((byte)p.name[0]), TIMER_IRQ_COUNT, null);
 
             // marking IRQs as "filtered" means they don't propagate if the
             // new value raised is the same as the last one.. in the case of the
