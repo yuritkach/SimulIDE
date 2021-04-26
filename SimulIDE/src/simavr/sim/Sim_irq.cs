@@ -33,7 +33,7 @@ namespace SimulIDE.src.simavr.sim
          * have been called, to prevent race condition of the initialization order.
          */
     
-        public delegate void Avr_irq_notify(ref Avr_irq irq, uint value,params object[] param);
+        public delegate void Avr_irq_notify(Avr_irq irq, uint value,object param);
 
         public class Avr_irq_pool
         {
@@ -138,7 +138,7 @@ namespace SimulIDE.src.simavr.sim
             irq=null;
         }
 
-        public static void Avr_irq_register_notify(Avr_irq irq, Avr_irq_notify notify,params object[] param)
+        public static void Avr_irq_register_notify(Avr_irq irq, Avr_irq_notify notify,object param)
         {
         //    if (!irq || !notify)
         //        return;
@@ -155,12 +155,8 @@ namespace SimulIDE.src.simavr.sim
         //    hook->param = param;
         }
 
-        //void
-        //avr_irq_unregister_notify(
-        //        avr_irq_t* irq,
-        //        avr_irq_notify_t notify,
-        //        void* param)
-        //{
+        public static void Avr_irq_unregister_notify(Avr_irq irq, Avr_irq_notify notify,object param)
+        {
         //    avr_irq_hook_t* hook, *prev;
         //    if (!irq || !notify)
         //        return;
@@ -181,7 +177,7 @@ namespace SimulIDE.src.simavr.sim
         //        prev = hook;
         //        hook = hook->next;
         //    }
-        //}
+        }
 
         public static void Avr_raise_irq_float(Avr_irq irq,uint value,int floating)
         {

@@ -111,18 +111,19 @@ namespace SimulIDE.src.simavr.sim
 //         * This allows reading bits like CS0, CS1, CS2 etc even if they are not in the same
 //         * physical IO register.
 //         */
-//        static inline uint8_t avr_regbit_get_array(avr_t* avr, avr_regbit_t* rb, int count)
-//        {
-//            uint8_t res = 0;
-//            int i;
+          public static byte Avr_regbit_get_array(Avr avr, Avr_regbit[] rb, int count)
+          {
+            byte res = 0;
+            int i;
 
-//            for (i = 0; i < count; i++, rb++) if (rb->reg)
-//                {
-//                    uint16_t a = rb->reg;
-//                    res |= ((avr->data[a] >> rb->bit) & rb->mask) << i;
-//                }
-//            return res;
-//        }
+            for (i = 0; i < count; i++)
+                if (rb[i].reg!=0)
+                {
+                    uint a = rb[i].reg;
+                    res |= (byte)(((avr.data[a] >> rb[i].bit) & rb[i].mask) << i);
+                }
+            return res;
+          }
 
 //        /*
 //         * Does the reverse of avr_regbit_get_array

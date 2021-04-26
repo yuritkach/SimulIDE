@@ -127,7 +127,7 @@ namespace SimulIDE.src.simavr.sim
         //    avr_cycle_timer_register(avr, avr_usec_to_cycles(avr, when), timer, param);
         //}
 
-        public static void  Avr_cycle_timer_cancel(ref Avr avr,Avr_cycle_timer timer,object[] param)
+        public static void  Avr_cycle_timer_cancel(ref Avr avr,Avr_cycle_timer timer,object param)
         {
         //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
 

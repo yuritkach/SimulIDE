@@ -7,6 +7,16 @@ namespace SimulIDE.src.simavr.sim {
 
     public delegate int IOPortIOCtlDelegate(Avr_io port, uint ctl, object parms);
 
+
+    //// this ioctl takes a avr_regbit_t, compares the register address
+    //// to PORT/PIN/DDR and return the corresponding IRQ(s) if it matches
+    public class Avr_ioport_getirq
+    {
+    	public Avr_regbit bit;	// bit wanted
+    	public Avr_irq[] irq = new Avr_irq[8];	// result, terminated by NULL if < 8
+    } 
+
+
     public class Avr_ioport_external
     {
         public byte name;
@@ -125,7 +135,7 @@ namespace SimulIDE.src.simavr.sim {
         // * AVR code, or any external piece of code that see fit to do it.
         // * Either way, this will raise pin change interrupts, if needed
         // */
-        public static void Avr_ioport_irq_notify(ref Avr_irq irq, uint value,object[] param)
+        public static void Avr_ioport_irq_notify(ref Avr_irq irq, uint value,object param)
         {
         //	avr_ioport_t * p = (avr_ioport_t *)param;
         //	avr_t * avr = p->io.avr;
@@ -167,7 +177,7 @@ namespace SimulIDE.src.simavr.sim {
             p.io = port;
 
             for (int i = 0; i < IOPORT_IRQ_PIN_ALL; i++)
-                Sim_irq.Avr_irq_register_notify(p.io.irq[i], Avr_ioport_irq_notify, new object[1] { p });
+                Sim_irq.Avr_irq_register_notify(p.io.irq[i], Avr_ioport_irq_notify, p );
         }
 
         public static int Avr_ioport_ioctl(Avr_io port, uint ctl, object[] io_param)
@@ -307,15 +317,7 @@ namespace SimulIDE.src.simavr.sim {
             return Sim_io.AVR_IOCTL_DEF((byte)'i',(byte) 'o',(byte) 'g', _name);
         }
 
-
-        //// this ioctl takes a avr_regbit_t, compares the register address
-        //// to PORT/PIN/DDR and return the corresponding IRQ(s) if it matches
-        //typedef struct avr_ioport_getirq_t {
-        //	avr_regbit_t bit;	// bit wanted
-        //	avr_irq_t * irq[8];	// result, terminated by NULL if < 8
-        //} avr_ioport_getirq_t;
-
-        //#define AVR_IOCTL_IOPORT_GETIRQ_REGBIT AVR_IOCTL_DEF('i','o','g','r')
+        public static uint AVR_IOCTL_IOPORT_GETIRQ_REGBIT = Sim_io.AVR_IOCTL_DEF((byte)'i', (byte)'o', (byte)'g', (byte)'r');
 
         ///*
         // * ioctl used to get a port state.
