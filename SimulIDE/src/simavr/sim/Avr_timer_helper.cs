@@ -642,185 +642,174 @@ namespace SimulIDE.src.simavr.sim
             }
         }
 
-        //static void
-        //avr_timer_write_ocr(
+        public static void Avr_timer_write_ocr(Avr avr,uint addr,byte v,object param)
+        {
 
-        //        struct avr_t * avr,
-        //        avr_io_addr_t addr,
-        //		uint8_t v,
+            Avr_timer_comp comp = (Avr_timer_comp)param;
+            Avr_timer timer = comp.timer;
+            uint oldv;
 
-        //        void* param)
-        //{
-        //	avr_timer_comp_p comp = (avr_timer_comp_p)param;
-        //avr_timer_t* timer = comp->timer;
-        //uint16_t oldv;
+            /* check to see if the OCR values actually changed */
+            oldv = _timer_get_comp_ocr(avr, comp);
+            Sim_core_helper.Avr_core_watch_write(avr, addr, v);
 
-        ///* check to see if the OCR values actually changed */
-        //oldv = _timer_get_comp_ocr(avr, comp);
-        //avr_core_watch_write(avr, addr, v);
+        	switch (timer.wgm_op_mode_kind)
+            {
+        		case avr_timer_wgm_normal:
+        			Avr_timer_reconfigure(timer, 0);
+        			break;
+        		case avr_timer_wgm_fc_pwm:	// OCR is not used here
+        			Avr_timer_reconfigure(timer, 0);
+        			break;
+        		case avr_timer_wgm_ctc:
+        			Avr_timer_reconfigure(timer, 0);
+        			break;
+        		case avr_timer_wgm_pwm:
+        			if (timer.mode.top != avr_timer_wgm_reg_ocra)  // ICR is the top, update comp_cycles
+                    { 
+                        uint ocr = _timer_get_comp_ocr(avr, comp);
+                        uint prescaler = timer.cs_div_value;
+                        comp.comp_cycles = prescaler* ocr;
+                        Sim_irq.Avr_raise_irq(timer.io.irq[TIMER_IRQ_OUT_PWM0], _timer_get_ocr(timer, AVR_TIMER_COMPA));
+                    }
+                    else
+                    {
+        				Avr_timer_reconfigure(timer, 0); // if OCRA is the top, reconfigure needed
+                    }
+                    Sim_irq.Avr_raise_irq(timer.io.irq[TIMER_IRQ_OUT_PWM1], _timer_get_ocr(timer, AVR_TIMER_COMPB));
+        			break;
+        		case avr_timer_wgm_fast_pwm:
+        			if (oldv != _timer_get_comp_ocr(avr, comp))
+        				Avr_timer_reconfigure(timer, 0);
+                    Sim_irq.Avr_raise_irq(timer.io.irq[TIMER_IRQ_OUT_PWM0],
+                    _timer_get_ocr(timer, AVR_TIMER_COMPA));
+                    Sim_irq.Avr_raise_irq(timer.io.irq[TIMER_IRQ_OUT_PWM1],
+                    _timer_get_ocr(timer, AVR_TIMER_COMPB));
+        			break;
+        		default:
+        			//AVR_LOG(avr, LOG_WARNING, "TIMER: %s-%c mode %d UNSUPPORTED\n",__FUNCTION__, timer->name, timer->mode.kind);
+                    Avr_timer_reconfigure(timer, 0);
+        			break;
+        	}
+        }
 
-        //	switch (timer->wgm_op_mode_kind) {
-        //		case avr_timer_wgm_normal:
-        //			avr_timer_reconfigure(timer, 0);
-        //			break;
-        //		case avr_timer_wgm_fc_pwm:	// OCR is not used here
-        //			avr_timer_reconfigure(timer, 0);
-        //			break;
-        //		case avr_timer_wgm_ctc:
-        //			avr_timer_reconfigure(timer, 0);
-        //			break;
-        //		case avr_timer_wgm_pwm:
-        //			if (timer->mode.top != avr_timer_wgm_reg_ocra) { // ICR is the top, update comp_cycles
-        //				uint32_t ocr = _timer_get_comp_ocr(avr, comp);
-        //uint32_t prescaler = timer->cs_div_value;
-        //comp->comp_cycles = prescaler* ocr;
-        //avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0, _timer_get_ocr(timer, AVR_TIMER_COMPA));
-        //			}else {
-        //				avr_timer_reconfigure(timer, 0); // if OCRA is the top, reconfigure needed
-        //			}
-        //			avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1, _timer_get_ocr(timer, AVR_TIMER_COMPB));
-        //			break;
-        //		case avr_timer_wgm_fast_pwm:
-        //			if (oldv != _timer_get_comp_ocr(avr, comp))
-        //				avr_timer_reconfigure(timer, 0);
-        //avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM0,
-        //        _timer_get_ocr(timer, AVR_TIMER_COMPA));
-        //avr_raise_irq(timer->io.irq + TIMER_IRQ_OUT_PWM1,
-        //        _timer_get_ocr(timer, AVR_TIMER_COMPB));
-        //			break;
-        //		default:
-        //			AVR_LOG(avr, LOG_WARNING, "TIMER: %s-%c mode %d UNSUPPORTED\n",
-        //                    __FUNCTION__, timer->name, timer->mode.kind);
-        //avr_timer_reconfigure(timer, 0);
-        //			break;
-        //	}
-        //}
+        public static void Avr_timer_write(Avr avr,uint addr,byte v,object param)
+        {
 
-        //static void
-        //avr_timer_write(
+            Avr_timer p = (Avr_timer)param;
 
-        //        struct avr_t * avr,
-        //        avr_io_addr_t addr,
-        //		uint8_t v,
+            byte as2 = Sim_regbit.Avr_regbit_get(avr, p.as2);
+            byte cs = Sim_regbit.Avr_regbit_get_array(avr, p.cs, p.cs.Length);
+            byte mode = Sim_regbit.Avr_regbit_get_array(avr, p.wgm, p.wgm.Length);
 
-        //        void* param)
-        //{
-        //	avr_timer_t* p = (avr_timer_t*)param;
+            Sim_core_helper.Avr_core_watch_write(avr, addr, v);
 
-        //uint8_t as2 = avr_regbit_get(avr, p->as2);
-        //uint8_t cs = avr_regbit_get_array(avr, p->cs, ARRAY_SIZE(p->cs));
-        //uint8_t mode = avr_regbit_get_array(avr, p->wgm, ARRAY_SIZE(p->wgm));
+            byte new_as2 = Sim_regbit.Avr_regbit_get(avr, p.as2);
+            byte new_cs = Sim_regbit.Avr_regbit_get_array(avr, p.cs, p.cs.Length);
+            byte new_mode = Sim_regbit.Avr_regbit_get_array(avr, p.wgm, p.wgm.Length);
 
-        //avr_core_watch_write(avr, addr, v);
+        	// only reconfigure the timer if "relevant" bits have changed
+        	// this prevent the timer reset when changing the edge detector
+        	// or other minor bits
+        	if (new_cs != cs || new_mode != mode || new_as2 != as2) {
+        	/* cs */
+        		if (new_cs == 0) {
+        			p.cs_div_value = 0;		// reset prescaler
+        			// cancel everything
+        			Avr_timer_cancel_all_cycle_timers(avr, p, 1);
 
-        //uint8_t new_as2 = avr_regbit_get(avr, p->as2);
-        //uint8_t new_cs = avr_regbit_get_array(avr, p->cs, ARRAY_SIZE(p->cs));
-        //uint8_t new_mode = avr_regbit_get_array(avr, p->wgm, ARRAY_SIZE(p->wgm));
+        			//AVR_LOG(avr, LOG_TRACE, "TIMER: %s-%c clock turned off\n",
+        			//		__func__, p->name);
+        			return;
+        		}
 
-        //	// only reconfigure the timer if "relevant" bits have changed
-        //	// this prevent the timer reset when changing the edge detector
-        //	// or other minor bits
-        //	if (new_cs != cs || new_mode != mode || new_as2 != as2) {
-        //	/* cs */
-        //		if (new_cs == 0) {
-        //			p->cs_div_value = 0;		// reset prescaler
-        //			// cancel everything
-        //			avr_timer_cancel_all_cycle_timers(avr, p, 1);
+                p.ext_clock_flags = (byte)(p.ext_clock_flags & ~(AVR_TIMER_EXTCLK_FLAG_TN | AVR_TIMER_EXTCLK_FLAG_EDGE
+        								| AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_STARTED));
+        		if (p.ext_clock_pin.reg!=0
+        				&& (p.cs_div[new_cs] == AVR_TIMER_EXTCLK_CHOOSE))
+                {
+        			// Special case: external clock source chosen, prescale divider irrelevant.
+        			p.cs_div_value = 1;
+        			p.ext_clock_flags |= (byte)(AVR_TIMER_EXTCLK_FLAG_TN | (new_cs & AVR_TIMER_EXTCLK_FLAG_EDGE));
+        		}
+                else
+                {
+        			p.cs_div_value = (byte)(1 << p.cs_div[new_cs]);
+        			if (new_as2!=0)
+                    {
+        				//p->cs_div_value = (uint32_t)((uint64_t)avr->frequency * (1 << p->cs_div[new_cs]) / 32768);
+        				p.ext_clock_flags |= (byte)(AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_EDGE);
+        			}
+        		}
 
-        //			//AVR_LOG(avr, LOG_TRACE, "TIMER: %s-%c clock turned off\n",
-        //			//		__func__, p->name);
-        //			return;
-        //		}
+        	/* mode */
+        		p.mode = p.wgm_op[new_mode];
+        		p.wgm_op_mode_kind = p.mode.kind;
+        		p.wgm_op_mode_size = (uint)(1 << p.mode.size) - 1;
 
-        //		p->ext_clock_flags &= ~(AVR_TIMER_EXTCLK_FLAG_TN | AVR_TIMER_EXTCLK_FLAG_EDGE
-        //								| AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_STARTED);
-        //		if (p->ext_clock_pin.reg
-        //				&& (p->cs_div[new_cs] == AVR_TIMER_EXTCLK_CHOOSE)) {
-        //			// Special case: external clock source chosen, prescale divider irrelevant.
-        //			p->cs_div_value = 1;
-        //			p->ext_clock_flags |= AVR_TIMER_EXTCLK_FLAG_TN | (new_cs & AVR_TIMER_EXTCLK_FLAG_EDGE);
-        //		} else {
-        //			p->cs_div_value = 1 << p->cs_div[new_cs];
-        //			if (new_as2) {
-        //				//p->cs_div_value = (uint32_t)((uint64_t)avr->frequency * (1 << p->cs_div[new_cs]) / 32768);
-        //				p->ext_clock_flags |= AVR_TIMER_EXTCLK_FLAG_AS2 | AVR_TIMER_EXTCLK_FLAG_EDGE;
-        //			}
-        //		}
+        		Avr_timer_reconfigure(p, 1);
+        	}
+        }
 
-        //	/* mode */
-        //		p->mode = p->wgm_op[new_mode];
-        //		p->wgm_op_mode_kind = p->mode.kind;
-        //		p->wgm_op_mode_size = (1 << p->mode.size) - 1;
+        /*
+         * write to the TIFR register. Watch for code that writes "1" to clear
+         * pending interrupts.
+         */
+        public static void Avr_timer_write_pending(Avr avr, uint addr,byte v,object param)
+        {
 
-        //		avr_timer_reconfigure(p, 1);
-        //	}
-        //}
+            Avr_timer p = (Avr_timer)param;
+            // save old bits values
+            byte ov = Sim_regbit.Avr_regbit_get(avr, p.overflow.raised);
+            byte ic = Sim_regbit.Avr_regbit_get(avr, p.icr.raised);
+            byte[] cp = new byte[AVR_TIMER_COMP_COUNT];
 
-        ///*
-        // * write to the TIFR register. Watch for code that writes "1" to clear
-        // * pending interrupts.
-        // */
-        //static void
-        //avr_timer_write_pending(
+        	for (int compi = 0; compi<AVR_TIMER_COMP_COUNT; compi++)
+        		cp[compi] = Sim_regbit.Avr_regbit_get(avr, p.comp[compi].interrupt.raised);
 
-        //        struct avr_t * avr,
-        //        avr_io_addr_t addr,
-        //		uint8_t v,
+            // write the value
+            // avr_core_watch_write(avr, addr, v); // This raises flags instead of clearing it.
 
-        //        void* param)
-        //{
-        //	avr_timer_t* p = (avr_timer_t*)param;
-        //// save old bits values
-        //uint8_t ov = avr_regbit_get(avr, p->overflow.raised);
-        //uint8_t ic = avr_regbit_get(avr, p->icr.raised);
-        //uint8_t cp[AVR_TIMER_COMP_COUNT];
+            // clear any interrupts & flags
+            Sim_interrupts.Avr_clear_interrupt_if(avr, p.overflow, ov);
+            Sim_interrupts.Avr_clear_interrupt_if(avr, p.icr, ic);
 
-        //	for (int compi = 0; compi<AVR_TIMER_COMP_COUNT; compi++)
-        //		cp[compi] = avr_regbit_get(avr, p->comp[compi].interrupt.raised);
+        	for (int compi = 0; compi<AVR_TIMER_COMP_COUNT; compi++)
+                Sim_interrupts.Avr_clear_interrupt_if(avr, p.comp[compi].interrupt, cp[compi]);
+        }
 
-        //// write the value
-        //// avr_core_watch_write(avr, addr, v); // This raises flags instead of clearing it.
+    //static void
+    //avr_timer_irq_icp(
 
-        //// clear any interrupts & flags
-        //avr_clear_interrupt_if(avr, &p->overflow, ov);
-        //avr_clear_interrupt_if(avr, &p->icr, ic);
+    //        struct avr_irq_t * irq,
+    //        uint32_t value,
+    //		void* param)
+    //{
+    //	avr_timer_t* p = (avr_timer_t*)param;
+    //avr_t* avr = p->io.avr;
 
-        //	for (int compi = 0; compi<AVR_TIMER_COMP_COUNT; compi++)
-        //		avr_clear_interrupt_if(avr, &p->comp[compi].interrupt, cp[compi]);
-        //}
+    //	// input capture disabled when ICR is used as top
+    //	if (p->mode.top == avr_timer_wgm_reg_icr)
+    //		return;
+    //	int bing = 0;
+    //	if (avr_regbit_get(avr, p->ices)) { // rising edge
+    //		if (!irq->value && value)
+    //			bing++;
+    //	} else {	// default, falling edge
+    //		if (irq->value && !value)
+    //			bing++;
+    //	}
+    //	if (!bing)
+    //		return;
+    //	// get current TCNT, copy it to ICR, and raise interrupt
+    //	uint16_t tcnt = _avr_timer_get_current_tcnt(p);
+    //avr->data[p->r_icr] = tcnt;
+    //	if (p->r_icrh)
+    //		avr->data[p->r_icrh] = tcnt >> 8;
+    //	avr_raise_interrupt(avr, &p->icr);
+    //}
 
-        //static void
-        //avr_timer_irq_icp(
-
-        //        struct avr_irq_t * irq,
-        //        uint32_t value,
-        //		void* param)
-        //{
-        //	avr_timer_t* p = (avr_timer_t*)param;
-        //avr_t* avr = p->io.avr;
-
-        //	// input capture disabled when ICR is used as top
-        //	if (p->mode.top == avr_timer_wgm_reg_icr)
-        //		return;
-        //	int bing = 0;
-        //	if (avr_regbit_get(avr, p->ices)) { // rising edge
-        //		if (!irq->value && value)
-        //			bing++;
-        //	} else {	// default, falling edge
-        //		if (irq->value && !value)
-        //			bing++;
-        //	}
-        //	if (!bing)
-        //		return;
-        //	// get current TCNT, copy it to ICR, and raise interrupt
-        //	uint16_t tcnt = _avr_timer_get_current_tcnt(p);
-        //avr->data[p->r_icr] = tcnt;
-        //	if (p->r_icrh)
-        //		avr->data[p->r_icrh] = tcnt >> 8;
-        //	avr_raise_interrupt(avr, &p->icr);
-        //}
-
-        public static int Avr_timer_ioctl(Avr_io port, uint ctl, object io_param)
+    public static int Avr_timer_ioctl(Avr_io port, uint ctl, object io_param)
         {
         //    avr_timer_t* p = (avr_timer_t*)port;
             int res = -1;

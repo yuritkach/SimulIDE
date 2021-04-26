@@ -33,32 +33,32 @@ namespace SimulIDE.src.simavr.sim
             return (byte)((avr.data[a] >> rb.bit) & rb.mask);
         }
 
-//        static inline uint8_t avr_regbit_setto(avr_t* avr, avr_regbit_t rb, uint8_t v)
-//        {
-//            uint16_t a = rb.reg;
-//            uint8_t m;
+        public static byte Avr_regbit_setto(Avr avr, Avr_regbit rb, byte v)
+        {
+            uint a = rb.reg;
+            byte m;
 
-//            if (!a) return 0;
+            if (a==0) return 0;
 
-//            m = rb.mask << rb.bit;
-//            avr_core_watch_write(avr, a, (avr->data[a] & ~(m)) | ((v << rb.bit) & m));
-//            return (avr->data[a] >> rb.bit) & rb.mask;
-//        }
+            m = (byte)(rb.mask << rb.bit);
+            Sim_core_helper.Avr_core_watch_write(avr, a,(uint)((avr.data[a] & ~(m)) | ((v << rb.bit) & m)));
+            return (byte)((avr.data[a] >> rb.bit) & rb.mask);
+        }
 
-//        /*
-//         * Set the 'raw' bits, if 'v' is the unshifted value of the bits
-//         */
-//        static inline uint8_t avr_regbit_setto_raw(avr_t* avr, avr_regbit_t rb, uint8_t v)
-//        {
-//            uint16_t a = rb.reg;
-//            uint8_t m;
+        //        /*
+        //         * Set the 'raw' bits, if 'v' is the unshifted value of the bits
+        //         */
+        //        static inline uint8_t avr_regbit_setto_raw(avr_t* avr, avr_regbit_t rb, uint8_t v)
+        //        {
+        //            uint16_t a = rb.reg;
+        //            uint8_t m;
 
-//            if (!a) return 0;
+        //            if (!a) return 0;
 
-//            m = rb.mask << rb.bit;
-//            avr_core_watch_write(avr, a, (avr->data[a] & ~(m)) | ((v) & m));
-//            return (avr->data[a]) & (rb.mask << rb.bit);
-//        }
+        //            m = rb.mask << rb.bit;
+        //            avr_core_watch_write(avr, a, (avr->data[a] & ~(m)) | ((v) & m));
+        //            return (avr->data[a]) & (rb.mask << rb.bit);
+        //        }
 
         public static byte Avr_regbit_get(Avr avr, Avr_regbit rb)
         {

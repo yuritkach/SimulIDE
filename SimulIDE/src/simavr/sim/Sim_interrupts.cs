@@ -145,11 +145,8 @@ namespace SimulIDE.src.simavr.sim
             return 1;
         }
 
-        //        void
-        //        avr_clear_interrupt(
-        //                avr_t* avr,
-        //                avr_int_vector_t* vector)
-        //        {
+        public static void Avr_clear_interrupt(Avr avr,Avr_int_vector vector)
+        {
         //            if (!vector)
         //                return;
         //            if (vector->trace)
@@ -165,24 +162,19 @@ namespace SimulIDE.src.simavr.sim
 
         //            if (vector->raised.reg && !vector->raise_sticky)
         //                avr_regbit_clear(avr, vector->raised);
-        //        }
+        }
 
-        //        int
-        //        avr_clear_interrupt_if(
-        //                avr_t* avr,
-        //                avr_int_vector_t* vector,
-        //                uint8_t old)
-        //        {
-        //            avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
-        //                    avr_has_pending_interrupts(avr));
-        //            if (avr_regbit_get(avr, vector->raised))
-        //            {
-        //                avr_clear_interrupt(avr, vector);
-        //                return 1;
-        //            }
-        //            avr_regbit_setto(avr, vector->raised, old);
-        //            return 0;
-        //        }
+        public static int Avr_clear_interrupt_if(Avr avr, Avr_int_vector vector,byte old)
+        {
+                    Sim_irq.Avr_raise_irq(avr.Interrupts.irq[AVR_INT_IRQ_PENDING],(uint)(Avr_has_pending_interrupts(avr)?1:0));
+                    if (Sim_regbit.Avr_regbit_get(avr, vector.raised)!=0)
+                    {
+                        Avr_clear_interrupt(avr, vector);
+                        return 1;
+                    }
+                    Sim_regbit.Avr_regbit_setto(avr, vector.raised, old);
+                    return 0;
+        }
 
         //        avr_irq_t*
         //        avr_get_interrupt_irq(

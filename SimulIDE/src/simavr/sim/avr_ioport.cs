@@ -135,7 +135,7 @@ namespace SimulIDE.src.simavr.sim {
         // * AVR code, or any external piece of code that see fit to do it.
         // * Either way, this will raise pin change interrupts, if needed
         // */
-        public static void Avr_ioport_irq_notify(ref Avr_irq irq, uint value,object param)
+        public static void Avr_ioport_irq_notify(Avr_irq irq, uint value,object param)
         {
         //	avr_ioport_t * p = (avr_ioport_t *)param;
         //	avr_t * avr = p->io.avr;
