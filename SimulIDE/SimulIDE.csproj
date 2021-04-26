@@ -104,7 +104,6 @@
     <Compile Include="src\simavr\cores\avr\io.cs" />
     <Compile Include="src\simavr\cores\avr\iom328p.cs" />
     <Compile Include="src\simavr\cores\avr\sfr_defs.cs" />
-    <Compile Include="src\simavr\cores\Avr_timer.cs" />
     <Compile Include="src\simavr\cores\Constants.cs" />
     <Compile Include="src\simavr\cores\Mcu.cs" />
     <Compile Include="src\simavr\cores\Mega328.cs" />

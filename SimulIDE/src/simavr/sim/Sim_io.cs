@@ -13,7 +13,7 @@ namespace SimulIDE.src.simavr.sim
     public delegate void iodealoc_function(Avr_io io);
     public class Avr_io
     {
-        public Avr_io next;
+   //     public Avr_io next;
         public Avr avr;     // avr we are attached to
         public string kind;       // pretty name, for debug
         public string[] irq_names; // IRQ names
@@ -50,9 +50,6 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_io(Avr avr,ref Avr_io io)
         {
-            if (avr.io_ports.Count > 0)
-                io.next = avr.io_ports.Peek();
-            else io.next = null;
             io.avr = avr;
             avr.io_ports.Enqueue(io);
         }
@@ -258,7 +255,6 @@ namespace SimulIDE.src.simavr.sim
             io.irq_count = 0;
             io.irq_ioctl_get = 0;
             io.avr = null;
-            io.next = null;
         }
 
         public static void Avr_deallocate_ios(Avr avr)

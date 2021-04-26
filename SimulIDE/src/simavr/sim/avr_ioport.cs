@@ -299,7 +299,7 @@ namespace SimulIDE.src.simavr.sim {
             Sim_io.Avr_register_io_write(avr, p.r_ddr, Avr_ioport_ddr_write, p);
         }
 
-        //#define AVR_IOPORT_OUTPUT 0x100
+        public const int AVR_IOPORT_OUTPUT = 0x100;
 
         // add port name (uppercase) to get the real IRQ
         public static uint AVR_IOCTL_IOPORT_GETIRQ(byte _name)

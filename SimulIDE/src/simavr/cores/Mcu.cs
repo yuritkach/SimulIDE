@@ -20,7 +20,7 @@ namespace SimulIDE.src.simavr.cores
       //  public Avr_uart uart;
       //  public Avr_acomp acomp;
       //  public Avr_adc adc;
-        public Avr_timer_helper timer0, timer1, timer2;
+        public Avr_timer timer0, timer1, timer2;
      //   public Avr_spi_t spi;
      //   public Avr_twi_t twi;
         // PORTA exists on m16 and 32, but not on 8. 

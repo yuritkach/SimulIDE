@@ -97,11 +97,8 @@ namespace SimulIDE.src.simavr.sim
         //            return avr_regbit_get(avr, vector->enable);
         //        }
 
-        //        int
-        //        avr_raise_interrupt(
-        //                avr_t* avr,
-        //                avr_int_vector_t* vector)
-        //        {
+        public static int Avr_raise_interrupt(Avr avr, Avr_int_vector vector)
+        {
         //            if (!vector || !vector->vector)
         //                return 0;
         //            if (vector->pending)
@@ -145,8 +142,8 @@ namespace SimulIDE.src.simavr.sim
         //                }
         //            }
         //            // return 'raised' even if it was already pending
-        //            return 1;
-        //        }
+            return 1;
+        }
 
         //        void
         //        avr_clear_interrupt(
