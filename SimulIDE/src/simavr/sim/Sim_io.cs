@@ -56,7 +56,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_io_read(Avr avr,uint addr,Avr_io_read_function readp,object param)
         {
-            int a = Sim_Avr.AVR_DATA_TO_IO((int)addr);
+            uint a = Sim_Avr.AVR_DATA_TO_IO(addr);
             if (avr.io[a].r.param!=null || avr.io[a].r.c!=null)
             {
                 if (avr.io[a].r.param != param || avr.io[a].r.c != readp)
@@ -83,7 +83,7 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_register_io_write(Avr avr, uint addr, Avr_io_write_function writep,object param)
         {
-            int a =Sim_Avr.AVR_DATA_TO_IO((int)addr);
+            uint a =Sim_Avr.AVR_DATA_TO_IO(addr);
             if (a < 0) return;
             if (a >= Sim_Avr.MAX_IOs)
                 throw new Exception("IO address 0x "+a.ToString()+" out of range ("+ Sim_Avr.MAX_IOs.ToString()+")");
@@ -147,50 +147,41 @@ namespace SimulIDE.src.simavr.sim
             return null;
         }
 
-//        avr_irq_t*
-//        avr_iomem_getirq(
-//                avr_t* avr,
-//                avr_io_addr_t addr,
-
-//        const char* name,
-
-//        int index)
-//{
-//	if (index > 8)
-//		return NULL;
-//	avr_io_addr_t a = AVR_DATA_TO_IO(addr);
-//	if (avr->io[a].irq == NULL) {
-//		/*
-//		 * Prepare an array of names for the io IRQs. Ideally we'd love to have
-//		 * a proper name for these, but it's not possible at this time.
-//		 */
-//		char names[9 * 20];
-//        char* d = names;
-//        const char* namep[9];
-//		for (int ni = 0; ni< 9; ni++) {
-//			if (ni< 8)
-
-//                sprintf(d, "=avr.io.%04x.%d", addr, ni);
-//			else
-//				sprintf(d, "8=avr.io.%04x.all", addr);
-//        namep[ni] = d;
-//			d += strlen(d) + 1;
-//		}
-//    avr->io[a].irq = avr_alloc_irq(&avr->irq_pool, 0, 9, namep);
-//		// mark the pin ones as filtered, so they only are raised when changing
-//		for (int i = 0; i< 8; i++)
-//			avr->io[a].irq[i].flags |= IRQ_FLAG_FILTERED;
-//	}
-//	// if given a name, replace the default one...
-//	if (name) {
-//		int l = strlen(name);
-//char n[l + 10];
-//sprintf(n, "avr.io.%s", name);
-//free((void*) avr->io[a].irq[index].name);
-//avr->io[a].irq[index].name = strdup(n);
-//	}
-//	return avr->io[a].irq + index;
-//}
+        public static Avr_irq Avr_iomem_getirq(Avr avr, uint addr, string name, int index)
+        {
+            if (index > 8)
+                return null;
+            uint a = Sim_core_helper.AVR_DATA_TO_IO(addr);
+            if (avr.io[a].irq == null)
+            {
+                /*
+                 * Prepare an array of names for the io IRQs. Ideally we'd love to have
+                 * a proper name for these, but it's not possible at this time.
+                 */
+                string[] names = new string[9];
+                string d;
+                for (int ni = 0; ni < 9; ni++)
+                {
+                    if (ni < 8)
+                        d = string.Format("=avr.io.{0:X4}.{1:G}", addr, ni);
+                    else
+                        d = string.Format("8=avr.io.{0:X4}.all", addr);
+                    names[ni] = d;
+                }
+                avr.io[a].irq = Sim_irq.Avr_alloc_irq(ref avr.irq_pool, 0, 9, names);
+                // mark the pin ones as filtered, so they only are raised when changing
+                for (int i = 0; i < 8; i++)
+                    avr.io[a].irq[i].flags |= Sim_irq.IRQ_FLAG_FILTERED;
+            }
+            // if given a name, replace the default one...
+            if (name!="")
+            {
+                int l = name.Length;
+                string n = "avr.io."+name;
+                avr.io[a].irq[index].name = n;
+            }
+            return avr.io[a].irq[index];
+        }
 
         public static Avr_irq[] Avr_io_setirqs(ref Avr_io io,uint ctl,uint count, Avr_irq[] irqs)
         {
@@ -262,75 +253,7 @@ namespace SimulIDE.src.simavr.sim
             avr.io_ports = null;
         }
 
-        ///*
-        // * used by the ioports to implement their own features
-        // * see avr_eeprom.* for an example, and avr_ioctl().
-        // */
-        //#define AVR_IOCTL_DEF(_a,_b,_c,_d) \
-        //	(((_a) << 24)|((_b) << 16)|((_c) << 8)|((_d)))
-
-        ///*
-        // * IO module base struct
-        // * Modules uses that as their first member in their own struct
-        // */
-
-        ///*
-        // * IO modules helper functions
-        // */
-
-        //// registers an IO module, so it's run(), reset() etc are called
-        //// this is called by the AVR core init functions, you /could/ register an external
-        //// one after instantiation, for whatever purpose...
-        //void
-        //avr_register_io(
-        //        avr_t* avr,
-        //        avr_io_t* io);
-        //        // Sets an IO module "official" IRQs and the ioctl used to get to them. if 'irqs' is NULL,
-        //        // 'count' will be allocated
-        //        avr_irq_t*
-        //        avr_io_setirqs(
-        //                avr_io_t* io,
-        //                uint32_t ctl,
-        //                int count,
-        //                avr_irq_t* irqs);
-
-        //        // register a callback for when IO register "addr" is read
-        //        void
-        //        avr_register_io_read(
-        //                avr_t* avr,
-        //                avr_io_addr_t addr,
-        //                avr_io_read_t read,
-        //                void* param);
-        //        // register a callback for when the IO register is written. callback has to set the memory itself
-        //        void
-        //        avr_register_io_write(
-        //                avr_t* avr,
-        //                avr_io_addr_t addr,
-        //                avr_io_write_t write,
-        //                void* param);
-        //        // call every IO modules until one responds to this
-        //        int
-        //        avr_ioctl(
-        //                avr_t* avr,
-        //                uint32_t ctl,
-        //                void* io_param);
-        //        // get the specific irq for a module, check AVR_IOCTL_IOPORT_GETIRQ for example
-        //        struct avr_irq_t *
-        //avr_io_getirq(
-        //        avr_t* avr,
-        //        uint32_t ctl,
-        //        int index);
-
-        //        // get the IRQ for an absolute IO address
-        //        // this allows any code to hook an IRQ in any io address, for example
-        //        // tracing changes of values into a register
-        //        // Note that the values do not "magically" change, they change only
-        //        // when the AVR code attempt to read and write at that address
-        //        //
-        //        // the "index" is a bit number, or ALL bits if index == 8
         public static int AVR_IOMEM_IRQ_ALL = 8;
-//        avr_irq_t* avr_iomem_getirq(Avr avr,uint addr, const char* name /* Optional, if NULL, "ioXXXX" will be used */ , int index);
-
 
     }
 }

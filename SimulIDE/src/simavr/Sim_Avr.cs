@@ -135,7 +135,7 @@ namespace SimulIDE.src.simavr
         public Avr()
         {
             commands = new Avr_cmd_table();
-            io = new List<IO>();
+            io = new IO[MAX_IOs+1];
             for (int i = 0; i < MAX_IOs; i++)
                 io[i] = new IO();
             io_ports = new Queue<Avr_io>();
@@ -246,7 +246,7 @@ namespace SimulIDE.src.simavr
         * work.
         */
         
-        public List<IO> io; 
+        public IO[] io; 
 
 	/*
 	 * This block allows sharing of the IO write/read on addresses between
@@ -687,12 +687,12 @@ namespace SimulIDE.src.simavr
 
 
 
-        public static int AVR_DATA_TO_IO(int v)
+        public static uint AVR_DATA_TO_IO(uint v)
         {
             return v - 32;
         }
 
-        public static int AVR_IO_TO_DATA(int v)
+        public static uint AVR_IO_TO_DATA(uint v)
         {
             return v + 32;
         }

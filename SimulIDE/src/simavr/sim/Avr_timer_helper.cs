@@ -925,7 +925,7 @@ namespace SimulIDE.src.simavr.sim
             _io.ioctl = Avr_timer_ioctl;
         }
 
-        public static void Avr_timer_init(Avr avr,Avr_timer p)
+        public static void Avr_timer_init(Avr avr,ref Avr_timer p)
         {
             p.io = _io;
 
@@ -1038,19 +1038,91 @@ namespace SimulIDE.src.simavr.sim
         public const int AVR_TIMER_EXTCLK_FLAG_EDGE = 0x01;		// use the rising edge
 
 
-        //#define AVR_TIMER_WGM_NORMAL8() { .kind = avr_timer_wgm_normal, .size=8 }
-        //#define AVR_TIMER_WGM_NORMAL16() { .kind = avr_timer_wgm_normal, .size=16 }
-        //#define AVR_TIMER_WGM_CTC() { .kind = avr_timer_wgm_ctc, .top = avr_timer_wgm_reg_ocra }
-        //#define AVR_TIMER_WGM_ICCTC() { .kind = avr_timer_wgm_ctc, .top = avr_timer_wgm_reg_icr }
-        //#define AVR_TIMER_WGM_FASTPWM8() { .kind = avr_timer_wgm_fast_pwm, .size=8 }
-        //#define AVR_TIMER_WGM_FASTPWM9() { .kind = avr_timer_wgm_fast_pwm, .size=9 }
-        //#define AVR_TIMER_WGM_FASTPWM10() { .kind = avr_timer_wgm_fast_pwm, .size=10 }
-        //#define AVR_TIMER_WGM_FCPWM8() { .kind = avr_timer_wgm_fc_pwm, .size=8 }
-        //#define AVR_TIMER_WGM_FCPWM9() { .kind = avr_timer_wgm_fc_pwm, .size=9 }
-        //#define AVR_TIMER_WGM_FCPWM10() { .kind = avr_timer_wgm_fc_pwm, .size=10 }
-        //#define AVR_TIMER_WGM_OCPWM() { .kind = avr_timer_wgm_pwm, .top = avr_timer_wgm_reg_ocra }
-        //#define AVR_TIMER_WGM_ICPWM() { .kind = avr_timer_wgm_pwm, .top = avr_timer_wgm_reg_icr }
+        public static Avr_timer_wgm AVR_TIMER_WGM_NORMAL8()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_normal;
+            result.size = 8;
+            return result;
+        }
 
+        public static Avr_timer_wgm AVR_TIMER_WGM_NORMAL16()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_normal;
+            result.size = 16;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_CTC()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_ctc;
+            result.top = avr_timer_wgm_reg_ocra;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_ICCTC()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_ctc;
+            result.top = avr_timer_wgm_reg_icr;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FASTPWM8()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fast_pwm;
+            result.size = 8;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FASTPWM9()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fast_pwm;
+            result.size = 9;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FASTPWM10()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fast_pwm;
+            result.size = 10;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FCPWM8()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fc_pwm;
+            result.size = 8;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FCPWM9()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fc_pwm;
+            result.size = 9;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_FCPWM10()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_fc_pwm;
+            result.size = 10;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_OCPWM()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_pwm;
+            result.top = avr_timer_wgm_reg_ocra;
+            return result;
+        }
+        public static Avr_timer_wgm AVR_TIMER_WGM_ICPWM()
+        {
+            Avr_timer_wgm result = new Avr_timer_wgm();
+            result.kind = avr_timer_wgm_pwm;
+            result.top = avr_timer_wgm_reg_icr;
+            return result;
+        }
 
         public const int AVR_TIMER_COMPA = 0;
         public const int AVR_TIMER_COMPB = 1;
