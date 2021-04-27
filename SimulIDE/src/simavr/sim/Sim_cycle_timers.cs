@@ -72,15 +72,19 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_cycle_timer_reset_sleep_run_cycles_limited(Avr avr)
         {
-        //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
-        //    avr_cycle_count_t sleep_cycle_count = DEFAULT_SLEEP_CYCLES;
-
-        //    if (pool->timer)
-        //    {
-        //        if (pool->timer->when > avr->cycle) sleep_cycle_count = pool->timer->when - avr->cycle;
-        //        else sleep_cycle_count = 0;
-        //    }
-        //    avr_cycle_timer_return_sleep_run_cycles_limited(avr, sleep_cycle_count);
+            Avr_cycle_timer_pool pool = avr.cycle_timers;
+            ulong sleep_cycle_count = DEFAULT_SLEEP_CYCLES;
+            foreach (Avr_cycle_timer_slot t in pool.timers)
+            {
+                if (t != null && !t.free)
+                {
+                    if (t.when > avr.cycle)
+                        sleep_cycle_count = t.when - avr.cycle;
+                    else
+                        sleep_cycle_count = 0;
+                }
+            }
+            Avr_cycle_timer_return_sleep_run_cycles_limited(avr, sleep_cycle_count);
         }
 
         //// no sanity checks checking here, on purpose
@@ -138,22 +142,16 @@ namespace SimulIDE.src.simavr.sim
 
         public static void  Avr_cycle_timer_cancel(ref Avr avr,Avr_cycle_timer timer,object param)
         {
-        //    avr_cycle_timer_pool_t* pool = &avr->cycle_timers;
-
-            // find its place in the list
-        //    avr_cycle_timer_slot_p t = pool->timer, last = NULL;
-         //   while (t)
-         //   {
-         //       if (t->timer == timer && t->param == param)
-         //       {
-        //            DETACH(pool->timer, last, t);
-        //            QUEUE(pool->timer_free, t);
-        //            break;
-        //        }
-        //        last = t;
-        //        t = t->next;
-        //    }
-        //    avr_cycle_timer_reset_sleep_run_cycles_limited(avr);
+            Avr_cycle_timer_pool pool = avr.cycle_timers;
+            foreach (Avr_cycle_timer_slot t in pool.timers)
+            {
+                if (t.timer == timer && t.param == param)
+                {
+                    t.free = true;
+                    break;
+                }
+            }
+            Avr_cycle_timer_reset_sleep_run_cycles_limited(avr);
         }
 
         ///*
@@ -229,55 +227,6 @@ namespace SimulIDE.src.simavr.sim
 
 
         public static int MAX_CYCLE_TIMERS = 64;
-
-
-//// register for calling 'timer' in 'when' cycles
-//void
-//avr_cycle_timer_register(
-
-//        struct avr_t * avr,
-//		avr_cycle_count_t when,
-//        avr_cycle_timer_t timer,
-//		void* param);
-//        // register a timer to call in 'when' usec
-//        void
-//        avr_cycle_timer_register_usec(
-
-//        struct avr_t * avr,
-//		uint32_t when,
-//        avr_cycle_timer_t timer,
-//		void* param);
-//        // cancel a previously set timer
-//        void
-//        avr_cycle_timer_cancel(
-
-//        struct avr_t * avr,
-//		avr_cycle_timer_t timer,
-
-//        void* param);
-//        /*
-//         * Check to see if a timer is present, if so, return the number (+1) of
-//         * cycles left for it to fire, and if not present, return zero
-//         */
-//        avr_cycle_count_t
-//        avr_cycle_timer_status(
-
-//        struct avr_t * avr,
-//		avr_cycle_timer_t timer,
-
-//        void* param);
-
-//        //
-//        // Private, called from the core
-//        //
-//        avr_cycle_count_t
-//        avr_cycle_timer_process(
-
-//        struct avr_t * avr);
-//void
-//avr_cycle_timer_reset(
-
-//        struct avr_t * avr);
 
     }
 }

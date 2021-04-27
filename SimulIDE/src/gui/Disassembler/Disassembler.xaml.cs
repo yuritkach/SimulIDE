@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SimulIDE.src.gui.StateViewer
+namespace SimulIDE.src.gui.Disassembler
 {
     /// <summary>
-    /// Interaction logic for StateViewer.xaml
+    /// Interaction logic for Disassembler.xaml
     /// </summary>
-    public partial class StateViewer : Page
+    public partial class Disassembler : Page
     {
-        public StateViewer()
+        public Disassembler()
         {
             InitializeComponent();
         }

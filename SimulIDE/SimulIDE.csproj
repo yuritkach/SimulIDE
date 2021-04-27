@@ -97,8 +97,8 @@
     <Compile Include="src\gui\RamTable.xaml.cs">
       <DependentUpon>RamTable.xaml</DependentUpon>
     </Compile>
-    <Compile Include="src\gui\StateViewer\StateViewer.xaml.cs">
-      <DependentUpon>StateViewer.xaml</DependentUpon>
+    <Compile Include="src\gui\Disassembler\Disassembler.xaml.cs">
+      <DependentUpon>Disassembler.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\INamedObject.cs" />
     <Compile Include="src\simavr\cores\avr\io.cs" />
@@ -170,7 +170,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="src\gui\StateViewer\StateViewer.xaml">
+    <Page Include="src\gui\Disassembler\Disassembler.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

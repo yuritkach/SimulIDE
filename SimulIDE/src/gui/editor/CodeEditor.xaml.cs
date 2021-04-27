@@ -439,12 +439,12 @@ namespace SimulIDE.src.gui.editor
                 if (!driveCirc) Simulator.Self().StopTimer();
                 state = DBG_STEPING;
                 int prev = prevDebugLine;
-                do
-                {
+             //   do
+             //   {
                     RunClockTick();
                     Sim_core_helper.console.ScrollToEnd();
-                }
-                while (debugLine == prev);
+             //   }
+             //   while (debugLine == prev);
                 Console.WriteLine("debugLine={0:G} prevDebugline={1:G}",debugLine,prev);
             }
             UpdateScreen();

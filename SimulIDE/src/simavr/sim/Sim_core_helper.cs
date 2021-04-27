@@ -1053,7 +1053,7 @@ namespace SimulIDE.src.simavr.sim
                                 case 0x9518:
                                     {  // RETI -- Return from Interrupt -- 1001 0101 0001 1000
                                         avr_sreg_set(avr, S_I, true);
-                                        Sim_interrupts.avr_interrupt_reti(avr);
+                                        Sim_interrupts.Avr_interrupt_reti(avr);
                                     }
                                     break; //!!!!! continue;
                                 case 0x9508:

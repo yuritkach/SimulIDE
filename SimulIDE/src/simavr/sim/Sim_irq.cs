@@ -15,7 +15,7 @@ namespace SimulIDE.src.simavr.sim
 
             public Avr_irq chain;	// raise the IRQ on this too - optional if "notify" is on
             public Avr_irq_notify notify;    // called when IRQ is raised - optional if "chain" is on
-            object[] param;                // "notify" parameter
+            public object param;                // "notify" parameter
         }
         /*
          * Internal IRQ system
@@ -140,19 +140,19 @@ namespace SimulIDE.src.simavr.sim
 
         public static void Avr_irq_register_notify(Avr_irq irq, Avr_irq_notify notify,object param)
         {
-        //    if (!irq || !notify)
-        //        return;
+            if (irq==null || notify==null)
+                return;
 
-        //    avr_irq_hook_t* hook = irq->hook;
-        //    while (hook)
-        //    {
-        //        if (hook->notify == notify && hook->param == param)
-        //            return; // already there
-        //        hook = hook->next;
-        //    }
-        //    hook = _avr_alloc_irq_hook(irq);
-        //    hook->notify = notify;
-        //    hook->param = param;
+            Avr_irq_hook hook = irq.hook;
+            while (hook!=null)
+            {
+                if (hook.notify == notify && hook.param == param)
+                    return; // already there
+                hook = hook.next;
+            }
+            hook = _avr_alloc_irq_hook(irq);
+            hook.notify = notify;
+            hook.param = param;
         }
 
         public static void Avr_irq_unregister_notify(Avr_irq irq, Avr_irq_notify notify,object param)
@@ -179,62 +179,62 @@ namespace SimulIDE.src.simavr.sim
         //    }
         }
 
-        public static void Avr_raise_irq_float(Avr_irq irq,uint value,int floating)
+        public static void Avr_raise_irq_float(Avr_irq irq,bool value,int floating)
         {
-        //    if (!irq)
-        //        return;
-        //    uint32_t output = (irq->flags & IRQ_FLAG_NOT) ? !value : value;
-        //    // if value is the same but it's the first time, raise it anyway
-        //    if (irq->value == output &&
-        //            (irq->flags & IRQ_FLAG_FILTERED) && !(irq->flags & IRQ_FLAG_INIT))
-        //        return;
-        //    irq->flags &= ~(IRQ_FLAG_INIT | IRQ_FLAG_FLOATING);
-        //    if (floating)
-        //        irq->flags |= IRQ_FLAG_FLOATING;
-        //    avr_irq_hook_t* hook = irq->hook;
-        //    while (hook)
-        //    {
-        //        avr_irq_hook_t* next = hook->next;
-        //        // prevents reentrance / endless calling loops
-        //        if (hook->busy == 0)
-        //        {
-        //            hook->busy++;
-        //            if (hook->notify)
-        //                hook->notify(irq, output, hook->param);
-        //            if (hook->chain)
-        //                avr_raise_irq_float(hook->chain, output, floating);
-        //            hook->busy--;
-        //        }
-        //        hook = next;
-        //    }
-        //    // the value is set after the callbacks are called, so the callbacks
-        //    // can themselves compare for old/new values between their parameter
-        //    // they are passed (new value) and the previous irq->value
-        //    irq->value = output;
+            if (irq==null)
+                return;
+            bool output = (irq.flags & IRQ_FLAG_NOT)!=0 ? !value : value;
+            // if value is the same but it's the first time, raise it anyway
+            if ((irq.value!=0)== output &&
+                    (irq.flags & IRQ_FLAG_FILTERED)!=0 && (irq.flags & IRQ_FLAG_INIT)==0)
+                return;
+            irq.flags = (byte)(irq.flags &   ~(IRQ_FLAG_INIT | IRQ_FLAG_FLOATING));
+            if (floating!=0)
+                irq.flags |= IRQ_FLAG_FLOATING;
+            Avr_irq_hook hook = irq.hook;
+            while (hook!=null)
+            {
+                Avr_irq_hook next = hook.next;
+                // prevents reentrance / endless calling loops
+                if (hook.busy == 0)
+                {
+                    hook.busy++;
+                    if (hook.notify!=null)
+                        hook.notify(irq, (uint)(output?1:0), hook.param);
+                    if (hook.chain!=null)
+                        Avr_raise_irq_float(hook.chain, output, floating);
+                    hook.busy--;
+                }
+                hook = next;
+            }
+            // the value is set after the callbacks are called, so the callbacks
+            // can themselves compare for old/new values between their parameter
+            // they are passed (new value) and the previous irq->value
+            irq.value = (uint)(output ? 1 : 0);
         }
 
         /* 'raise' an IRQ. Ie call their 'hooks', and raise any chained IRQs, and set the new 'value' */
         public static void Avr_raise_irq(Avr_irq irq,uint value)
         {
-            Avr_raise_irq_float(irq, value, (irq.flags & IRQ_FLAG_FLOATING));
+            Avr_raise_irq_float(irq, value != 0, (irq.flags & IRQ_FLAG_FLOATING));
         }
 
         public static void Avr_connect_irq(Avr_irq src,Avr_irq dst)
         {
-        //    if (!src || !dst || src == dst)
-        //    {
-        //        fprintf(stderr, "error: %s invalid irq %p/%p", __FUNCTION__, src, dst);
-        //        return;
-        //    }
-        //    avr_irq_hook_t* hook = src->hook;
-        //    while (hook)
-        //    {
-        //        if (hook->chain == dst)
-        //            return; // already there
-        //        hook = hook->next;
-        //    }
-        //    hook = _avr_alloc_irq_hook(src);
-        //    hook->chain = dst;
+            if (src==null || dst==null || src == dst)
+            {
+                Console.WriteLine("error: {0:G} invalid irq {1:G}/{2:G}", "Avr_connect_irq", src, dst);
+                return;
+            }
+            Avr_irq_hook hook = src.hook;
+            while (hook!=null)
+            {
+                if (hook.chain == dst)
+                    return; // already there
+                hook = hook.next;
+            }
+            hook = _avr_alloc_irq_hook(src);
+            hook.chain = dst;
         }
 
         //void

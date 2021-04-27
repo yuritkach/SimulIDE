@@ -100,49 +100,48 @@ namespace SimulIDE.src.simavr.sim
 
         public static int Avr_raise_interrupt(Avr avr, Avr_int_vector vector)
         {
-        //            if (!vector || !vector->vector)
-        //                return 0;
-        //            if (vector->pending)
-        //            {
-        //                if (vector->trace)
-        //                    printf("IRQ%d:I=%d already raised (enabled %d) (cycle %lld pc 0x%x)\n",
-        //                        vector->vector, !!avr->sreg[S_I], avr_regbit_get(avr, vector->enable),
-        //                        (long long int)avr->cycle, avr->pc);
-        //                return 0;
-        //            }
-        //            if (vector->trace)
-        //                printf("IRQ%d raising (enabled %d)\n",
-        //                    vector->vector, avr_regbit_get(avr, vector->enable));
-        //            // always mark the 'raised' flag to one, even if the interrupt is disabled
-        //            // this allow "polling" for the "raised" flag, like for non-interrupt
-        //            // driven UART and so so. These flags are often "write one to clear"
-        //            if (vector->raised.reg)
-        //                avr_regbit_set(avr, vector->raised);
+            if (vector==null || vector.vector==0)
+                return 0;
+            if (vector.pending!=0)
+            {
+                if (vector.trace!=0)
+                    Console.WriteLine("IRQ{0:G}:I={1:G} already raised (enabled {2:G}) (cycle {3:G} pc {4:X4})\n",
+                        vector.vector, avr.sreg[Sim_core_helper.S_I], Sim_regbit.Avr_regbit_get(avr, vector.enable),
+                        avr.cycle, avr.PC);
+                return 0;
+            }
+            if (vector.trace!=0)
+                Console.WriteLine("IRQ{0:G} raising (enabled {1:G})\n",
+                    vector.vector, Sim_regbit.Avr_regbit_get(avr, vector.enable));
+            // always mark the 'raised' flag to one, even if the interrupt is disabled
+            // this allow "polling" for the "raised" flag, like for non-interrupt
+            // driven UART and so so. These flags are often "write one to clear"
+            if (vector.raised.reg!=0)
+                Sim_regbit.Avr_regbit_set(avr, vector.raised);
 
-        //            avr_raise_irq(vector->irq + AVR_INT_IRQ_PENDING, 1);
-        //            avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING, 1);
+            Sim_irq.Avr_raise_irq(vector.irq[AVR_INT_IRQ_PENDING], 1);
+            Sim_irq.Avr_raise_irq(avr.Interrupts.irq[AVR_INT_IRQ_PENDING], 1);
 
-        //            // If the interrupt is enabled, attempt to wake the core
-        //            if (avr_regbit_get(avr, vector->enable))
-        //            {
-        //                // Mark the interrupt as pending
-        //                vector->pending = 1;
+            // If the interrupt is enabled, attempt to wake the core
+            if (Sim_regbit.Avr_regbit_get(avr, vector.enable)!=0)
+            {
+                // Mark the interrupt as pending
+                vector.pending = 1;
 
-        //                avr_int_table_p table = &avr->interrupts;
+                Avr_int_table table = avr.Interrupts;
 
-        //                avr_int_pending_write(&table->pending, vector);
+                // Avr_int_pending_write(table.pending, vector); нет в исходниках
 
-        //                if (avr->sreg[S_I] && avr->interrupt_state == 0)
-        //                    avr->interrupt_state = 1;
-        //                if (avr->state == cpu_Sleeping)
-        //                {
-        //                    if (vector->trace)
-        //                        printf("IRQ%d Waking CPU due to interrupt\n",
-        //                            vector->vector);
-        //                    avr->state = cpu_Running;   // in case we were sleeping
-        //                }
-        //            }
-        //            // return 'raised' even if it was already pending
+                if (avr.sreg[Sim_core_helper.S_I]!=0 && avr.interrupt_state == 0)
+                    avr.interrupt_state = 1;
+                if (avr.state == Sim_Avr.CoreStates.cpu_Sleeping)
+                {
+                    if (vector.trace!=0)
+                        Console.WriteLine("IRQ{0:G} Waking CPU due to interrupt\n",vector.vector);
+                    avr.state = Sim_Avr.CoreStates.cpu_Running;   // in case we were sleeping
+                }
+            }
+            // return 'raised' even if it was already pending
             return 1;
         }
 
@@ -192,19 +191,17 @@ namespace SimulIDE.src.simavr.sim
         //        }
 
         /* this is called uppon RETI. */
-        public static void avr_interrupt_reti(Avr avr)
+        public static void Avr_interrupt_reti(Avr avr)
         {
-        //	avr_int_table_p table = &avr->interrupts;
-        //	if (table->running_ptr) {
-        //		avr_int_vector_t* vector = table->running[--table->running_ptr];
-        //        avr_raise_irq(vector->irq + AVR_INT_IRQ_RUNNING, 0);
-        //    }
-        //    avr_raise_irq(table->irq + AVR_INT_IRQ_RUNNING,
-        //            table->running_ptr > 0 ?
-
-        //                    table->running[table->running_ptr - 1]->vector : 0);
-        //    avr_raise_irq(avr->interrupts.irq + AVR_INT_IRQ_PENDING,
-        //            avr_has_pending_interrupts(avr));
+        	Avr_int_table table = avr.Interrupts;
+        	if (table.running_ptr!=0)
+            {
+        		Avr_int_vector vector = table.running[--table.running_ptr];
+                Sim_irq.Avr_raise_irq(vector.irq[AVR_INT_IRQ_RUNNING], 0);
+            }
+            Sim_irq.Avr_raise_irq(table.irq[AVR_INT_IRQ_RUNNING],
+                (uint)(table.running_ptr > 0 ?table.running[table.running_ptr - 1].vector : 0));
+            Sim_irq.Avr_raise_irq(avr.Interrupts.irq[AVR_INT_IRQ_PENDING],(uint)(Avr_has_pending_interrupts(avr)?1:0));
         }
 
         ///*
