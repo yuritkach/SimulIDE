@@ -24,7 +24,7 @@ namespace SimulIDE.src.simavr.sim {
         public byte value;
     } 
    
-    public class Avr_ioport
+    public class Avr_ioport:Avr_io
     {
         public Avr_io io;
         public string name;
@@ -285,20 +285,21 @@ namespace SimulIDE.src.simavr.sim {
 
 
 
-        public static void Avr_ioport_init(Avr avr, ref Avr_ioport p)
+        public static void Avr_ioport_init(Avr avr, Avr_ioport p)
         {
         	if (p.r_port==0) {
                 Console.WriteLine("skipping PORT%c for core %s\n", p.name, avr.mmcu);
         		return;
         	}
         	p.io = _io;
+            p.io.avr = avr;
             Console.WriteLine("Avr_ioport_init PIN%c 0x%02x DDR%c 0x%02x PORT%c 0x%02x\n", 
         		p.name, p.r_pin,p.name, p.r_ddr,p.name, p.r_port);
 
-        	Sim_io.Avr_register_io(avr, ref p.io);
-        	Sim_interrupts.Avr_register_vector(avr, ref p.pcint);
+        	Sim_io.Avr_register_io(avr, p);
+        	Sim_interrupts.Avr_register_vector(avr, p.pcint);
         	// allocate this module's IRQ
-        	Sim_io.Avr_io_setirqs(ref p.io, AVR_IOCTL_IOPORT_GETIRQ((byte)p.name[0]), IOPORT_IRQ_COUNT, null);
+        	Sim_io.Avr_io_setirqs(p.io, AVR_IOCTL_IOPORT_GETIRQ((byte)p.name[0]), IOPORT_IRQ_COUNT, null);
 
         	for (int i = 0; i < IOPORT_IRQ_COUNT; i++)
         		p.io.irq[i].flags |= Sim_irq.IRQ_FLAG_FILTERED;

@@ -35,7 +35,7 @@ namespace SimulIDE.src.simavr.sim
     public class Avr_cycle_timer_pool
     {
         public Avr_cycle_timer_slot[] timer_slots = new Avr_cycle_timer_slot[Sim_cycle_timers.MAX_CYCLE_TIMERS];
-        public List<Avr_cycle_timer_slot> timers;
+        public List<Avr_cycle_timer_slot> timers= new List<Avr_cycle_timer_slot>();
     }
 
 
@@ -107,7 +107,16 @@ namespace SimulIDE.src.simavr.sim
 
             // remove it if it was already scheduled
             Avr_cycle_timer_cancel(ref avr, timer, param);
-            Avr_cycle_timer_slot t = pool.timer_slots.SingleOrDefault(s => s.free);
+            Avr_cycle_timer_slot t = null;
+            foreach (Avr_cycle_timer_slot s in pool.timer_slots)
+            {
+                if (s != null && s.free)
+                {
+                    t = s;
+                    break;
+                }
+            }
+            
             if (t==null)
             {
                 //AVR_LOG(avr, LOG_ERROR, "CYCLE: %s: pool is full (%d)!\n", __func__, MAX_CYCLE_TIMERS);

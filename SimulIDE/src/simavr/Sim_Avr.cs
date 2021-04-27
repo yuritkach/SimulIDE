@@ -355,8 +355,8 @@ namespace SimulIDE.src.simavr
         avr.frequency = 1000000;	// can be overridden via avr_mcu_section
         Sim_Cmds.Avr_cmd_init(ref avr);
         Sim_interrupts.Avr_interrupt_init(ref avr);
-        avr.custom.Init?.Invoke(avr, avr.custom.data);
-        avr.Init?.Invoke(avr);
+           //avr.custom.Init?.Invoke(avr, avr.custom.data);
+           //avr.Init?.Invoke(avr);
         // set default (non gdb) fast callbacks
          avr.Run = Avr_callback_run_raw;
         //avr.sleep = avr_callback_sleep_raw;

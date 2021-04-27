@@ -12,7 +12,7 @@ namespace SimulIDE.src.simavr.sim
     // * Handles self-programming subsystem if the core
     // * supports it.
     // */
-    public class Avr_flash
+    public class Avr_flash:Avr_io
     {
         public Avr_io io;
         public ushort flags;
@@ -147,8 +147,8 @@ namespace SimulIDE.src.simavr.sim
             if (p.tmppage_used==null)
                 p.tmppage_used = new byte[p.spm_pagesize / 2];
 
-            Sim_io.Avr_register_io(avr, ref p.io);
-            Sim_interrupts.Avr_register_vector(avr, ref p.flash);
+            Sim_io.Avr_register_io(avr, p);
+            Sim_interrupts.Avr_register_vector(avr, p.flash);
             Sim_io.Avr_register_io_write(avr, p.r_spm, Avr_flash_write, p);
         }
 

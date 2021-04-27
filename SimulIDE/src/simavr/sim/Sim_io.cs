@@ -48,7 +48,7 @@ namespace SimulIDE.src.simavr.sim
             return res;
         }
 
-        public static void Avr_register_io(Avr avr,ref Avr_io io)
+        public static void Avr_register_io(Avr avr,Avr_io io)
         {
             io.avr = avr;
             avr.io_ports.Enqueue(io);
@@ -183,7 +183,7 @@ namespace SimulIDE.src.simavr.sim
             return avr.io[a].irq[index];
         }
 
-        public static Avr_irq[] Avr_io_setirqs(ref Avr_io io,uint ctl,uint count, Avr_irq[] irqs)
+        public static Avr_irq[] Avr_io_setirqs(Avr_io io,uint ctl,uint count, Avr_irq[] irqs)
         {
             // allocate this module's IRQ
             io.irq_count = count;

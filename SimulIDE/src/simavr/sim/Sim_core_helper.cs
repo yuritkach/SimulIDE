@@ -338,7 +338,7 @@ namespace SimulIDE.src.simavr.sim
                 ushort io = (ushort)AVR_DATA_TO_IO(addr);
 
                 if (avr.io[io].r.c != null)
-                    avr.data[addr] = avr.io[io].r.c(avr, addr, new object[1] { avr.io[io].r.param });
+                    avr.data[addr] = avr.io[io].r.c(avr, addr, avr.io[io].r.param);
 
                 if (avr.io[io].irq != null)
                 {

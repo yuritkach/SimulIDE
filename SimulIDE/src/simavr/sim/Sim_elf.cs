@@ -69,7 +69,7 @@ namespace SimulIDE.src.simavr.sim
                 Sim_io.Avr_ioctl(avr, AVR_IOCTL_IOPORT_SET_EXTERNAL, e);
             }
             Sim_Avr.Avr_set_command_register(avr, firmware.command_register_addr);
-            Sim_Avr.Avr_set_console_register(avr, firmware.console_register_addr);
+            //TYV   Sim_Avr.Avr_set_console_register(avr, firmware.console_register_addr);
 
             // rest is initialization of the VCD file
             if (firmware.tracecount == 0) return 0;

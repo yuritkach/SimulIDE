@@ -257,15 +257,15 @@ namespace SimulIDE.src.simavr.cores
             Avr_flash_helper.Avr_flash_init(avr, selfprog);
 //            avr_watchdog_init(avr, &mcu->watchdog);
 //            avr_extint_init(avr, &mcu->extint);
-            Avr_ioports.Avr_ioport_init(avr, ref portb);
-            Avr_ioports.Avr_ioport_init(avr, ref portc);
-            Avr_ioports.Avr_ioport_init(avr, ref portd);
+            Avr_ioports.Avr_ioport_init(avr, portb);
+            Avr_ioports.Avr_ioport_init(avr, portc);
+            Avr_ioports.Avr_ioport_init(avr, portd);
 //            avr_uart_init(avr, &mcu->uart);
 //            avr_acomp_init(avr, &mcu->acomp);
 //            avr_adc_init(avr, &mcu->adc);
-            Avr_timer_helper.Avr_timer_init(avr, ref timer0);
-            Avr_timer_helper.Avr_timer_init(avr, ref timer1);
-            Avr_timer_helper.Avr_timer_init(avr, ref timer2);
+            Avr_timer_helper.Avr_timer_init(avr, timer0);
+            Avr_timer_helper.Avr_timer_init(avr, timer1);
+            Avr_timer_helper.Avr_timer_init(avr, timer2);
 //            avr_spi_init(avr, &mcu->spi);
 //            avr_twi_init(avr, &mcu->twi);
         }

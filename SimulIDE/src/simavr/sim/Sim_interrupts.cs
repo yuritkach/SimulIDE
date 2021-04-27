@@ -57,7 +57,7 @@ namespace SimulIDE.src.simavr.sim
                 table.vector[i].pending = 0;
         }
 
-        public static void Avr_register_vector(Avr avr, ref Avr_int_vector vector)
+        public static void Avr_register_vector(Avr avr, Avr_int_vector vector)
         {
             if (vector == null)
                 vector = new Avr_int_vector();
@@ -68,7 +68,8 @@ namespace SimulIDE.src.simavr.sim
             string name1 = ">avr.int." + vector.vector.ToString("X2") + ".running";
             string[] names = new string[] { name0, name1 };
             Sim_irq.Avr_init_irq(ref avr.irq_pool,ref vector.irq,(uint)(vector.vector * 256), AVR_INT_IRQ_COUNT, names);
-            table.vector[table.vector_count++] = vector;
+            table.vector[table.vector_count] = vector;
+            table.vector_count++;
             if (vector.trace!=0)
                 Console.WriteLine("IRQ{0:G} registered (enabled {1:X4}:{2:G})\n",vector.vector, vector.enable.reg, vector.enable.bit);
             //            if (!vector->enable.reg)
